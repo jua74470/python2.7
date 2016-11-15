@@ -11,6 +11,16 @@
   sleep 1
 }
 
+%py2_build_egg() %{expand:
+  CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} bdist_egg --executable="%{__python2} %{py2_shbang_opts}" %{?*}
+  sleep 1
+}
+
 %py2_install() %{expand:
   CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+}
+
+%py2_install_egg() %{expand:
+  mkdir -p %{buildroot}%{python2_sitelib}
+  easy_install-%{python2_version} -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python2_version}.egg %{?*}
 }
