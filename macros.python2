@@ -12,7 +12,12 @@
 }
 
 %py2_build_egg() %{expand:
-  CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} bdist_egg --executable="%{__python2} %{py2_shbang_opts}" %{?*}
+  CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} bdist_egg %{?*}
+  sleep 1
+}
+
+%py2_build_wheel() %{expand:
+  CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} bdist_wheel %{?*}
   sleep 1
 }
 
@@ -23,4 +28,8 @@
 %py2_install_egg() %{expand:
   mkdir -p %{buildroot}%{python2_sitelib}
   easy_install-%{python2_version} -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python2_version}.egg %{?*}
+}
+
+%py2_install_wheel() %{expand:
+  pip%{python2_version} install -I dist/%{1} --root %{buildroot} --strip-file-prefix %{buildroot}
 }
