@@ -33,5 +33,5 @@
 }
 
 %py2_install_wheel() %{expand:\\\
-  pip%{python2_version} install -I dist/%{1} --root %{buildroot} --strip-file-prefix %{buildroot}
+  pip%{python2_version} install -I dist/%{1} --root %{buildroot} --strip-file-prefix %{buildroot} --no-deps
 }
