@@ -53,6 +53,13 @@
 # Turn this to 0 to turn off the "check" phase:
 %global run_selftest_suite 1
 
+%if 0%{?_module_build}
+%global with_gdbm 0
+%global with_valgrind 0
+%global with_systemtap 0
+%global run_selftest_suite 0
+%endif
+
 # Some of the files below /usr/lib/pythonMAJOR.MINOR/test  (e.g. bad_coding.py)
 # are deliberately invalid, leading to SyntaxError exceptions if they get
 # byte-compiled.
@@ -117,9 +124,21 @@ Provides: python(abi) = %{pybasever}
 # (keep this list alphabetized)
 
 BuildRequires: autoconf
+%if ! 0%{?_module_build}
 BuildRequires: bluez-libs-devel
+%endif
 BuildRequires: bzip2
 BuildRequires: bzip2-devel
+BuildRequires: glibc-devel
+BuildRequires: gmp-devel
+BuildRequires: libdb-devel
+BuildRequires: libffi-devel
+BuildRequires: ncurses-devel
+BuildRequires: openssl-devel
+BuildRequires: pkgconfig
+BuildRequires: readline-devel
+BuildRequires: sqlite-devel
+BuildRequires: tcl-devel
 
 # expat 2.1.0 added the symbol XML_SetHashSalt without bumping SONAME.  We use
 # it (in pyexpat) in order to enable the fix in Python-2.7.3 for CVE-2012-0876:
@@ -130,17 +149,10 @@ BuildRequires: gcc-c++
 %if %{with_gdbm}
 BuildRequires: gdbm-devel
 %endif
-BuildRequires: glibc-devel
-BuildRequires: gmp-devel
-BuildRequires: libdb-devel
-BuildRequires: libffi-devel
+%if ! 0%{?_module_build}
 BuildRequires: libGL-devel
 BuildRequires: libX11-devel
-BuildRequires: ncurses-devel
-BuildRequires: openssl-devel
-BuildRequires: pkgconfig
-BuildRequires: readline-devel
-BuildRequires: sqlite-devel
+%endif
 
 %if 0%{?with_systemtap}
 BuildRequires: systemtap-sdt-devel
@@ -150,9 +162,10 @@ BuildRequires: systemtap-sdt-devel
 %endif # with_systemtap
 
 BuildRequires: tar
-BuildRequires: tcl-devel
+%if ! 0%{?_module_build}
 BuildRequires: tix-devel
 BuildRequires: tk-devel
+%endif
 
 %if 0%{?with_valgrind}
 BuildRequires: valgrind-devel
@@ -160,12 +173,14 @@ BuildRequires: valgrind-devel
 
 BuildRequires: zlib-devel
 
+%if ! 0%{?_module_build}
 %if 0%{?with_rewheel}
 BuildRequires: python2-setuptools
 BuildRequires: python2-pip
 
 Requires: python2-setuptools
 Requires: python2-pip
+%endif
 %endif
 
 
@@ -747,6 +762,9 @@ Patch250: 00250-getentropy.patch
 # scripts specified as an entry_points
 Patch252: 00252-add-executable-option.patch
 
+# Disable tk for modularity builds to break up build dependencies
+Patch04000: 04000-modularity-disable-tk.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python" and "python3" in Fedora, EL, etc.,
@@ -1068,6 +1086,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch250 -p1
 %patch252 -p1
 
+%patch4000 -p1
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1764,7 +1783,9 @@ rm -fr %{buildroot}
 %files tkinter
 %defattr(-,root,root,755)
 %{pylibdir}/lib-tk
+%if ! 0%{?_module_build}
 %{dynload_dir}/_tkinter.so
+%endif
 
 %files test
 %defattr(-, root, root, -)
@@ -1902,8 +1923,10 @@ rm -fr %{buildroot}
 #  None for now; we could build precanned versions that have the appropriate
 # shebang if needed
 
+%if ! 0%{?_module_build}
 # Analog  of the tkinter subpackage's files:
 %{dynload_dir}/_tkinter_d.so
+%endif
 
 # Analog  of the -test subpackage's files:
 %{dynload_dir}/_ctypes_test_d.so
@@ -1930,6 +1953,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Fri Apr 21 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-5
+- drop a couple of dependencies for Modularity builds
+
 * Tue Feb 21 2017 Michal Cyprian <mcyprian@redhat.com> - 2.7.13-5
 - Add --executable option to install.py command
 
