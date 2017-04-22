@@ -110,7 +110,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1953,6 +1953,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Sun Apr 23 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-6
+- add missing patch
+
 * Fri Apr 21 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-5
 - drop a couple of dependencies for Modularity builds
 
