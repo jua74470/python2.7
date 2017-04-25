@@ -110,7 +110,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1086,7 +1086,9 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch250 -p1
 %patch252 -p1
 
+%if ! 0%{?_module_build}
 %patch4000 -p1
+%endif
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1953,6 +1955,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Tue Apr 25 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-7
+- apply modularity patch only during module builds
+
 * Sun Apr 23 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-6
 - add missing patch
 
