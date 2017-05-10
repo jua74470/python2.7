@@ -110,7 +110,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -762,8 +762,11 @@ Patch250: 00250-getentropy.patch
 # scripts specified as an entry_points
 Patch252: 00252-add-executable-option.patch
 
-# Disable tk for modularity builds to break up build dependencies
-Patch04000: 04000-modularity-disable-tk.patch
+# 00269 #
+# Fix python's recompilation with common build commands when using
+# profile guided optimizations.
+# Fixed upstream: http://bugs.python.org/issue29243
+Patch269: 00269-fix-multiple-compilations-issue-with-pgo-builds.patch
 
 # (New patches go here ^^^)
 #
@@ -777,6 +780,10 @@ Patch04000: 04000-modularity-disable-tk.patch
 # This is the generated patch to "configure"; see the description of
 #   %{regenerate_autotooling_patch}
 # above:
+
+# Disable tk for modularity builds to break up build dependencies
+Patch04000: 04000-modularity-disable-tk.patch
+
 Patch5000: 05000-autotool-intermediates.patch
 
 # ======================================================
@@ -1070,6 +1077,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 
 %patch250 -p1
 %patch252 -p1
+%patch269 -p1
 
 %if ! 0%{?_module_build}
 %patch4000 -p1
@@ -1207,7 +1215,11 @@ BuildPython debug \
 BuildPython optimized \
   python \
   python%{pybasever} \
+%ifarch %{ix86} x86_64
+  "--enable-optimizations" \
+%else
   "" \
+%endif
   true
 
 
@@ -1940,6 +1952,10 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Wed May 10 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.13-8
+- Enable profile guided optimizations for x86_64 and i686 architectures
+- Update description to reflect that Python 2 is not the default Python
+
 * Tue Apr 25 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-7
 - apply modularity patch only during module builds
 
