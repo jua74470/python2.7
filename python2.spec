@@ -189,7 +189,7 @@ Requires: python2-pip
 # Source code and patches
 # =======================
 
-Source: http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+Source: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 
 # Work around bug 562906 until it's fixed in rpm-build by providing a fixed
 # version of pythondeps.sh:
@@ -767,7 +767,7 @@ Patch04000: 04000-modularity-disable-tk.patch
 
 # (New patches go here ^^^)
 #
-# When adding new patches to "python" and "python3" in Fedora, EL, etc.,
+# When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
 # please try to keep the patch numbers in-sync between all specfiles.
 #
 # More information, and a patch number catalog, is at:
@@ -796,25 +796,20 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL: https://www.python.org/
 
 %description
-Python is an interpreted, interactive, object-oriented programming
-language often compared to Tcl, Perl, Scheme or Java. Python includes
-modules, classes, exceptions, very high level dynamic data types and
-dynamic typing. Python supports interfaces to many system calls and
-libraries, as well as to various windowing systems (X11, Motif, Tk,
-Mac and MFC).
+Python 2 is an old version of the language that is incompatible with the 3.x
+line of releases. The language is mostly the same, but many details, especially
+how built-in objects like dictionaries and strings work, have changed
+considerably, and a lot of deprecated features have finally been removed in the
+3.x line.
 
-Programmers can write new built-in modules for Python in C or C++.
-Python can be used as an extension language for applications that need
-a programmable interface.
-
-Note that documentation for Python is provided in the python-docs
+Note that documentation for Python 2 is provided in the python2-docs
 package.
 
-This package provides the "python" executable; most of the actual
-implementation is within the "python-libs" package.
+This package provides the "python2" executable; most of the actual
+implementation is within the "python2-libs" package.
 
 %package libs
-Summary: Runtime libraries for Python
+Summary: Runtime libraries for Python 2
 Group: Applications/System
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
@@ -834,13 +829,10 @@ Provides: python-libs%{?_isa} = %{version}-%{release}
 Obsoletes: python-libs < %{obs}
 
 %description libs
-This package contains runtime libraries for use by Python:
-- the libpython dynamic library, for use by applications that embed Python as
-a scripting language, and by the main "python" executable
-- the Python standard library
+This package contains files used to embed Python 2 into applications.
 
 %package devel
-Summary: The libraries and header files needed for Python development
+Summary: Libraries and header files needed for Python 2 development
 Group: Development/Libraries
 Requires: %{python}%{?_isa} = %{version}-%{release}
 Requires: python-rpm-macros
@@ -855,18 +847,11 @@ Provides: python-devel%{?_isa} = %{version}-%{release}
 Obsoletes: python-devel < %{obs}
 
 %description devel
-The Python programming language's interpreter can be extended with
-dynamically loaded extensions and can be embedded in other programs.
-This package contains the header files and libraries needed to do
-these types of tasks.
-
-Install python-devel if you want to develop Python extensions.  The
-python package will also need to be installed.  You'll probably also
-want to install the python-docs package, which contains Python
-documentation.
+This package contains libraries and header files used to build applications
+with and native libraries for Python 2
 
 %package tools
-Summary: A collection of development tools included with Python
+Summary: A collection of development tools included with Python 2
 Group: Development/Tools
 Requires: %{name} = %{version}-%{release}
 Requires: %{python}-tkinter = %{version}-%{release}
@@ -876,12 +861,12 @@ Provides: python-tools%{?_isa} = %{version}-%{release}
 Obsoletes: python-tools < %{obs}
 
 %description tools
-This package includes several tools to help with the development of Python
+This package includes several tools to help with the development of Python 2
 programs, including IDLE (an IDE with editing and debugging facilities), a
 color editor (pynche), and a python gettext program (pygettext.py).
 
 %package tkinter
-Summary: A graphical user interface for the Python scripting language
+Summary: A graphical user interface for the Python 2 scripting language
 Group: Development/Languages
 Requires: %{name} = %{version}-%{release}
 
@@ -896,13 +881,13 @@ Obsoletes: tkinter < %{obs}
 %description tkinter
 
 The Tkinter (Tk interface) program is an graphical user interface for
-the Python scripting language.
+the Python 2 scripting language.
 
-You should install the tkinter package if you'd like to use a graphical
-user interface for Python programming.
+You should install the python2tkinter package if you'd like to use a graphical
+user interface for Python 2 programming.
 
 %package test
-Summary: The test modules from the main python package
+Summary: The test modules from the main python2 package
 Group: Development/Languages
 Requires: %{name} = %{version}-%{release}
 
@@ -912,16 +897,16 @@ Obsoletes: python-test < %{obs}
 
 %description test
 
-The test modules from the main python package: %{name}
+The test modules from the main python2 package: %{name}
 These have been removed to save space, as they are never or almost
 never used in production.
 
-You might want to install the python-test package if you're developing python
+You might want to install the python2-test package if you're developing python 2
 code that uses more than just unittest and/or test_support.py.
 
 %if 0%{?with_debug_build}
 %package debug
-Summary: Debug version of the Python runtime
+Summary: Debug version of the Python 2 runtime
 Group: Applications/System
 
 # The debug build is an all-in-one package version of the regular build, and
@@ -939,20 +924,20 @@ Provides: python-debug%{?_isa} = %{version}-%{release}
 Obsoletes: python-debug < %{obs}
 
 %description debug
-python-debug provides a version of the Python runtime with numerous debugging
+python2-debug provides a version of the Python 2 runtime with numerous debugging
 features enabled, aimed at advanced Python users, such as developers of Python
 extension modules.
 
-This version uses more memory and will be slower than the regular Python build,
+This version uses more memory and will be slower than the regular Python 2 build,
 but is useful for tracking down reference-counting issues, and other bugs.
 
 The bytecodes are unchanged, so that .pyc files are compatible between the two
-version of Python, but the debugging features mean that C/C++ extension modules
+version of Python 2, but the debugging features mean that C/C++ extension modules
 are ABI-incompatible with those built for the standard runtime.
 
-It shares installation directories with the standard Python runtime, so that
+It shares installation directories with the standard Python 2 runtime, so that
 .py and .pyc files can be shared.  All compiled extension modules gain a "_d"
-suffix ("foo_d.so" rather than "foo.so") so that each Python implementation can
+suffix ("foo_d.so" rather than "foo.so") so that each Python 2 implementation can
 load its own extensions.
 %endif # with_debug_build
 
