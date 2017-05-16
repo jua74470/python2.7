@@ -110,7 +110,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -844,6 +844,7 @@ Group: Development/Libraries
 Requires: %{python}%{?_isa} = %{version}-%{release}
 Requires: python-rpm-macros
 Requires: python2-rpm-macros
+Requires: python3-rpm-generators
 Requires: pkgconfig
 # Needed here because of the migration of Makefile from -devel to the main
 # package
@@ -1952,6 +1953,14 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Tue May 16 2017 Tomas Orsava <torsava@redhat.com> - 2.7.13-9
+- Added a dependency to the devel subpackage on python3-rpm-generators which
+  have been excised out of rpm-build
+- There is no Python 2 package containing Python RPM generators, therefore
+  Python 3 is needed when Python 2 package is to be built, but this was
+  decided not to be a problem due to nearing EOL of Python 2
+- Involves: rhbz#1410631, rhbz#1444925
+
 * Wed May 10 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.13-8
 - Enable profile guided optimizations for x86_64 and i686 architectures
 - Update description to reflect that Python 2 is not the default Python
