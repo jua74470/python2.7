@@ -8,11 +8,6 @@
 
 %global python python2
 
-# Macro for using a version-release which will obsolete python for
-# Fedora 24 and 25, in order to ensure a clean upgrade path to Fedora 26.
-# It should be removed along with the obsolete tags at Fedora 28.
-%global obs 2.7.13-2
-
 %global pybasever 2.7
 %global pylibdir %{_libdir}/python%{pybasever}
 %global tools_dir %{pylibdir}/Tools
@@ -109,7 +104,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -791,7 +786,11 @@ Patch5000: 05000-autotool-intermediates.patch
 
 Provides: python = %{version}-%{release}
 Provides: python%{?_isa} = %{version}-%{release}
-Obsoletes: python < %{obs}
+
+# All the obsolete tags similar to this one should be removed at Fedora 28
+# Also, according to the guidelines, this should be a hardcoded version,
+# but that was proven problematic, see rhbz#1457336
+Obsoletes: python < %{version}-%{release}
 
 # Providing python27 as now multiple interpreters exist in Fedora
 # alongside the system one e.g. python26, python33 etc
@@ -832,7 +831,7 @@ Requires: glibc%{?_isa} >= 2.24.90-26
 
 Provides: python-libs = %{version}-%{release}
 Provides: python-libs%{?_isa} = %{version}-%{release}
-Obsoletes: python-libs < %{obs}
+Obsoletes: python-libs < %{version}-%{release}
 
 %description libs
 This package contains files used to embed Python 2 into applications.
@@ -851,7 +850,7 @@ Conflicts: %{python} < %{version}-%{release}
 
 Provides: python-devel = %{version}-%{release}
 Provides: python-devel%{?_isa} = %{version}-%{release}
-Obsoletes: python-devel < %{obs}
+Obsoletes: python-devel < %{version}-%{release}
 
 %description devel
 This package contains libraries and header files used to build applications
@@ -865,7 +864,7 @@ Requires: %{python}-tkinter = %{version}-%{release}
 
 Provides: python-tools = %{version}-%{release}
 Provides: python-tools%{?_isa} = %{version}-%{release}
-Obsoletes: python-tools < %{obs}
+Obsoletes: python-tools < %{version}-%{release}
 
 %description tools
 This package includes several tools to help with the development of Python 2
@@ -883,7 +882,7 @@ Provides: tkinter2 = %{version}-%{release}
 Provides: tkinter2%{?_isa} = %{version}-%{release}
 Provides: python-tkinter = %{version}-%{release}
 Provides: python-tkinter%{?_isa} = %{version}-%{release}
-Obsoletes: tkinter < %{obs}
+Obsoletes: tkinter < %{version}-%{release}
 
 %description tkinter
 
@@ -900,7 +899,7 @@ Requires: %{name} = %{version}-%{release}
 
 Provides: python-test = %{version}-%{release}
 Provides: python-test%{?_isa} = %{version}-%{release}
-Obsoletes: python-test < %{obs}
+Obsoletes: python-test < %{version}-%{release}
 
 %description test
 
@@ -928,7 +927,7 @@ Requires: %{name}-tools%{?_isa} = %{version}-%{release}
 
 Provides: python-debug = %{version}-%{release}
 Provides: python-debug%{?_isa} = %{version}-%{release}
-Obsoletes: python-debug < %{obs}
+Obsoletes: python-debug < %{version}-%{release}
 
 %description debug
 python2-debug provides a version of the Python 2 runtime with numerous debugging
@@ -1952,6 +1951,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Wed May 31 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.13-11
+- Change fixed Obsoletes version with a dynamic one (rhbz#1457336)
+
 * Thu May 18 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-10
 - revert logic for modularity patch and enable gdbm for modularity 
 
