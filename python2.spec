@@ -104,7 +104,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -762,6 +762,12 @@ Patch252: 00252-add-executable-option.patch
 # Fixed upstream: http://bugs.python.org/issue29243
 Patch269: 00269-fix-multiple-compilations-issue-with-pgo-builds.patch
 
+# 00270 #
+# Fix test_alpn_protocols from test_ssl as openssl > 1.1.0f
+# changed the behaviour of the ALPN hook.
+# Fixed upstream: http://bugs.python.org/issue30714
+Patch270: 00270-fix-ssl-alpn-hook-test.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1077,6 +1083,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch250 -p1
 %patch252 -p1
 %patch269 -p1
+%patch270 -p1
 
 %if 0%{?_module_build}
 %patch4000 -p1
@@ -1951,6 +1958,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Mon Jun 26 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.13-11
+- Fix test_alpn_protocols from test_ssl
+
 * Wed May 31 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.13-11
 - Change fixed Obsoletes version with a dynamic one (rhbz#1457336)
 
