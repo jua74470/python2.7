@@ -754,6 +754,7 @@ Patch250: 00250-getentropy.patch
 # 00252
 # Add executable option to install.py command to make it work for
 # scripts specified as an entry_points
+# Reported upstream: https://bugs.python.org/issue29411
 Patch252: 00252-add-executable-option.patch
 
 # 00269 #
