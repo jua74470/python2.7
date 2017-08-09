@@ -104,7 +104,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 14%{?dist}
+Release: 15%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -751,12 +751,6 @@ Patch198: 00198-add-rewheel-module.patch
 # Fixed upstream: https://hg.python.org/cpython/rev/13a39142c047
 Patch250: 00250-getentropy.patch
 
-# 00252
-# Add executable option to install.py command to make it work for
-# scripts specified as an entry_points
-# Reported upstream: https://bugs.python.org/issue29411
-Patch252: 00252-add-executable-option.patch
-
 # 00269 #
 # Fix python's recompilation with common build commands when using
 # profile guided optimizations.
@@ -1082,7 +1076,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %endif
 
 %patch250 -p1
-%patch252 -p1
 %patch269 -p1
 %patch270 -p1
 
@@ -1959,6 +1952,11 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Wed Aug 09 2017 Michal Cyprian <mcyprian@redhat.com> - 2.7.13-15
+- Revert "Add --executable option to install.py command"
+  This enhancement is currently not needed and it can possibly
+  collide with `pip --editable`option
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.13-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
