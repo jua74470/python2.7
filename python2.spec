@@ -104,7 +104,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 15%{?dist}
+Release: 16%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1946,12 +1946,17 @@ rm -fr %{buildroot}
 # (if it doesn't, then the rpmbuild ought to fail since the debug-gdb.py
 # payload file would be unpackaged)
 
+# Workaround for rhbz#1476593
+%undefine _debuginfo_subpackages
 
 # ======================================================
 # Finally, the changelog:
 # ======================================================
 
 %changelog
+* Mon Aug 14 2017 David "Sanqui" Labský <dlabsky@redhat.com> - 2.7.13-16
+- Do not generate debuginfo subpackages (#1476593)
+
 * Wed Aug 09 2017 Michal Cyprian <mcyprian@redhat.com> - 2.7.13-15
 - Revert "Add --executable option to install.py command"
   This enhancement is currently not needed and it can possibly
