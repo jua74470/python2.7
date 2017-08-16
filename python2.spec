@@ -104,7 +104,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 16%{?dist}
+Release: 17%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1770,7 +1770,10 @@ rm -fr %{buildroot}
 %doc Tools/pynche/README.pynche
 %{site_packages}/pynche
 %{_bindir}/smtpd*.py*
-%{_bindir}/2to3*
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1111275
+%exclude %{_bindir}/2to3*
+
 %{_bindir}/idle*
 %{_bindir}/pynche*
 %{_bindir}/pygettext*.py*
@@ -1954,6 +1957,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Wed Aug 16 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.13-17
+- Exclude /usr/bin/2to3 (rhbz#1111275)
+
 * Mon Aug 14 2017 David "Sanqui" Labský <dlabsky@redhat.com> - 2.7.13-16
 - Do not generate debuginfo subpackages (#1476593)
 
