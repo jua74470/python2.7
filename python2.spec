@@ -2,7 +2,15 @@
 # Conditionals and other variables controlling the build
 # ======================================================
 
-%global with_rewheel 1
+# Note that the bcond macros are named for the CLI option they create.
+# "%%bcond_without" means "ENABLE by default and create a --without option"
+
+# Ability to reuse RPM-installed pip using rewheel
+%bcond_without rewheel
+
+# Extra build for debugging the interpreter or C-API extensions
+# (the -debug subpackages)
+%bcond_without debug_build
 
 %global unicode ucs4
 
@@ -27,8 +35,6 @@
 %global py_INSTSONAME_optimized libpython%{pybasever}.so.%{py_SOVERSION}
 %global py_INSTSONAME_debug     libpython%{pybasever}_d.so.%{py_SOVERSION}
 
-%global with_debug_build 1
-
 # Disabled for now:
 %global with_huntrleaks 0
 
@@ -45,13 +51,15 @@
 
 %global with_gdbm 1
 
-# Turn this to 0 to turn off the "check" phase:
-%global run_selftest_suite 1
-
 %if 0%{?_module_build}
 %global with_valgrind 0
 %global with_systemtap 0
-%global run_selftest_suite 0
+
+# (Don't) Run the test suite in %%check
+%bcond_with tests
+%else
+# Run the test suite in %%check
+%bcond_without tests
 %endif
 
 # Some of the files below /usr/lib/pythonMAJOR.MINOR/test  (e.g. bad_coding.py)
@@ -104,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.13
-Release: 17%{?dist}
+Release: 18%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -168,7 +176,7 @@ BuildRequires: valgrind-devel
 BuildRequires: zlib-devel
 
 %if ! 0%{?_module_build}
-%if 0%{?with_rewheel}
+%if %{with rewheel}
 BuildRequires: python2-setuptools
 BuildRequires: python2-pip
 
@@ -911,7 +919,7 @@ never used in production.
 You might want to install the python2-test package if you're developing python 2
 code that uses more than just unittest and/or test_support.py.
 
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 %package debug
 Summary: Debug version of the Python 2 runtime
 Group: Applications/System
@@ -946,7 +954,7 @@ It shares installation directories with the standard Python 2 runtime, so that
 .py and .pyc files can be shared.  All compiled extension modules gain a "_d"
 suffix ("foo_d.so" rather than "foo.so") so that each Python 2 implementation can
 load its own extensions.
-%endif # with_debug_build
+%endif # with debug_build
 
 
 # ======================================================
@@ -1071,7 +1079,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch189 -p1
 %patch191 -p1
 %patch193 -p1
-%if 0%{with_rewheel}
+%if %{with rewheel}
 %patch198 -p1
 %endif
 
@@ -1200,7 +1208,7 @@ LD_LIBRARY_PATH="$topdir/$ConfDir" PATH=$PATH:$topdir/$ConfDir make -s EXTRA_CFL
 
 # Use "BuildPython" to support building with different configurations:
 
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 BuildPython debug \
   python-debug \
   python%{pybasever}-debug \
@@ -1210,7 +1218,7 @@ BuildPython debug \
   "--with-pydebug --with-count-allocs --with-call-profile" \
 %endif
   false
-%endif # with_debug_build
+%endif # with debug_build
 
 BuildPython optimized \
   python \
@@ -1294,11 +1302,11 @@ LD_LIBRARY_PATH="$topdir/$ConfDir" $topdir/$ConfDir/$BinaryName -O \
 # Use "InstallPython" to support building with different configurations:
 
 # Install the "debug" build first, so that we can move some files aside
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 InstallPython debug \
   python%{pybasever}-debug \
   %{py_INSTSONAME_debug}
-%endif # with_debug_build
+%endif # with debug_build
 
 # Now the optimized build:
 InstallPython optimized \
@@ -1414,7 +1422,7 @@ install -d %{buildroot}/%{_prefix}/lib/python%{pybasever}/site-packages
 %global _pyconfig_h %{_pyconfig32_h}
 %endif
 
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 %global PyIncludeDirs python%{pybasever} python%{pybasever}-debug
 %else
 %global PyIncludeDirs python%{pybasever}
@@ -1490,12 +1498,12 @@ sed \
    %{SOURCE3} \
    > %{buildroot}%{tapsetdir}/%{libpython_stp_optimized}
 
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 sed \
    -e "s|LIBRARY_PATH|%{_libdir}/%{py_INSTSONAME_debug}|" \
    %{SOURCE3} \
    > %{buildroot}%{tapsetdir}/%{libpython_stp_debug}
-%endif # with_debug_build
+%endif # with debug_build
 %endif # with_systemtap
 
 # Make library-files user writable
@@ -1551,19 +1559,19 @@ CheckPython() {
 
 }
 
-%if 0%{run_selftest_suite}
+%if %{with tests}
 
 # Check each of the configurations:
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 CheckPython \
   debug \
   python%{pybasever}-debug
-%endif # with_debug_build
+%endif # with debug_build
 CheckPython \
   optimized \
   python%{pybasever}
 
-%endif # run_selftest_suite
+%endif # with tests
 
 
 # ======================================================
@@ -1743,7 +1751,7 @@ rm -fr %{buildroot}
 %{pylibdir}/ensurepip/*.py*
 %exclude %{pylibdir}/ensurepip/_bundled
 
-%if 0%{?with_rewheel}
+%if %{with rewheel}
 %dir %{pylibdir}/ensurepip/rewheel/
 %{pylibdir}/ensurepip/rewheel/*.py*
 %endif
@@ -1812,7 +1820,7 @@ rm -fr %{buildroot}
 # Hence the manifest is the combination of analogous files in the manifests of
 # all of the other subpackages
 
-%if 0%{?with_debug_build}
+%if %{with debug_build}
 %files debug
 %defattr(-,root,root,-)
 
@@ -1934,7 +1942,7 @@ rm -fr %{buildroot}
 %{dynload_dir}/_ctypes_test_d.so
 %{dynload_dir}/_testcapimodule_d.so
 
-%endif # with_debug_build
+%endif # with debug_build
 
 # We put the debug-gdb.py file inside /usr/lib/debug to avoid noise from
 # ldconfig (rhbz:562980).
@@ -1957,6 +1965,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Thu Aug 31 2017 Tomas Orsava <torsava@redhat.com> - 2.7.13-18
+- Switch some macros into bconds to facilitate modularity
+
 * Wed Aug 16 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.13-17
 - Exclude /usr/bin/2to3 (rhbz#1111275)
 
