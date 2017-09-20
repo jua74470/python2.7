@@ -691,12 +691,6 @@ Patch169: 00169-avoid-implicit-usage-of-md5-in-multiprocessing.patch
 # (rhbz#850013)
 Patch170: 00170-gc-assertions.patch
 
-# 00173 #
-# Workaround for ENOPROTOOPT seen in Koji within
-# test.test_support.bind_port()
-# (rhbz#913732)
-Patch173: 00173-workaround-ENOPROTOOPT-in-bind_port.patch
-
 # 00174 #
 # Workaround for failure to set up prefix/exec_prefix when running
 # an embededed libpython that sets Py_SetProgramName() to a name not
@@ -1070,7 +1064,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch168 -p1
 %patch169 -p1
 %patch170 -p1
-%patch173 -p1
 %patch174 -p1 -b .fix-for-usr-move
 %patch180 -p1
 %patch181 -p1
