@@ -118,8 +118,8 @@ index 997a2fc..467e782 100644
 +PYTHON=		python$(DEBUG_SUFFIX)$(EXE)
 +BUILDPYTHON=	python$(DEBUG_SUFFIX)$(BUILDEXE)
  
+ PYTHON_FOR_REGEN=@PYTHON_FOR_REGEN@
  PYTHON_FOR_BUILD=@PYTHON_FOR_BUILD@
- _PYTHON_HOST_PLATFORM=@_PYTHON_HOST_PLATFORM@
 @@ -547,7 +553,7 @@ sharedmods: $(BUILDPYTHON) pybuilddir.txt Modules/_math.o
  		_TCLTK_INCLUDES='$(TCLTK_INCLUDES)' _TCLTK_LIBS='$(TCLTK_LIBS)' \
  		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
@@ -194,8 +194,8 @@ index 997a2fc..467e782 100644
  # pkgconfig directory
  LIBPC=		$(LIBDIR)/pkgconfig
  
--libainstall:	all python-config
-+libainstall:	all python$(DEBUG_SUFFIX)-config
+-libainstall:	@DEF_MAKE_RULE@ python-config
++libainstall:	@DEF_MAKE_RULE@ python$(DEBUG_SUFFIX)-config
  	@for i in $(LIBDIR) $(LIBP) $(LIBPL) $(LIBPC); \
  	do \
  		if test ! -d $(DESTDIR)$$i; then \

@@ -111,8 +111,8 @@
 Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
-Version: 2.7.13
-Release: 18%{?dist}
+Version: 2.7.14
+Release: 1%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -746,25 +746,6 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # 00198 #
 Patch198: 00198-add-rewheel-module.patch
 
-# 00250 #
-# After  glibc-2.24.90, Python failed to start on EL7 kernel
-# rhbz#1410175: https://bugzilla.redhat.com/show_bug.cgi?id=1410175
-# http://bugs.python.org/issue29157
-# Fixed upstream: https://hg.python.org/cpython/rev/13a39142c047
-Patch250: 00250-getentropy.patch
-
-# 00269 #
-# Fix python's recompilation with common build commands when using
-# profile guided optimizations.
-# Fixed upstream: http://bugs.python.org/issue29243
-Patch269: 00269-fix-multiple-compilations-issue-with-pgo-builds.patch
-
-# 00270 #
-# Fix test_alpn_protocols from test_ssl as openssl > 1.1.0f
-# changed the behaviour of the ALPN hook.
-# Fixed upstream: http://bugs.python.org/issue30714
-Patch270: 00270-fix-ssl-alpn-hook-test.patch
-
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1075,10 +1056,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rewheel}
 %patch198 -p1
 %endif
-
-%patch250 -p1
-%patch269 -p1
-%patch270 -p1
 
 %if 0%{?_module_build}
 %patch4000 -p1
@@ -1958,6 +1935,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Mon Oct 09 2017 Iryna Shcherbina <ishcherb@redhat.com> - 2.7.14-1
+- Update to version 2.7.14
+
 * Thu Aug 31 2017 Tomas Orsava <torsava@redhat.com> - 2.7.13-18
 - Switch some macros into bconds to facilitate modularity
 
