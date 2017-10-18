@@ -1,0 +1,88 @@
+From ab35adc682ec51800aa19a77de9947c6aaa50f41 Mon Sep 17 00:00:00 2001
+From: Victor Stinner <victor.stinner@gmail.com>
+Date: Fri, 6 Oct 2017 22:28:59 +0200
+Subject: [PATCH] bpo-31719: Fix test_regrtest.test_crashed() on s390x
+
+Add a new _testcapi._read_null() function to crash Python in a
+reliable way on s390x.
+
+On s390x, ctypes.string_at(0) returns an empty string rather than
+crashing.
+---
+ Lib/test/support/__init__.py                            |  4 ++--
+ Lib/test/test_regrtest.py                               |  2 ++
+ .../next/Tests/2017-10-06-22-37-38.bpo-31719.gHyrV3.rst |  3 +++
+ Modules/_testcapimodule.c                               | 17 +++++++++++++++++
+ 4 files changed, 24 insertions(+), 2 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Tests/2017-10-06-22-37-38.bpo-31719.gHyrV3.rst
+
+diff --git a/Lib/test/support/__init__.py b/Lib/test/support/__init__.py
+index ef474e00b68..25df3ed0c41 100644
+--- a/Lib/test/support/__init__.py
++++ b/Lib/test/support/__init__.py
+@@ -1960,6 +1960,6 @@ def _crash_python():
+     Use SuppressCrashReport() to prevent a crash report from popping up.
+     """
+ 
+-    import ctypes
++    import _testcapi
+     with SuppressCrashReport():
+-        ctypes.string_at(0)
++        _testcapi._read_null()
+diff --git a/Lib/test/test_regrtest.py b/Lib/test/test_regrtest.py
+index 264c74d22ba..aae274384c7 100644
+--- a/Lib/test/test_regrtest.py
++++ b/Lib/test/test_regrtest.py
+@@ -543,6 +543,8 @@ def test_method2(self):
+                                 testname)
+         self.assertEqual(output.splitlines(), all_methods)
+ 
++    @unittest.skipIf(sys.platform.startswith('aix'),
++                     "support._crash_python() doesn't work on AIX")
+     def test_crashed(self):
+         # Any code which causes a crash
+         code = 'import test.support; test.support._crash_python()'
+diff --git a/Misc/NEWS.d/next/Tests/2017-10-06-22-37-38.bpo-31719.gHyrV3.rst b/Misc/NEWS.d/next/Tests/2017-10-06-22-37-38.bpo-31719.gHyrV3.rst
+new file mode 100644
+index 00000000000..a06c5267251
+--- /dev/null
++++ b/Misc/NEWS.d/next/Tests/2017-10-06-22-37-38.bpo-31719.gHyrV3.rst
+@@ -0,0 +1,3 @@
++Fix test_regrtest.test_crashed() on s390x. Add a new _testcapi._read_null()
++function to crash Python in a reliable way on s390x. On s390x,
++ctypes.string_at(0) returns an empty string rather than crashing.
+diff --git a/Modules/_testcapimodule.c b/Modules/_testcapimodule.c
+index 7691b5188ff..5902de07823 100644
+--- a/Modules/_testcapimodule.c
++++ b/Modules/_testcapimodule.c
+@@ -2566,6 +2566,22 @@ py_w_stopcode(PyObject *self, PyObject *args)
+ #endif
+ 
+ 
++/* Read memory from NULL (address 0) to raise a SIGSEGV or SIGBUS signal
++   depending on the platform. This function is used by
++   test.support._crash_python() to "crash" Python. */
++static PyObject *
++read_null(PyObject *self, PyObject *args)
++{
++    volatile int *x;
++    volatile int y;
++
++    x = NULL;
++    y = *x;
++    return PyLong_FromLong(y);
++
++}
++
++
+ static PyMethodDef TestMethods[] = {
+     {"raise_exception",         raise_exception,                 METH_VARARGS},
+     {"set_errno",               set_errno,                       METH_VARARGS},
+@@ -2685,6 +2701,7 @@ static PyMethodDef TestMethods[] = {
+ #ifdef W_STOPCODE
+     {"W_STOPCODE", py_w_stopcode, METH_VARARGS},
+ #endif
++    {"_read_null", (PyCFunction)read_null, METH_NOARGS},
+     {NULL, NULL} /* sentinel */
+ };
+ 

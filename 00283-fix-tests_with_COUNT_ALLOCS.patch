@@ -1,0 +1,172 @@
+From 7b4ba62e388474e811268322b47f80d464933541 Mon Sep 17 00:00:00 2001
+From: Victor Stinner <victor.stinner@gmail.com>
+Date: Tue, 17 Oct 2017 02:25:23 -0700
+Subject: [PATCH] [2.7] bpo-31692: Add PYTHONSHOWALLOCCOUNT env var (GH-3927)
+
+bpo-31692, bpo-19527:
+
+* Add a new PYTHONSHOWALLOCCOUNT environment variable, similar to
+  the Python 3 "-X showalloccount" option
+* When Python is compiled with COUNT_ALLOCS, the new
+  PYTHONSHOWALLOCCOUNT environment variable now has to be set to dump
+  allocation counts into stderr on shutdown. Moreover, allocations
+  statistics are now dumped into stderr rather than stdout.
+* Add @test.support.requires_type_collecting decorator: skip test if
+  COUNT_ALLOCS is defined
+* Fix tests for COUNT_ALLOCS: decorate some methods with
+  @requires_type_collecting
+* test_sys.test_objecttypes(): update object type when COUNT_ALLOCS
+  is defined
+---
+ Doc/c-api/typeobj.rst                                              | 2 +-
+ Doc/using/cmdline.rst                                              | 7 +++++++
+ Lib/test/support/__init__.py                                       | 3 +++
+ Lib/test/test_abc.py                                               | 1 +
+ Lib/test/test_gc.py                                                | 4 +++-
+ Lib/test/test_regrtest.py                                          | 1 +
+ Lib/test/test_sys.py                                               | 5 ++++-
+ Lib/test/test_weakref.py                                           | 1 +
+ .../Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst     | 4 ++++
+ Python/pythonrun.c                                                 | 4 +++-
+ 10 files changed, 28 insertions(+), 4 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst
+
+diff --git a/Doc/c-api/typeobj.rst b/Doc/c-api/typeobj.rst
+index 18edcdd7e5a..f0ccf2ea5fe 100644
+--- a/Doc/c-api/typeobj.rst
++++ b/Doc/c-api/typeobj.rst
+@@ -1101,7 +1101,7 @@ The next fields, up to and including :c:member:`~PyTypeObject.tp_weaklist`, only
+ The remaining fields are only defined if the feature test macro
+ :const:`COUNT_ALLOCS` is defined, and are for internal use only. They are
+ documented here for completeness.  None of these fields are inherited by
+-subtypes.
++subtypes. See the :envvar:`PYTHONSHOWALLOCCOUNT` environment variable.
+ 
+ 
+ .. c:member:: Py_ssize_t PyTypeObject.tp_allocs
+diff --git a/Doc/using/cmdline.rst b/Doc/using/cmdline.rst
+index f00f7f6026a..55bc12893d6 100644
+--- a/Doc/using/cmdline.rst
++++ b/Doc/using/cmdline.rst
+@@ -663,3 +663,10 @@ if Python was configured with the ``--with-pydebug`` build option.
+ 
+    If set, Python will print memory allocation statistics every time a new
+    object arena is created, and on shutdown.
++
++.. envvar:: PYTHONSHOWALLOCCOUNT
++
++   If set and Python was compiled with ``COUNT_ALLOCS`` defined, Python will
++   dump allocations counts into stderr on shutdown.
++
++   .. versionadded:: 2.7.15
+diff --git a/Lib/test/support/__init__.py b/Lib/test/support/__init__.py
+index 25df3ed0c41..d14a6620b5d 100644
+--- a/Lib/test/support/__init__.py
++++ b/Lib/test/support/__init__.py
+@@ -1795,6 +1795,9 @@ def py3k_bytes(b):
+         except TypeError:
+             return bytes(b)
+ 
++requires_type_collecting = unittest.skipIf(hasattr(sys, 'getcounts'),
++                        'types are immortal if COUNT_ALLOCS is defined')
++
+ def args_from_interpreter_flags():
+     """Return a list of command-line arguments reproducing the current
+     settings in sys.flags."""
+diff --git a/Lib/test/test_abc.py b/Lib/test/test_abc.py
+index 6a8c3a13274..dbba37cdb6f 100644
+--- a/Lib/test/test_abc.py
++++ b/Lib/test/test_abc.py
+@@ -208,6 +208,7 @@ class C(A, B):
+         C()
+         self.assertEqual(B.counter, 1)
+ 
++    @test_support.requires_type_collecting
+     def test_cache_leak(self):
+         # See issue #2521.
+         class A(object):
+diff --git a/Lib/test/test_gc.py b/Lib/test/test_gc.py
+index ed01c9802fc..7e47b2d3a27 100644
+--- a/Lib/test/test_gc.py
++++ b/Lib/test/test_gc.py
+@@ -1,5 +1,6 @@
+ import unittest
+-from test.test_support import verbose, run_unittest, start_threads, import_module
++from test.support import (verbose, run_unittest, start_threads, import_module,
++                          requires_type_collecting)
+ import sys
+ import sysconfig
+ import time
+@@ -90,6 +91,7 @@ class A:
+         del a
+         self.assertNotEqual(gc.collect(), 0)
+ 
++    @requires_type_collecting
+     def test_newinstance(self):
+         class A(object):
+             pass
+diff --git a/Lib/test/test_regrtest.py b/Lib/test/test_regrtest.py
+index aae274384c7..988a72c1099 100644
+--- a/Lib/test/test_regrtest.py
++++ b/Lib/test/test_regrtest.py
+@@ -493,6 +493,7 @@ def check_leak(self, code, what):
+             self.assertIn(line2, reflog)
+ 
+     @unittest.skipUnless(Py_DEBUG, 'need a debug build')
++    @support.requires_type_collecting
+     def test_huntrleaks(self):
+         # test --huntrleaks
+         code = textwrap.dedent("""
+diff --git a/Lib/test/test_sys.py b/Lib/test/test_sys.py
+index 5baaa352c0b..9342716272a 100644
+--- a/Lib/test/test_sys.py
++++ b/Lib/test/test_sys.py
+@@ -748,7 +748,10 @@ def delx(self): del self.__x
+         # tupleiterator
+         check(iter(()), size('lP'))
+         # type
+-        s = vsize('P2P15Pl4PP9PP11PI'   # PyTypeObject
++        fmt = 'P2P15Pl4PP9PP11PI'
++        if hasattr(sys, 'getcounts'):
++            fmt += '3P2P'
++        s = vsize(fmt +                 # PyTypeObject
+                   '39P'                 # PyNumberMethods
+                   '3P'                  # PyMappingMethods
+                   '10P'                 # PySequenceMethods
+diff --git a/Lib/test/test_weakref.py b/Lib/test/test_weakref.py
+index 415d5ebbd72..418481dadd8 100644
+--- a/Lib/test/test_weakref.py
++++ b/Lib/test/test_weakref.py
+@@ -601,6 +601,7 @@ class D:
+         del c1, c2, C, D
+         gc.collect()
+ 
++    @test_support.requires_type_collecting
+     def test_callback_in_cycle_resurrection(self):
+         import gc
+ 
+diff --git a/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst b/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst
+new file mode 100644
+index 00000000000..f32548c67bd
+--- /dev/null
++++ b/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst 
+@@ -0,0 +1,4 @@
++Add a new PYTHONSHOWALLOCCOUNT environment variable. When Python is compiled
++with COUNT_ALLOCS, PYTHONSHOWALLOCCOUNT now has to be set to dump allocation
++counts into stderr on shutdown. Moreover, allocations statistics are now dumped
++into stderr rather than stdout.
+diff --git a/Python/pythonrun.c b/Python/pythonrun.c
+index 677f6e48111..44fe13d2f7d 100644
+--- a/Python/pythonrun.c
++++ b/Python/pythonrun.c
+@@ -488,7 +488,9 @@ Py_Finalize(void)
+ 
+     /* Debugging stuff */
+ #ifdef COUNT_ALLOCS
+-    dump_counts(stdout);
++    if (Py_GETENV("PYTHONSHOWALLOCCOUNT")) {
++        dump_counts(stderr);
++    }
+ #endif
+ 
+     PRINT_TOTAL_REFS();

@@ -473,14 +473,6 @@ Patch114: 00114-statvfs-f_flag-constants.patch
 # This patch adds the build Modules directory to build path.
 Patch121: 00121-add-Modules-to-build-path.patch
 
-# 00125 #
-# COUNT_ALLOCS is useful for debugging, but the upstream behaviour of always
-# emitting debug info to stdout on exit is too verbose and makes it harder to
-# use the debug build.  Add a "PYTHONDUMPCOUNTS" environment variable which
-# must be set to enable the output on exit
-# Not yet sent upstream
-Patch125: 00125-less-verbose-COUNT_ALLOCS.patch
-
 # 2.7.1 (in r84230) added a test to test_abc which fails if python is
 # configured with COUNT_ALLOCS, which is the case for our debug build
 # (the COUNT_ALLOCS instrumentation keeps "C" alive).
@@ -529,16 +521,6 @@ Patch132: 00132-add-rpmbuild-hooks-to-unittest.patch
 # "dl" is deprecated, and test_dl doesn't work on 64-bit builds:
 Patch133: 00133-skip-test_dl.patch
 
-# 00134 #
-# Fix a failure in test_sys.py when configured with COUNT_ALLOCS enabled
-# Not yet sent upstream
-Patch134: 00134-fix-COUNT_ALLOCS-failure-in-test_sys.patch
-
-# 00135 #
-# Skip "test_callback_in_cycle_resurrection" in a debug build, where it fails:
-# Not yet sent upstream
-Patch135: 00135-skip-test-within-test_weakref-in-debug-build.patch
-
 # 00136 #
 # Some tests try to seek on sys.stdin, but don't work as expected when run
 # within Koji/mock; skip them within the rpm build:
@@ -562,11 +544,6 @@ Patch139: 00139-skip-test_float-known-failure-on-arm.patch
 #  http://bugs.python.org/issue8314 (rhbz#711584)
 # which appears to be a libffi bug
 Patch140: 00140-skip-test_ctypes-known-failure-on-sparc.patch
-
-# 00141 #
-# Fix test_gc's test_newinstance case when configured with COUNT_ALLOCS:
-# Not yet sent upstream
-Patch141: 00141-fix-test_gc_with_COUNT_ALLOCS.patch
 
 # 00142 #
 # Some pty tests fail when run in mock (rhbz#714627):
@@ -745,6 +722,17 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 
 # 00198 #
 Patch198: 00198-add-rewheel-module.patch
+
+# 00280 #
+# The test `test_regrtest.test_crashed` fails on s390x architecture.
+# https://bugs.python.org/issue31719
+Patch280: 00280-Fix-test_regrtest-test_crashed-on-s390x.patch
+
+# 00283 #
+# Fix tests on debug build configured with COUNT_ALLOCS,
+# and add a new environment variable PYTHONSHOWALLOCCOUNT:
+# https://bugs.python.org/issue31692
+Patch283: 00283-fix-tests_with_COUNT_ALLOCS.patch
 
 # (New patches go here ^^^)
 #
@@ -1005,7 +993,6 @@ rm -r Modules/zlib || exit 1
 
 
 %patch121 -p1
-%patch125 -p1 -b .less-verbose-COUNT_ALLOCS
 %patch128 -p1
 
 %patch130 -p1
@@ -1016,8 +1003,6 @@ rm -r Modules/zlib || exit 1
 
 %patch132 -p1
 %patch133 -p1
-%patch134 -p1
-%patch135 -p1
 %patch136 -p1 -b .stdin-test
 %patch137 -p1
 %patch138 -p1
@@ -1027,7 +1012,6 @@ rm -r Modules/zlib || exit 1
 %ifarch %{sparc}
 %patch140 -p1
 %endif
-%patch141 -p1
 %patch142 -p1 -b .tty-fail
 %patch143 -p1 -b .tsc-on-ppc
 %if !%{with_gdbm}
@@ -1056,6 +1040,9 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rewheel}
 %patch198 -p1
 %endif
+%patch283 -p1
+%patch280 -p1
+
 
 %if 0%{?_module_build}
 %patch4000 -p1
