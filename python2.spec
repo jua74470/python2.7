@@ -175,15 +175,15 @@ BuildRequires: valgrind-devel
 
 BuildRequires: zlib-devel
 
-%if ! 0%{?_module_build}
 %if %{with rewheel}
 BuildRequires: python2-setuptools
-BuildRequires: python2-pip
-
 Requires: python2-setuptools
+
+%if ! 0%{?_module_build}
+BuildRequires: python2-pip
 Requires: python2-pip
-%endif
-%endif
+%endif # !module_build
+%endif # rewheel
 
 
 
