@@ -1,0 +1,92 @@
+diff --git a/Doc/using/cmdline.rst b/Doc/using/cmdline.rst
+index 55bc128..15d5830 100644
+--- a/Doc/using/cmdline.rst
++++ b/Doc/using/cmdline.rst
+@@ -664,6 +664,13 @@ if Python was configured with the ``--with-pydebug`` build option.
+    If set, Python will print memory allocation statistics every time a new
+    object arena is created, and on shutdown.
+ 
++.. envvar:: PYTHONSHOWREFCOUNT
++
++   If set, Python will print the total reference count when the program
++   finishes or after each statement in the interactive interpreter.
++
++   .. versionadded:: 2.7.15
++
+ .. envvar:: PYTHONSHOWALLOCCOUNT
+ 
+    If set and Python was compiled with ``COUNT_ALLOCS`` defined, Python will
+diff --git a/Doc/whatsnew/2.7.rst b/Doc/whatsnew/2.7.rst
+index f0d2428..b29593a 100644
+--- a/Doc/whatsnew/2.7.rst
++++ b/Doc/whatsnew/2.7.rst
+@@ -2548,6 +2548,10 @@ longer dumped by default anymore: the :envvar:`PYTHONSHOWALLOCCOUNT` environment
+ variable must now also be set. Moreover, allocation counts are now dumped into
+ stderr, rather than stdout. (Contributed by Victor Stinner; :issue:`31692`.)
+ 
++In debug mode, the ``[xxx refs]`` statistic is not written by default, the
++:envvar:`PYTHONSHOWREFCOUNT` environment variable now must also be set.
++(Contributed by Victor Stinner; :issue:`31733`.)
++
+ .. versionadded:: 2.7.15
+ 
+ 
+diff --git a/Python/pythonrun.c b/Python/pythonrun.c
+index d17f7f3..eb31e34 100644
+--- a/Python/pythonrun.c
++++ b/Python/pythonrun.c
+@@ -37,14 +37,6 @@
+ #include "windows.h"
+ #endif
+ 
+-#ifndef Py_REF_DEBUG
+-#define PRINT_TOTAL_REFS()
+-#else /* Py_REF_DEBUG */
+-#define PRINT_TOTAL_REFS() fprintf(stderr,                              \
+-                   "[%" PY_FORMAT_SIZE_T "d refs]\n",                   \
+-                   _Py_GetRefTotal())
+-#endif
+-
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+@@ -104,6 +96,21 @@ PyModule_GetWarningsModule(void)
+     return PyImport_ImportModule("warnings");
+ }
+ 
++static void
++_PyDebug_PrintTotalRefs(void)
++{
++#ifdef Py_REF_DEBUG
++    Py_ssize_t total;
++
++    if (!Py_GETENV("PYTHONSHOWREFCOUNT")) {
++        return;
++    }
++
++    total = _Py_GetRefTotal();
++    fprintf(stderr, "[%" PY_FORMAT_SIZE_T "d refs]\n", total);
++#endif
++}
++
+ static int initialized = 0;
+ 
+ /* API to access the initialized flag -- useful for esoteric use */
+@@ -486,7 +493,7 @@ Py_Finalize(void)
+     }
+ #endif
+ 
+-    PRINT_TOTAL_REFS();
++    _PyDebug_PrintTotalRefs();
+ 
+ #ifdef Py_TRACE_REFS
+     /* Display all objects still alive -- this can invoke arbitrary
+@@ -777,7 +784,7 @@ PyRun_InteractiveLoopFlags(FILE *fp, const char *filename, PyCompilerFlags *flag
+     }
+     for (;;) {
+         ret = PyRun_InteractiveOneFlags(fp, filename, flags);
+-        PRINT_TOTAL_REFS();
++        _PyDebug_PrintTotalRefs();
+         if (ret == E_EOF)
+             return 0;
+         /*

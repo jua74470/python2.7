@@ -59,6 +59,28 @@ index f00f7f6026a..55bc12893d6 100644
 +   dump allocations counts into stderr on shutdown.
 +
 +   .. versionadded:: 2.7.15
+diff --git a/Doc/whatsnew/2.7.rst b/Doc/whatsnew/2.7.rst
+index 28a8d4b..f0d2428 100644
+--- a/Doc/whatsnew/2.7.rst
++++ b/Doc/whatsnew/2.7.rst
+@@ -2540,6 +2540,17 @@ exemption allowing new ``-3`` warnings to be added in any Python 2.7
+ maintenance release.
+ 
+ 
++Two new environment variables for debug mode
++--------------------------------------------
++
++When Python is compiled with ``COUNT_ALLOC`` defined, allocation counts are no
++longer dumped by default anymore: the :envvar:`PYTHONSHOWALLOCCOUNT` environment
++variable must now also be set. Moreover, allocation counts are now dumped into
++stderr, rather than stdout. (Contributed by Victor Stinner; :issue:`31692`.)
++
++.. versionadded:: 2.7.15
++
++
+ PEP 434: IDLE Enhancement Exception for All Branches
+ ----------------------------------------------------
+ 
 diff --git a/Lib/test/support/__init__.py b/Lib/test/support/__init__.py
 index 25df3ed0c41..d14a6620b5d 100644
 --- a/Lib/test/support/__init__.py
@@ -145,16 +167,6 @@ index 415d5ebbd72..418481dadd8 100644
      def test_callback_in_cycle_resurrection(self):
          import gc
  
-diff --git a/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst b/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst
-new file mode 100644
-index 00000000000..f32548c67bd
---- /dev/null
-+++ b/Misc/NEWS.d/next/Core and Builtins/2017-10-09-11-03-13.bpo-31692.5-bpdk.rst 
-@@ -0,0 +1,4 @@
-+Add a new PYTHONSHOWALLOCCOUNT environment variable. When Python is compiled
-+with COUNT_ALLOCS, PYTHONSHOWALLOCCOUNT now has to be set to dump allocation
-+counts into stderr on shutdown. Moreover, allocations statistics are now dumped
-+into stderr rather than stdout.
 diff --git a/Python/pythonrun.c b/Python/pythonrun.c
 index 677f6e48111..44fe13d2f7d 100644
 --- a/Python/pythonrun.c

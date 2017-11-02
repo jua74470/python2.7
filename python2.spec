@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -734,6 +734,12 @@ Patch280: 00280-Fix-test_regrtest-test_crashed-on-s390x.patch
 # https://bugs.python.org/issue31692
 Patch283: 00283-fix-tests_with_COUNT_ALLOCS.patch
 
+# 00284 #
+# Add a new PYTHONSHOWREFCOUNT environment variable. In debug mode, Python now
+# will print the total reference count if PYTHONSHOWREFCOUNT is set.
+# Backported from upstream: https://bugs.python.org/issue31733
+Patch284: 00284-add-PYTHONSHOWREFCOUNT-env-var.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1040,8 +1046,9 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rewheel}
 %patch198 -p1
 %endif
-%patch283 -p1
 %patch280 -p1
+%patch283 -p1
+%patch284 -p1
 
 
 %if 0%{?_module_build}
@@ -1922,6 +1929,10 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Thu Nov 02 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-2
+- Add a new PYTHONSHOWREFCOUNT environment variable for printing the reference
+  count in debug builds.
+
 * Mon Oct 09 2017 Iryna Shcherbina <ishcherb@redhat.com> - 2.7.14-1
 - Update to version 2.7.14
 
