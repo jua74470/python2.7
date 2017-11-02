@@ -740,6 +740,11 @@ Patch283: 00283-fix-tests_with_COUNT_ALLOCS.patch
 # Backported from upstream: https://bugs.python.org/issue31733
 Patch284: 00284-add-PYTHONSHOWREFCOUNT-env-var.patch
 
+# 00285 #
+# Fix nondeterministic read in test_pty which fails randomly in koji.
+# Fixed upstream: https://bugs.python.org/issue31158
+Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1049,6 +1054,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch280 -p1
 %patch283 -p1
 %patch284 -p1
+%patch285 -p1
 
 
 %if 0%{?_module_build}
@@ -1932,6 +1938,7 @@ rm -fr %{buildroot}
 * Thu Nov 02 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-2
 - Add a new PYTHONSHOWREFCOUNT environment variable for printing the reference
   count in debug builds.
+- Fix nondeterministic read in test_pty.
 
 * Mon Oct 09 2017 Iryna Shcherbina <ishcherb@redhat.com> - 2.7.14-1
 - Update to version 2.7.14
