@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -827,6 +827,13 @@ Requires: python-rpm-macros
 Requires: python2-rpm-macros
 Requires: python3-rpm-generators
 Requires: pkgconfig
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1217376
+# https://bugzilla.redhat.com/show_bug.cgi?id=1496757
+# https://bugzilla.redhat.com/show_bug.cgi?id=1218294
+# TODO change to a specific subpackage once available (#1218294)
+Requires: redhat-rpm-config
+
 # Needed here because of the migration of Makefile from -devel to the main
 # package
 Conflicts: %{python} < %{version}-%{release}
@@ -1935,6 +1942,10 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Thu Nov 09 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-3
+- Make the -devel package require redhat-rpm-config
+Resolves: rhbz#1496757
+
 * Thu Nov 02 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-2
 - Add a new PYTHONSHOWREFCOUNT environment variable for printing the reference
   count in debug builds.
