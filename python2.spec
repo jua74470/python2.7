@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -355,7 +355,7 @@ Patch17: python-2.6.4-distutils-rpath.patch
 # for 2.7rc1 by dmalcolm:
 Patch55: 00055-systemtap.patch
 
-# Only used when "%{_lib}" == "lib64"
+# Only used when "%%{_lib}" == "lib64"
 # Fixup various paths throughout the build and in distutils from "lib" to "lib64",
 # and add the /usr/lib64/pythonMAJOR.MINOR/site-packages to sitedirs, in front of
 # /usr/lib/pythonMAJOR.MINOR/site-packages
@@ -369,7 +369,7 @@ Patch102: 00102-2.7.13-lib64.patch
 Patch103: python-2.7-lib64-sysconfig.patch
 
 # 00104 #
-# Only used when "%{_lib}" == "lib64"
+# Only used when "%%{_lib}" == "lib64"
 # Another lib64 fix, for distutils/tests/test_install.py; not upstream:
 Patch104: 00104-lib64-fix-for-test_install.patch
 
@@ -745,6 +745,14 @@ Patch284: 00284-add-PYTHONSHOWREFCOUNT-env-var.patch
 # Fixed upstream: https://bugs.python.org/issue31158
 Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
 
+# 00287 #
+# On the creation of io.FileIO() and builtin file() objects the GIL is now released
+# when checking the file descriptor. io.FileIO.readall(), io.FileIO.read(), and
+# file.read() also now release the GIL when getting the file size, which fixes hanging
+# of all threads when trying to access an inaccessible NFS server.
+# Fixed upstream: https://bugs.python.org/issue32186
+Patch287: 00287-fix-thread-hanging-on-inaccessible-nfs-server.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -755,7 +763,7 @@ Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
 #     https://fedoraproject.org/wiki/SIGs/Python/PythonPatches
 
 # This is the generated patch to "configure"; see the description of
-#   %{regenerate_autotooling_patch}
+#   %%{regenerate_autotooling_patch}
 # above:
 
 # Disable tk for modularity builds to break up build dependencies
@@ -1062,6 +1070,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch283 -p1
 %patch284 -p1
 %patch285 -p1
+%patch287 -p1
 
 
 %if 0%{?_module_build}
@@ -1942,6 +1951,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Mon Dec 11 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-4
+- Fix hanging of all threads when trying to access an inaccessible NFS server.
+
 * Thu Nov 09 2017 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-3
 - Make the -devel package require redhat-rpm-config
 Resolves: rhbz#1496757
