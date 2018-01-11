@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1951,6 +1951,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Thu Jan 11 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-5
+- Rebuild for gdbm 1.14
+
 * Mon Dec 11 2017 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-4
 - Fix hanging of all threads when trying to access an inaccessible NFS server.
 
