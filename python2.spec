@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -149,7 +149,8 @@ BuildRequires: expat-devel >= 2.1.0
 BuildRequires: findutils
 BuildRequires: gcc-c++
 %if %{with_gdbm}
-BuildRequires: gdbm-devel
+# ABI change without soname bump, reverted
+BuildRequires: gdbm-devel >= 1:1.13
 %endif
 %if ! 0%{?_module_build}
 BuildRequires: libGL-devel
@@ -819,6 +820,11 @@ Requires: expat >= 2.1.0
 
 # Python built with glibc >= 2.24.90-26 needs to require it (rhbz#1410644).
 Requires: glibc%{?_isa} >= 2.24.90-26
+
+%if %{with_gdbm}
+# ABI change without soname bump, reverted
+Requires: gdbm%{?_isa} >= 1:1.13
+%endif
 
 Provides: python-libs = %{version}-%{release}
 Provides: python-libs%{?_isa} = %{version}-%{release}
@@ -1951,6 +1957,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Tue Jan 16 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-6
+- Rebuild for reverted gdbm 1.13 on Fedora 27
+
 * Thu Jan 11 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-5
 - Rebuild for gdbm 1.14
 
