@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -141,6 +141,10 @@ BuildRequires: pkgconfig
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
 BuildRequires: tcl-devel
+
+# For the nis module
+BuildRequires: libnsl2-devel
+BuildRequires: libtirpc-devel
 
 # expat 2.1.0 added the symbol XML_SetHashSalt without bumping SONAME.  We use
 # it (in pyexpat) in order to enable the fix in Python-2.7.3 for CVE-2012-0876:
@@ -228,6 +232,7 @@ Source7: pynche
 #   - various modules are built by default by upstream as static libraries;
 #   we built them as shared libraries
 #   - build the "readline" module (appears to also be handled by setup.py now)
+#   - build the nis module (which needs the tirpc library since glibc 2.26)
 #   - enable the build of the following modules:
 #     - array arraymodule.c	# array objects
 #     - cmath cmathmodule.c # -lm # complex math library functions
@@ -254,7 +259,6 @@ Source7: pynche
 #     - _socket socketmodule.c  # Socket module helper for socket(2)
 #     - _ssl _ssl.c
 #     - crypt cryptmodule.c -lcrypt	# crypt(3)
-#     - nis nismodule.c -lnsl	# Sun yellow pages -- not everywhere
 #     - termios termios.c	# Steen Lumholt's termios module
 #     - resource resource.c	# Jeremy Hylton's rlimit interface
 #     - audioop audioop.c	# Operations on audio samples
@@ -754,6 +758,11 @@ Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
 # Fixed upstream: https://bugs.python.org/issue32186
 Patch287: 00287-fix-thread-hanging-on-inaccessible-nfs-server.patch
 
+# 00289 #
+# Disable automatic detection for the nis module
+# (we handle it it in Setup.dist, see Patch0)
+Patch289: 00289-disable-nis-detection.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1077,6 +1086,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch284 -p1
 %patch285 -p1
 %patch287 -p1
+%patch289 -p1
 
 
 %if 0%{?_module_build}
@@ -1957,6 +1967,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Wed Jan 17 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-7
+- Build the nis module with tirpc
+
 * Tue Jan 16 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-6
 - Rebuild for reverted gdbm 1.13 on Fedora 27
 

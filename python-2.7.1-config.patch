@@ -111,7 +111,7 @@
 -#nis nismodule.c -lnsl	# Sun yellow pages -- not everywhere
 -#termios termios.c	# Steen Lumholt's termios module
 -#resource resource.c	# Jeremy Hylton's rlimit interface
-+nis nismodule.c -lnsl	# Sun yellow pages -- not everywhere
++nis nismodule.c -lnsl -ltirpc -I/usr/include/tirpc -I/usr/include/nsl -L/usr/lib/nsl
 +termios termios.c	# Steen Lumholt's termios module
 +resource resource.c	# Jeremy Hylton's rlimit interface
  

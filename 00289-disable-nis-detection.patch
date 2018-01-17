@@ -1,0 +1,26 @@
+diff a/setup.py b/setup.py
+--- a/setup.py	2018-01-17 11:58:45.384354567 +0100
++++ b/setup.py	2018-01-17 11:54:23.384743168 +0100
+@@ -1346,19 +1346,10 @@
+             else:
+                 missing.append('resource')
+ 
+-            # Sun yellow pages. Some systems have the functions in libc.
+-            if (host_platform not in ['cygwin', 'atheos', 'qnx6'] and
+-                find_file('rpcsvc/yp_prot.h', inc_dirs, []) is not None):
+-                if (self.compiler.find_library_file(lib_dirs, 'nsl')):
+-                    libs = ['nsl']
+-                else:
+-                    libs = []
+-                exts.append( Extension('nis', ['nismodule.c'],
+-                                       libraries = libs) )
+-            else:
+-                missing.append('nis')
++            # nis (Sun yellow pages) is handled in Setup.dist
++
+         else:
+-            missing.extend(['nis', 'resource', 'termios'])
++            missing.extend(['resource', 'termios'])
+ 
+         # Curses support, requiring the System V version of curses, often
+         # provided by the ncurses library.
