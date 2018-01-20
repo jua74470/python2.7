@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1967,6 +1967,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 2.7.14-8
+- Rebuilt for switch to libxcrypt
+
 * Wed Jan 17 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-7
 - Build the nis module with tirpc
 
