@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -758,10 +758,16 @@ Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
 # Fixed upstream: https://bugs.python.org/issue32186
 Patch287: 00287-fix-thread-hanging-on-inaccessible-nfs-server.patch
 
+# 00288 #
+# Adds a warning when /usr/bin/python is invoked during rpmbuild
+# See https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build
+Patch288: 00288-ambiguous-python-version-rpmbuild-warn.patch
+
 # 00289 #
 # Disable automatic detection for the nis module
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
+
 
 # (New patches go here ^^^)
 #
@@ -1086,6 +1092,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch284 -p1
 %patch285 -p1
 %patch287 -p1
+%patch288 -p1
 %patch289 -p1
 
 
@@ -1967,6 +1974,10 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Tue Jan 30 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-9
+- Add patch 288: warn/fail if Python 2 is called as /usr/bin/python and
+  PYTHON_DISALLOW_AMBIGUOUS_VERSION is set
+
 * Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 2.7.14-8
 - Rebuilt for switch to libxcrypt
 

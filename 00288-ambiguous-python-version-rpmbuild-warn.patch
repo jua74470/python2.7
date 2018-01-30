@@ -1,0 +1,53 @@
+diff -U3 -r Python-2.7.14.orig/Lib/site.py Python-2.7.14/Lib/site.py
+--- Python-2.7.14.orig/Lib/site.py	2018-01-29 15:05:04.517599815 +0100
++++ Python-2.7.14/Lib/site.py	2018-01-30 09:13:17.305270500 +0100
+@@ -515,6 +515,41 @@
+                 "'import usercustomize' failed; use -v for traceback"
+ 
+ 
++def handle_ambiguous_python_version():
++    """Warn or fail if /usr/bin/python is used
++
++    Behavior depends on the value of PYTHON_DISALLOW_AMBIGUOUS_VERSION:
++    - "warn" - print warning to stderr
++    - "1" - print error and exit with positive exit code
++    - otherwise: do nothing
++
++    This is a Fedora modification, see the Change page for details:
++    See https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build
++    """
++    if sys.executable == "/usr/bin/python":
++        setting = os.environ.get("PYTHON_DISALLOW_AMBIGUOUS_VERSION")
++        if setting == 'warn':
++            print>>sys.stderr, (
++                "DEPRECATION WARNING: python2 invoked with /usr/bin/python.\n"
++                "    Use /usr/bin/python3 or /usr/bin/python2\n"
++                "    /usr/bin/python will be removed or switched to Python 3"
++                    " in the future.\n"
++                "    If you cannot make the switch now, please follow"
++                    " instructions at"
++                    " https://fedoraproject.org/wiki/Changes/"
++                    "Avoid_usr_bin_python_in_RPM_Build#Quick_Opt-Out")
++        elif setting == '1':
++            print>>sys.stderr, (
++                "ERROR: python2 invoked with /usr/bin/python.\n"
++                "    Use /usr/bin/python3 or /usr/bin/python2\n"
++                "    /usr/bin/python will be switched to Python 3"
++                    " in the future.\n"
++                "    More details are at"
++                    " https://fedoraproject.org/wiki/Changes/"
++                    "Avoid_usr_bin_python_in_RPM_Build#Quick_Opt-Out")
++            exit(1)
++
++
+ def main():
+     global ENABLE_USER_SITE
+ 
+@@ -543,6 +578,7 @@
+     # this module is run as a script, because this code is executed twice.
+     if hasattr(sys, "setdefaultencoding"):
+         del sys.setdefaultencoding
++    handle_ambiguous_python_version()
+ 
+ main()
+ 
