@@ -768,6 +768,10 @@ Patch288: 00288-ambiguous-python-version-rpmbuild-warn.patch
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
+# 00293 #
+# Fix over-alignment of _gc_head, the structure for GC information
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1540316
+Patch293: 00293-fix-gc-alignment.patch
 
 # (New patches go here ^^^)
 #
@@ -1094,6 +1098,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch287 -p1
 %patch288 -p1
 %patch289 -p1
+%patch293 -p1
 
 
 %if 0%{?_module_build}
@@ -1977,6 +1982,7 @@ rm -fr %{buildroot}
 * Tue Jan 30 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-9
 - Add patch 288: warn/fail if Python 2 is called as /usr/bin/python and
   PYTHON_DISALLOW_AMBIGUOUS_VERSION is set
+- Add patch 289: Fix for over-aligned GC info
 
 * Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 2.7.14-8
 - Rebuilt for switch to libxcrypt
