@@ -1596,16 +1596,6 @@ CheckPython \
 rm -fr %{buildroot}
 
 
-# ======================================================
-# Scriptlets
-# ======================================================
-
-%post libs -p /sbin/ldconfig
-
-%postun libs -p /sbin/ldconfig
-
-
-
 %files
 %defattr(-, root, root, -)
 %{!?_licensedir:%global license %%doc}
