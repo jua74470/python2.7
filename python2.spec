@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1969,6 +1969,9 @@ rm -fr %{buildroot}
 # ======================================================
 
 %changelog
+* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.14-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Tue Jan 30 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-9
 - Add patch 288: warn/fail if Python 2 is called as /usr/bin/python and
   PYTHON_DISALLOW_AMBIGUOUS_VERSION is set
