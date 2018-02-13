@@ -807,7 +807,6 @@ Obsoletes: python < %{version}-%{release}
 # alongside the system one e.g. python26, python33 etc
 Provides:   python27 = %{version}-%{release}
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 URL: https://www.python.org/
 
