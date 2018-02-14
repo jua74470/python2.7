@@ -1591,9 +1591,6 @@ CheckPython \
 # Cleaning up
 # ======================================================
 
-%clean
-rm -fr %{buildroot}
-
 
 %files
 %defattr(-, root, root, -)
