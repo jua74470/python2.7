@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -930,7 +930,7 @@ These have been removed to save space, as they are never or almost
 never used in production.
 
 You might want to install the python2-test package if you're developing python 2
-code that uses more than just unittest and/or test_support.py.
+code that uses more than just unittest and/or test.support.
 
 %if %{with debug_build}
 %package debug
@@ -1720,9 +1720,15 @@ CheckPython \
 %{pylibdir}/pydoc_data
 %dir %{pylibdir}/sqlite3
 %{pylibdir}/sqlite3/*.py*
+
+# Some bits of test are used for actual testing of stuff, not just python itself:
+# See also https://bugzilla.redhat.com/show_bug.cgi?id=1528899
 %dir %{pylibdir}/test
-%{pylibdir}/test/test_support.py*
 %{pylibdir}/test/__init__.py*
+%{pylibdir}/test/support/
+%{pylibdir}/test/script_helper.py*
+%{pylibdir}/test/test_support.py*
+
 %{pylibdir}/unittest
 %{pylibdir}/wsgiref
 %{pylibdir}/xml
@@ -1807,9 +1813,14 @@ CheckPython \
 %{pylibdir}/lib2to3/tests
 %{pylibdir}/sqlite3/test
 %{pylibdir}/test/*
-# These two are shipped in the main subpackage:
-%exclude %{pylibdir}/test/test_support.py*
+
+# Some bits of test are used for actual testing of stuff, not just python itself:
+# See also https://bugzilla.redhat.com/show_bug.cgi?id=1528899
 %exclude %{pylibdir}/test/__init__.py*
+%exclude %{pylibdir}/test/support/
+%exclude %{pylibdir}/test/script_helper.py*
+%exclude %{pylibdir}/test/test_support.py*
+
 %{dynload_dir}/_ctypes_test.so
 %{dynload_dir}/_testcapimodule.so
 
@@ -1965,6 +1976,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Feb 15 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-11
+- Move test.support and test.script_helper to python2-libs
+Resolves: rhbz#1528899
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.14-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
