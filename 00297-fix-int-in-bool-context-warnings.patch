@@ -1,0 +1,24 @@
+commit fd39e2a6845f33a74fbb0671c434c0d84a5ec2f3
+Author: Christian Heimes <christian@python.org>
+Date:   Fri Sep 15 20:27:23 2017 +0200
+
+    bpo-31474: Fix -Wint-in-bool-context warnings (#3581)
+    
+    Signed-off-by: Christian Heimes <christian@python.org>
+
+diff --git a/Include/pymem.h b/Include/pymem.h
+index 10b5bea5eb..2c239df590 100644
+--- a/Include/pymem.h
++++ b/Include/pymem.h
+@@ -72,9 +72,9 @@ PyAPI_FUNC(void) PyMem_Free(void *);
+ /* Returns NULL to indicate error if a negative size or size larger than
+    Py_ssize_t can represent is supplied.  Helps prevents security holes. */
+ #define PyMem_MALLOC(n)		((size_t)(n) > (size_t)PY_SSIZE_T_MAX ? NULL \
+-				: malloc((n) ? (n) : 1))
++				: malloc(((n) != 0) ? (n) : 1))
+ #define PyMem_REALLOC(p, n)	((size_t)(n) > (size_t)PY_SSIZE_T_MAX  ? NULL \
+-				: realloc((p), (n) ? (n) : 1))
++				: realloc((p), ((n) != 0) ? (n) : 1))
+ #define PyMem_FREE		free
+ 
+ #endif	/* PYMALLOC_DEBUG */

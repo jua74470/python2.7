@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 12%{?dist}
+Release: 13%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -773,6 +773,14 @@ Patch289: 00289-disable-nis-detection.patch
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1540316
 Patch293: 00293-fix-gc-alignment.patch
 
+# 00297 #
+# Fix -Wint-in-bool-context warnings that show up when compiling Python
+# (and, more importantly, Python libraries) with newer GCC.
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1473425
+# Fixed upstream: https://github.com/python/cpython/pull/3581
+Patch297: 00297-fix-int-in-bool-context-warnings.patch
+
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1098,6 +1106,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch288 -p1
 %patch289 -p1
 %patch293 -p1
+%patch297 -p1
 
 
 %if 0%{?_module_build}
@@ -1976,6 +1985,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Feb 26 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-13
+- Fix -Wint-in-bool-context warnings
+Resolves: rhbz#1473425
+
 * Sat Feb 24 2018 Florian Weimer <fweimer@redhat.com> - 2.7.14-12
 - Rebuild with new LDFLAGS from redhat-rpm-config
 
