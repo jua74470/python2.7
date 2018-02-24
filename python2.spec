@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1976,6 +1976,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sat Feb 24 2018 Florian Weimer <fweimer@redhat.com> - 2.7.14-12
+- Rebuild with new LDFLAGS from redhat-rpm-config
+
 * Thu Feb 15 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-11
 - Move test.support and test.script_helper to python2-libs
 Resolves: rhbz#1528899
