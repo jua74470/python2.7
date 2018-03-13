@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 13%{?dist}
+Release: 14%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -780,6 +780,11 @@ Patch293: 00293-fix-gc-alignment.patch
 # Fixed upstream: https://github.com/python/cpython/pull/3581
 Patch297: 00297-fix-int-in-bool-context-warnings.patch
 
+# 00298 #
+# The SSL module no longer sends IP addresses in SNI TLS extension on
+# platforms with OpenSSL 1.0.2+ or inet_pton.
+# Fixed upstream: https://bugs.python.org/issue32185
+Patch298: 00298-do-not-send-IP-in-SNI-TLS-extension.patch
 
 # (New patches go here ^^^)
 #
@@ -1107,6 +1112,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch289 -p1
 %patch293 -p1
 %patch297 -p1
+%patch298 -p1
 
 
 %if 0%{?_module_build}
@@ -1985,6 +1991,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Mar 13 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-14
+- Do not send IP addresses in SNI TLS extension
+
 * Mon Feb 26 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.14-13
 - Fix -Wint-in-bool-context warnings
 Resolves: rhbz#1473425
