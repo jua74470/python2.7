@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 14%{?dist}
+Release: 15%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -786,6 +786,12 @@ Patch297: 00297-fix-int-in-bool-context-warnings.patch
 # Fixed upstream: https://bugs.python.org/issue32185
 Patch298: 00298-do-not-send-IP-in-SNI-TLS-extension.patch
 
+# 00299 #
+# Fix ssl module, Python 2.7 doesn't have Py_MAX
+# The previous patch 298 broke python2. This is a fixup.
+# Fixed upstream: https://github.com/python/cpython/pull/5878
+Patch299: 00299-fix-ssl-module-pymax.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1113,6 +1119,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch293 -p1
 %patch297 -p1
 %patch298 -p1
+%patch299 -p1
 
 
 %if 0%{?_module_build}
@@ -1991,6 +1998,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Mar 14 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-15
+- Fix broken SSL module
+Resolves: rhbz#1555081
+
 * Tue Mar 13 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.14-14
 - Do not send IP addresses in SNI TLS extension
 
