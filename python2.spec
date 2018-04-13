@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python-docs when changing this:
 Version: 2.7.14
-Release: 15%{?dist}
+Release: 16%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -817,10 +817,6 @@ Patch5000: 05000-autotool-intermediates.patch
 Provides: python = %{version}-%{release}
 Provides: python%{?_isa} = %{version}-%{release}
 
-# All the obsolete tags similar to this one should be removed at Fedora 28
-# Also, according to the guidelines, this should be a hardcoded version,
-# but that was proven problematic, see rhbz#1457336
-Obsoletes: python < %{version}-%{release}
 
 # Providing python27 as now multiple interpreters exist in Fedora
 # alongside the system one e.g. python26, python33 etc
@@ -865,7 +861,6 @@ Requires: gdbm%{?_isa} >= 1:1.13
 
 Provides: python-libs = %{version}-%{release}
 Provides: python-libs%{?_isa} = %{version}-%{release}
-Obsoletes: python-libs < %{version}-%{release}
 
 %description libs
 This package contains files used to embed Python 2 into applications.
@@ -891,7 +886,6 @@ Conflicts: %{python} < %{version}-%{release}
 
 Provides: python-devel = %{version}-%{release}
 Provides: python-devel%{?_isa} = %{version}-%{release}
-Obsoletes: python-devel < %{version}-%{release}
 
 %description devel
 This package contains libraries and header files used to build applications
@@ -905,7 +899,6 @@ Requires: %{python}-tkinter = %{version}-%{release}
 
 Provides: python-tools = %{version}-%{release}
 Provides: python-tools%{?_isa} = %{version}-%{release}
-Obsoletes: python-tools < %{version}-%{release}
 
 %description tools
 This package includes several tools to help with the development of Python 2
@@ -923,7 +916,6 @@ Provides: tkinter2 = %{version}-%{release}
 Provides: tkinter2%{?_isa} = %{version}-%{release}
 Provides: python-tkinter = %{version}-%{release}
 Provides: python-tkinter%{?_isa} = %{version}-%{release}
-Obsoletes: tkinter < %{version}-%{release}
 
 %description tkinter
 
@@ -940,7 +932,6 @@ Requires: %{name} = %{version}-%{release}
 
 Provides: python-test = %{version}-%{release}
 Provides: python-test%{?_isa} = %{version}-%{release}
-Obsoletes: python-test < %{version}-%{release}
 
 %description test
 
@@ -968,7 +959,6 @@ Requires: %{name}-tools%{?_isa} = %{version}-%{release}
 
 Provides: python-debug = %{version}-%{release}
 Provides: python-debug%{?_isa} = %{version}-%{release}
-Obsoletes: python-debug < %{version}-%{release}
 
 %description debug
 python2-debug provides a version of the Python 2 runtime with numerous debugging
@@ -1998,6 +1988,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Apr 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-16
+- Remove Obsoletes tag from when python was renamed to python2 (Fedora 25 was last)
+
 * Wed Mar 14 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-15
 - Fix broken SSL module
 Resolves: rhbz#1555081
