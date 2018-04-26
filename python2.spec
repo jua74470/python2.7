@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.14
-Release: 16%{?dist}
+Release: 17%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1216,10 +1216,16 @@ make EXTRA_CFLAGS="$CFLAGS" %{?_smp_mflags}
 # optimized python binary:
 if $PathFixWithThisBinary
 then
+  # pathfix.py currently only works with files matching ^[a-zA-Z0-9_]+\.py$
+  # when crawling through directories, so we handle the special cases manually
   LD_LIBRARY_PATH="$topdir/$ConfDir" ./$BinaryName \
     $topdir/Tools/scripts/pathfix.py \
-      -i "/usr/bin/env $BinaryName" \
-      $topdir
+      -i "%{_bindir}/python%{pybasever}" \
+      $topdir \
+      $topdir/Tools/pynche/pynche \
+      $topdir/Demo/pdist/{rcvs,rcsbump,rrcs} \
+      $topdir/Demo/scripts/find-uname.py \
+      $topdir/Tools/scripts/reindent-rst.py
 fi
 
 # Rebuild with new python
@@ -1988,6 +1994,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Apr 25 2018 Tomas Orsava <torsava@redhat.com> - 2.7.14-17
+- Change shebangs to the proper versioned binary
+
 * Fri Apr 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-16
 - Remove Obsoletes tag from when python was renamed to python2 (Fedora 25 was last)
 
