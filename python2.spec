@@ -62,18 +62,10 @@
 %bcond_without tests
 %endif
 
-# Some of the files below /usr/lib/pythonMAJOR.MINOR/test  (e.g. bad_coding.py)
-# are deliberately invalid, leading to SyntaxError exceptions if they get
-# byte-compiled.
-#
-# These errors are ignored by the normal python build, and aren't normally a
-# problem in the buildroots since /usr/bin/python isn't present.
-#
-# However, for the case where we're rebuilding the python srpm on a machine
-# that does have python installed we need to set this to avoid
-# brp-python-bytecompile treating these as fatal errors:
-#
-%global _python_bytecompile_errors_terminate_build 0
+# Disable automatic bytecompilation. The python2.7 binary is not yet
+# available in /usr/bin when Python is built. Also, the bytecompilation fails
+# on files that test invalid syntax.
+%undefine __brp_python_bytecompile
 
 # We need to get a newer configure generated out of configure.in for the following
 # patches:
@@ -1537,6 +1529,19 @@ sed \
 %endif # with debug_build
 %endif # with_systemtap
 
+# Do bytecompilation with the newly installed interpreter.
+# compile *.pyo
+find %{buildroot} -type f -a -name "*.py" -print0 | \
+    LD_LIBRARY_PATH="%{buildroot}%{dynload_dir}/:%{buildroot}%{_libdir}" \
+    PYTHONPATH="%{buildroot}%{_libdir}/python%{pybasever} %{buildroot}%{_libdir}/python%{pybasever}/site-packages" \
+    xargs -0 %{buildroot}%{_bindir}/python%{pybasever} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:]]' || :
+# compile *.pyc
+find %{buildroot} -type f -a -name "*.py" -print0 | \
+    LD_LIBRARY_PATH="%{buildroot}%{dynload_dir}/:%{buildroot}%{_libdir}" \
+    PYTHONPATH="%{buildroot}%{_libdir}/python%{pybasever} %{buildroot}%{_libdir}/python%{pybasever}/site-packages" \
+    xargs -0 %{buildroot}%{_bindir}/python%{pybasever} -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:]]' || :
+
+
 # Make library-files user writable
 /usr/bin/chmod 755 %{buildroot}%{dynload_dir}/*.so
 /usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}.so.1.0
@@ -1996,6 +2001,8 @@ CheckPython \
 %changelog
 * Wed Apr 25 2018 Tomas Orsava <torsava@redhat.com> - 2.7.14-17
 - Change shebangs to the proper versioned binary
+- Bytecompile files manually, disbale brp-python-bytecompile
+Resolves: rhbz#1572171
 
 * Fri Apr 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.14-16
 - Remove Obsoletes tag from when python was renamed to python2 (Fedora 25 was last)
