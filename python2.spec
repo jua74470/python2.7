@@ -1534,6 +1534,10 @@ CheckPython() {
 
 %if %{with tests}
 
+# no locale coercion in python2
+# test_ssl:test_load_dh_params shutil.copies into unicode filename
+export LC_ALL=C.utf-8
+
 # Check each of the configurations:
 %if %{with debug_build}
 CheckPython \
