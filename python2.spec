@@ -103,8 +103,8 @@
 Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
-Version: 2.7.14
-Release: 17%{?dist}
+Version: 2.7.15
+Release: 1%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -720,36 +720,6 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # 00198 #
 Patch198: 00198-add-rewheel-module.patch
 
-# 00280 #
-# The test `test_regrtest.test_crashed` fails on s390x architecture.
-# https://bugs.python.org/issue31719
-Patch280: 00280-Fix-test_regrtest-test_crashed-on-s390x.patch
-
-# 00283 #
-# Fix tests on debug build configured with COUNT_ALLOCS,
-# and add a new environment variable PYTHONSHOWALLOCCOUNT:
-# https://bugs.python.org/issue31692
-Patch283: 00283-fix-tests_with_COUNT_ALLOCS.patch
-
-# 00284 #
-# Add a new PYTHONSHOWREFCOUNT environment variable. In debug mode, Python now
-# will print the total reference count if PYTHONSHOWREFCOUNT is set.
-# Backported from upstream: https://bugs.python.org/issue31733
-Patch284: 00284-add-PYTHONSHOWREFCOUNT-env-var.patch
-
-# 00285 #
-# Fix nondeterministic read in test_pty which fails randomly in koji.
-# Fixed upstream: https://bugs.python.org/issue31158
-Patch285: 00285-fix-non-deterministic-read-in-test_pty.patch
-
-# 00287 #
-# On the creation of io.FileIO() and builtin file() objects the GIL is now released
-# when checking the file descriptor. io.FileIO.readall(), io.FileIO.read(), and
-# file.read() also now release the GIL when getting the file size, which fixes hanging
-# of all threads when trying to access an inaccessible NFS server.
-# Fixed upstream: https://bugs.python.org/issue32186
-Patch287: 00287-fix-thread-hanging-on-inaccessible-nfs-server.patch
-
 # 00288 #
 # Adds a warning when /usr/bin/python is invoked during rpmbuild
 # See https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build
@@ -759,30 +729,6 @@ Patch288: 00288-ambiguous-python-version-rpmbuild-warn.patch
 # Disable automatic detection for the nis module
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
-
-# 00293 #
-# Fix over-alignment of _gc_head, the structure for GC information
-# See https://bugzilla.redhat.com/show_bug.cgi?id=1540316
-Patch293: 00293-fix-gc-alignment.patch
-
-# 00297 #
-# Fix -Wint-in-bool-context warnings that show up when compiling Python
-# (and, more importantly, Python libraries) with newer GCC.
-# See https://bugzilla.redhat.com/show_bug.cgi?id=1473425
-# Fixed upstream: https://github.com/python/cpython/pull/3581
-Patch297: 00297-fix-int-in-bool-context-warnings.patch
-
-# 00298 #
-# The SSL module no longer sends IP addresses in SNI TLS extension on
-# platforms with OpenSSL 1.0.2+ or inet_pton.
-# Fixed upstream: https://bugs.python.org/issue32185
-Patch298: 00298-do-not-send-IP-in-SNI-TLS-extension.patch
-
-# 00299 #
-# Fix ssl module, Python 2.7 doesn't have Py_MAX
-# The previous patch 298 broke python2. This is a fixup.
-# Fixed upstream: https://github.com/python/cpython/pull/5878
-Patch299: 00299-fix-ssl-module-pymax.patch
 
 # (New patches go here ^^^)
 #
@@ -1091,17 +1037,8 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rewheel}
 %patch198 -p1
 %endif
-%patch280 -p1
-%patch283 -p1
-%patch284 -p1
-%patch285 -p1
-%patch287 -p1
 %patch288 -p1
 %patch289 -p1
-%patch293 -p1
-%patch297 -p1
-%patch298 -p1
-%patch299 -p1
 
 
 %if 0%{?_module_build}
@@ -1999,6 +1936,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue May 01 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-1
+- Update to version 2.7.15
+
 * Wed Apr 25 2018 Tomas Orsava <torsava@redhat.com> - 2.7.14-17
 - Change shebangs to the proper versioned binary
 - Bytecompile files manually, disbale brp-python-bytecompile

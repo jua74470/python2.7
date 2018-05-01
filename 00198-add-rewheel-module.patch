@@ -1,5 +1,5 @@
 diff --git a/Lib/ensurepip/__init__.py b/Lib/ensurepip/__init__.py
-index 14c9adb..e20104e 100644
+index 89ed1ef..e2a4c25 100644
 --- a/Lib/ensurepip/__init__.py
 +++ b/Lib/ensurepip/__init__.py
 @@ -7,6 +7,7 @@ import pkgutil
@@ -7,22 +7,22 @@ index 14c9adb..e20104e 100644
  import sys
  import tempfile
 +from ensurepip import rewheel
-
-
+ 
+ 
  __all__ = ["version", "bootstrap"]
-@@ -43,6 +44,8 @@ def _run_pip(args, additional_paths=None):
-
+@@ -29,6 +30,8 @@ def _run_pip(args, additional_paths=None):
+ 
      # Install the bundled software
      import pip
 +    if args[0] in ["install", "list", "wheel"]:
 +        args.append('--pre')
-     pip.main(args)
-
-
-@@ -93,21 +96,40 @@ def bootstrap(root=None, upgrade=False, user=False,
+     return pip.main(args)
+ 
+ 
+@@ -93,21 +96,40 @@ def _bootstrap(root=None, upgrade=False, user=False,
          # omit pip and easy_install
          os.environ["ENSUREPIP_OPTIONS"] = "install"
-
+ 
 +    whls = []
 +    rewheel_dir = None
 +    # try to see if we have system-wide versions of _PROJECTS
@@ -67,7 +67,7 @@ index 14c9adb..e20104e 100644
 +            additional_paths.append(os.path.join(tmpdir, os.path.basename(whl)))
 +        if rewheel_dir:
 +            shutil.rmtree(rewheel_dir)
-
+ 
          # Construct the arguments to be passed to the pip command
          args = ["install", "--no-index", "--find-links", tmpdir]
 diff --git a/Lib/ensurepip/rewheel/__init__.py b/Lib/ensurepip/rewheel/__init__.py
@@ -235,15 +235,15 @@ index 0000000..75c2094
 +            pass # bad RECORD or empty line
 +    return to_write, to_omit
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index ca33158..44bdde5 100644
+index 877698c..2c43611 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -1066,7 +1066,7 @@ LIBSUBDIRS=	lib-tk lib-tk/test lib-tk/test/test_tkinter \
-		test/tracedmodules \
-		encodings compiler hotshot \
-		email email/mime email/test email/test/data \
+@@ -1065,7 +1065,7 @@ LIBSUBDIRS=	lib-tk lib-tk/test lib-tk/test/test_tkinter \
+ 		test/tracedmodules \
+ 		encodings compiler hotshot \
+ 		email email/mime email/test email/test/data \
 -		ensurepip ensurepip/_bundled \
 +		ensurepip ensurepip/_bundled ensurepip/rewheel\
-		json json/tests \
-		sqlite3 sqlite3/test \
-		logging bsddb bsddb/test csv importlib wsgiref \
+ 		json json/tests \
+ 		sqlite3 sqlite3/test \
+ 		logging bsddb bsddb/test csv importlib wsgiref \
