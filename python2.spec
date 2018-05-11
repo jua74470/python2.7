@@ -12,6 +12,10 @@
 # (the -debug subpackages)
 %bcond_without debug_build
 
+# Only use this when bootstrapping python3
+# Needed to build setuptools for the first time
+%bcond_with python3_bootstrap
+
 %global unicode ucs4
 
 %global python python2
@@ -809,8 +813,14 @@ Group: Development/Libraries
 Requires: %{python}%{?_isa} = %{version}-%{release}
 Requires: python-rpm-macros
 Requires: python2-rpm-macros
-Requires: python3-rpm-generators
 Requires: pkgconfig
+
+%if %{without python3_bootstrap}
+# When bootstrapping python3, we need to build setuptools
+# But setuptools BR python2-devel and that brings in python3-rpm-generators
+# python3-rpm-generators needs python3-setuptools, so we cannot have it yet
+Requires: python3-rpm-generators
+%endif
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1217376
 # https://bugzilla.redhat.com/show_bug.cgi?id=1496757
