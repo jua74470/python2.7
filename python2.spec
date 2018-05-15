@@ -108,7 +108,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1249,7 +1249,7 @@ make install DESTDIR=%{buildroot}
 #
 %if 0%{?with_gdb_hooks}
 DirHoldingGdbPy=%{_prefix}/lib/debug/%{_libdir}
-PathOfGdbPy=$DirHoldingGdbPy/$PyInstSoName.debug-gdb.py
+PathOfGdbPy=$DirHoldingGdbPy/$PyInstSoName-%{version}-%{release}.%{_arch}.debug-gdb.py
 
 mkdir -p %{buildroot}$DirHoldingGdbPy
 cp $topdir/Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
@@ -1492,7 +1492,9 @@ find %{buildroot} -type f -a -name "*.py" -print0 | \
 # Make library-files user writable
 /usr/bin/chmod 755 %{buildroot}%{dynload_dir}/*.so
 /usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}.so.1.0
+%if %{with debug_build}
 /usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}_d.so.1.0
+%endif
 
 
 # ======================================================
@@ -1950,6 +1952,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue May 15 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.15-2
+- Fix loading of the gdb python plugin (rhbz#1578001)
+
 * Tue May 01 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-1
 - Update to version 2.7.15
 
