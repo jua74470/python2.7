@@ -1,4 +1,3 @@
-%global _with_python3_bootstrap 1
 # ======================================================
 # Conditionals and other variables controlling the build
 # ======================================================
@@ -109,7 +108,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1953,6 +1952,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Jun 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-4
+- Rebuilt for Python 3.7
+
 * Wed Jun 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-3
 - Bootstrap for Python 3.7
 
