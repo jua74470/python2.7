@@ -1,3 +1,4 @@
+%global _with_python3_bootstrap 1
 # ======================================================
 # Conditionals and other variables controlling the build
 # ======================================================
@@ -108,7 +109,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1952,6 +1953,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Jun 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-3
+- Bootstrap for Python 3.7
+
 * Tue May 15 2018 Charalampos Stratakis <cstratak@redhat.com> - 2.7.15-2
 - Fix loading of the gdb python plugin (rhbz#1578001)
 
