@@ -108,7 +108,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -186,6 +186,15 @@ Requires: python2-pip
 %endif # !module_build
 %endif # rewheel
 
+# Providing python27 as now multiple interpreters exist in Fedora
+# alongside the system one e.g. python26, python33 etc
+Provides:   python27 = %{version}-%{release}
+
+# https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+# We recommend /usr/bin/python so users get it by default
+# Versioned recommends are problematic, and we know that the package requires
+# python2 back with fixed version, so we just use the path here:
+Recommends: %{_bindir}/python
 
 
 # =======================
@@ -724,11 +733,6 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # 00198 #
 Patch198: 00198-add-rewheel-module.patch
 
-# 00288 #
-# Adds a warning when /usr/bin/python is invoked during rpmbuild
-# See https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build
-Patch288: 00288-ambiguous-python-version-rpmbuild-warn.patch
-
 # 00289 #
 # Disable automatic detection for the nis module
 # (we handle it it in Setup.dist, see Patch0)
@@ -756,15 +760,6 @@ Patch5000: 05000-autotool-intermediates.patch
 # Additional metadata, and subpackages
 # ======================================================
 
-Provides: python = %{version}-%{release}
-Provides: python%{?_isa} = %{version}-%{release}
-
-
-# Providing python27 as now multiple interpreters exist in Fedora
-# alongside the system one e.g. python26, python33 etc
-Provides:   python27 = %{version}-%{release}
-
-
 URL: https://www.python.org/
 
 %description
@@ -779,6 +774,22 @@ package.
 
 This package provides the "python2" executable; most of the actual
 implementation is within the "python2-libs" package.
+
+
+%package -n python-unversioned-command
+Summary: The "python" command that runs Python 2
+BuildArch: noarch
+# https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+
+# In theory this could require any python2 version
+Requires: python2 == %{version}-%{release}
+# But since we want to provide versioned python, we require exact version
+Provides: python = %{version}-%{release}
+# This also save us an explicit conflict for older python2 builds
+
+%description -n python-unversioned-command
+This package contains /usr/bin/python - the "python" command that runs Python 2.
+
 
 %package libs
 Summary: Runtime libraries for Python 2
@@ -1047,7 +1058,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rewheel}
 %patch198 -p1
 %endif
-%patch288 -p1
 %patch289 -p1
 
 
@@ -1574,10 +1584,13 @@ CheckPython \
 %license LICENSE
 %doc README
 %{_bindir}/pydoc*
-%{_bindir}/python
 %{_bindir}/%{python}
 %{_bindir}/python%{pybasever}
-%{_mandir}/*/*
+%{_mandir}/*/python2*
+
+%files -n python-unversioned-command
+%{_bindir}/python
+%{_mandir}/*/python.1.*
 
 %files libs
 %defattr(-,root,root,-)
@@ -1952,6 +1965,11 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Jun 14 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-5
+- Move /usr/bin/python into a separate package
+  https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+- Revert https://fedoraproject.org/wiki/Changes/Avoid_usr_bin_python_in_RPM_Build
+
 * Wed Jun 13 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-4
 - Rebuilt for Python 3.7
 
