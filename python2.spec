@@ -70,6 +70,10 @@
 # available in /usr/bin when Python is built. Also, the bytecompilation fails
 # on files that test invalid syntax.
 %undefine __brp_python_bytecompile
+# The above is broken now
+# https://bugzilla.redhat.com/show_bug.cgi?id=1597664
+# This is an older non-standard way to disable the brp script, as a workaround
+%undefine py_auto_byte_compile
 
 # We need to get a newer configure generated out of configure.in for the following
 # patches:
