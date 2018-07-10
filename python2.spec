@@ -1583,7 +1583,6 @@ CheckPython \
 
 
 %files
-%defattr(-, root, root, -)
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README
@@ -1597,7 +1596,6 @@ CheckPython \
 %{_mandir}/*/python.1.*
 
 %files libs
-%defattr(-,root,root,-)
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README
@@ -1757,7 +1755,6 @@ CheckPython \
 
 
 %files devel
-%defattr(-,root,root,-)
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
 %{_libdir}/pkgconfig/python.pc
 %{_libdir}/pkgconfig/python2.pc
@@ -1773,7 +1770,6 @@ CheckPython \
 %{_libdir}/libpython%{pybasever}.so
 
 %files tools
-%defattr(-,root,root,755)
 %doc Tools/pynche/README.pynche
 %{site_packages}/pynche
 %{_bindir}/smtpd*.py*
@@ -1790,14 +1786,12 @@ CheckPython \
 %{pylibdir}/Doc
 
 %files tkinter
-%defattr(-,root,root,755)
 %{pylibdir}/lib-tk
 %if ! 0%{?_module_build}
 %{dynload_dir}/_tkinter.so
 %endif
 
 %files test
-%defattr(-, root, root, -)
 %{pylibdir}/bsddb/test
 %{pylibdir}/ctypes/test
 %{pylibdir}/distutils/tests
@@ -1826,7 +1820,6 @@ CheckPython \
 
 %if %{with debug_build}
 %files debug
-%defattr(-,root,root,-)
 
 # Analog of the core subpackage's files:
 %{_bindir}/python-debug
