@@ -112,7 +112,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -1962,6 +1962,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.15-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Thu Jun 14 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-5
 - Move /usr/bin/python into a separate package
   https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
