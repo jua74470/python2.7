@@ -136,11 +136,13 @@ BuildRequires: gmp-devel
 BuildRequires: libdb-devel
 BuildRequires: libffi-devel
 BuildRequires: ncurses-devel
-BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
 BuildRequires: tcl-devel
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1609291
+BuildRequires: compat-openssl10-devel
 
 # For the nis module
 BuildRequires: libnsl2-devel
