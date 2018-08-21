@@ -719,11 +719,11 @@ Patch185: 00185-urllib2-honors-noproxy-for-ftp.patch
 # symbol)
 Patch187: 00187-add-RPATH-to-pyexpat.patch
 
-# 00189 #
+# 00190 #
 # Fixes gdb py-bt command not to raise exception while processing
 # statements from eval
 # rhbz#1008154 (patch by Attila Fazekas)
-Patch189: 00189-gdb-py-bt-dont-raise-exception-from-eval.patch
+Patch190: 00190-gdb-py-bt-dont-raise-exception-from-eval.patch
 
 # 00191 #
 # Disabling NOOP test as it fails without internet connection
@@ -1058,7 +1058,7 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch181 -p1
 %patch185 -p1
 %patch187 -p1
-%patch189 -p1
+%patch190 -p1
 %patch191 -p1
 %patch193 -p1
 %if %{with rewheel}
