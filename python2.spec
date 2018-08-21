@@ -5,8 +5,9 @@
 # Note that the bcond macros are named for the CLI option they create.
 # "%%bcond_without" means "ENABLE by default and create a --without option"
 
-# Ability to reuse RPM-installed pip using rewheel
-%bcond_without rewheel
+# Whether to use RPM build wheels from the python-{pip,setuptools}-wheel package
+# Uses upstream bundled prebuilt wheels otherwise
+%bcond_without rpmwheels
 
 # Extra build for debugging the interpreter or C-API extensions
 # (the -debug subpackages)
@@ -112,7 +113,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -182,15 +183,10 @@ BuildRequires: valgrind-devel
 
 BuildRequires: zlib-devel
 
-%if %{with rewheel}
-BuildRequires: python2-setuptools
-Requires: python2-setuptools
-
-%if ! 0%{?_module_build}
-BuildRequires: python2-pip
-Requires: python2-pip
-%endif # !module_build
-%endif # rewheel
+%if %{with rpmwheels}
+BuildRequires: python-setuptools-wheel
+BuildRequires: python-pip-wheel
+%endif
 
 # Providing python27 as now multiple interpreters exist in Fedora
 # alongside the system one e.g. python26, python33 etc
@@ -201,6 +197,12 @@ Provides:   python27 = %{version}-%{release}
 # Versioned recommends are problematic, and we know that the package requires
 # python2 back with fixed version, so we just use the path here:
 Recommends: %{_bindir}/python
+
+# Previously, this was required for our rewheel patch to work.
+# This is technically no longer needed, but we keep it recommended
+# for the developer experience.
+Recommends: python2-setuptools
+Recommends: python2-pip
 
 
 # =======================
@@ -719,6 +721,11 @@ Patch185: 00185-urllib2-honors-noproxy-for-ftp.patch
 # symbol)
 Patch187: 00187-add-RPATH-to-pyexpat.patch
 
+# 00189 #
+# Instead of bundled wheels, use our RPM packaged wheels from
+# /usr/share/python-wheels
+Patch189: 00189-use-rpm-wheels.patch
+
 # 00190 #
 # Fixes gdb py-bt command not to raise exception while processing
 # statements from eval
@@ -735,9 +742,6 @@ Patch191: 00191-disable-NOOP.patch
 # rhbz#1066708
 # Patch provided by John C. Peterson
 Patch193: 00193-enable-loading-sqlite-extensions.patch
-
-# 00198 #
-Patch198: 00198-add-rewheel-module.patch
 
 # 00289 #
 # Disable automatic detection for the nis module
@@ -816,6 +820,14 @@ Requires: glibc%{?_isa} >= 2.24.90-26
 %if %{with_gdbm}
 # ABI change without soname bump, reverted
 Requires: gdbm%{?_isa} >= 1:1.13
+%endif
+
+%if %{with rpmwheels}
+Requires: python-setuptools-wheel
+Requires: python-pip-wheel
+%else
+Provides: bundled(python2-pip) = 9.0.3
+Provides: bundled(python2-setuptools) = 39.0.1
 %endif
 
 Provides: python-libs = %{version}-%{release}
@@ -1058,12 +1070,15 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch181 -p1
 %patch185 -p1
 %patch187 -p1
+
+%if %{with rpmwheels}
+%patch189 -p1
+rm Lib/ensurepip/_bundled/*.whl
+%endif
+
 %patch190 -p1
 %patch191 -p1
 %patch193 -p1
-%if %{with rewheel}
-%patch198 -p1
-%endif
 %patch289 -p1
 
 
@@ -1748,11 +1763,11 @@ CheckPython \
 
 %dir %{pylibdir}/ensurepip/
 %{pylibdir}/ensurepip/*.py*
+%if %{with rpmwheels}
 %exclude %{pylibdir}/ensurepip/_bundled
-
-%if %{with rewheel}
-%dir %{pylibdir}/ensurepip/rewheel/
-%{pylibdir}/ensurepip/rewheel/*.py*
+%else
+%dir %{pylibdir}/ensurepip/_bundled
+%{pylibdir}/ensurepip/_bundled/*.whl
 %endif
 
 
@@ -1964,6 +1979,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Aug 21 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-7
+- Use RPM built wheels of pip and setuptools in ensurepip instead of our rewheel patch
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.15-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
