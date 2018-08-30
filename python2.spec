@@ -113,7 +113,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -850,6 +850,15 @@ Requires: pkgconfig
 # python3-rpm-generators needs python3-setuptools, so we cannot have it yet
 Requires: python3-rpm-generators
 %endif
+
+# This is not "API" (packages that need setuptools should still BuildRequire it)
+# However some packages apparently can build both with and without setuptools
+# producing egg-info as file or directory (depending on setuptools presence).
+# Directory-to-file updates are problematic in RPM, so we ensure setuptools is
+# installed when -devel is required.
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1623922
+# See https://fedoraproject.org/wiki/Packaging:Directory_Replacement
+Requires: python2-setuptools
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1217376
 # https://bugzilla.redhat.com/show_bug.cgi?id=1496757
@@ -1979,6 +1988,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Aug 30 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-8
+- Require python2-setuptools from python2-devel to prevent packaging errors (#1623922)
+
 * Tue Aug 21 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-7
 - Use RPM built wheels of pip and setuptools in ensurepip instead of our rewheel patch
 
