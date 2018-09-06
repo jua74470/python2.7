@@ -105,6 +105,16 @@
 # the rest of the build
 %global regenerate_autotooling_patch 0
 
+# Python 2 is deprecated in Fedora 30+, see:
+#   https://fedoraproject.org/wiki/Changes/Mass_Python_2_Package_Removal
+# This means that new packages MUST NOT depend on python2, even transitively
+#   see: https://fedoraproject.org/wiki/Packaging:Deprecating_Packages
+# Python 2 will not be supported after 2019. Use the python3 package instead
+# if possible.
+%if 0%{fedora} >= 30
+%global deprecated Provides: deprecated()
+%endif
+
 
 # ==================
 # Top-level metadata
@@ -113,11 +123,13 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
+
+%?deprecated
 
 
 # =======================
@@ -790,6 +802,7 @@ implementation is within the "python2-libs" package.
 Summary: The "python" command that runs Python 2
 BuildArch: noarch
 # https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+%?deprecated
 
 # In theory this could require any python2 version
 Requires: python2 == %{version}-%{release}
@@ -804,6 +817,7 @@ This package contains /usr/bin/python - the "python" command that runs Python 2.
 %package libs
 Summary: Runtime libraries for Python 2
 Group: Applications/System
+%?deprecated
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
 # Requires: binutils
@@ -839,6 +853,8 @@ This package contains files used to embed Python 2 into applications.
 %package devel
 Summary: Libraries and header files needed for Python 2 development
 Group: Development/Libraries
+%?deprecated
+
 Requires: %{python}%{?_isa} = %{version}-%{release}
 Requires: python-rpm-macros
 Requires: python2-rpm-macros
@@ -880,6 +896,8 @@ with and native libraries for Python 2
 %package tools
 Summary: A collection of development tools included with Python 2
 Group: Development/Tools
+%?deprecated
+
 Requires: %{name} = %{version}-%{release}
 Requires: %{python}-tkinter = %{version}-%{release}
 
@@ -894,6 +912,8 @@ color editor (pynche), and a python gettext program (pygettext.py).
 %package tkinter
 Summary: A graphical user interface for the Python 2 scripting language
 Group: Development/Languages
+%?deprecated
+
 Requires: %{name} = %{version}-%{release}
 
 Provides: tkinter = %{version}-%{release}
@@ -914,6 +934,8 @@ user interface for Python 2 programming.
 %package test
 Summary: The test modules from the main python2 package
 Group: Development/Languages
+%?deprecated
+
 Requires: %{name} = %{version}-%{release}
 
 Provides: python-test = %{version}-%{release}
@@ -932,6 +954,7 @@ code that uses more than just unittest and/or test.support.
 %package debug
 Summary: Debug version of the Python 2 runtime
 Group: Applications/System
+%?deprecated
 
 # The debug build is an all-in-one package version of the regular build, and
 # shares the same .py/.pyc files and directories as the regular build.  Hence
@@ -1988,6 +2011,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Sep 06 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.15-9
+- Deprecate python2 and all subpackages in Fedora 30+ (#1625773)
+
 * Thu Aug 30 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-8
 - Require python2-setuptools from python2-devel to prevent packaging errors (#1623922)
 
