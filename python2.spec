@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -760,6 +760,13 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
+# 00309 #
+# CVE-2018-1000802
+# shutil._call_external_zip to use subprocess instead of distutils.spawn
+# rhbz#1631662
+# Fixed upstream https://bugs.python.org/issue34540
+Patch309: 00309-shutil-spawn-subprocess.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1112,6 +1119,7 @@ rm Lib/ensurepip/_bundled/*.whl
 %patch191 -p1
 %patch193 -p1
 %patch289 -p1
+%patch309 -p1
 
 
 %if 0%{?_module_build}
@@ -2011,6 +2019,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Sep 20 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-10
+- Security fix for CVE-2018-1000802 (#1631662)
+
 * Thu Sep 06 2018 Petr Viktorin <pviktori@redhat.com> - 2.7.15-9
 - Deprecate python2 and all subpackages in Fedora 30+ (#1625773)
 
