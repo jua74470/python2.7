@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -767,6 +767,13 @@ Patch289: 00289-disable-nis-detection.patch
 # Fixed upstream https://bugs.python.org/issue34540
 Patch309: 00309-shutil-spawn-subprocess.patch
 
+# 00310 #
+# CVE-2018-14647
+# Use XML_SetHashSalt in _elementtree
+# rhbz#1631822
+# Fixed upstream https://bugs.python.org/issue34623
+Patch310: 00310-use-xml-sethashsalt-in-elementtree.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1120,6 +1127,7 @@ rm Lib/ensurepip/_bundled/*.whl
 %patch193 -p1
 %patch289 -p1
 %patch309 -p1
+%patch310 -p1
 
 
 %if 0%{?_module_build}
@@ -2019,6 +2027,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Sep 24 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-11
+- Security fix for CVE-2018-14647 (#1631822)
+
 * Thu Sep 20 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-10
 - Security fix for CVE-2018-1000802 (#1631662)
 
