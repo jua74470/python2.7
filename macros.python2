@@ -7,19 +7,24 @@
 
 # Use the slashes after expand so that the command starts on the same line as
 # the macro
+# The `sleep 1` commands work around a race in install; see:
+#   https://bugzilla.redhat.com/show_bug.cgi?id=1644923
 %py2_build() %{expand:\\\
+  sleep 1
   CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
   %{__python2} %{py_setup} %{?py_setup_args} build --executable="%{__python2} %{py2_shbang_opts}" %{?*}
   sleep 1
 }
 
 %py2_build_egg() %{expand:\\\
+  sleep 1
   CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
   %{__python2} %{py_setup} %{?py_setup_args} bdist_egg %{?*}
   sleep 1
 }
 
 %py2_build_wheel() %{expand:\\\
+  sleep 1
   CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
   %{__python2} %{py_setup} %{?py_setup_args} bdist_wheel %{?*}
   sleep 1
