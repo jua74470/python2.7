@@ -144,6 +144,7 @@ BuildRequires: bluez-libs-devel
 %endif
 BuildRequires: bzip2
 BuildRequires: bzip2-devel
+BuildRequires: glibc-all-langpacks
 BuildRequires: glibc-devel
 BuildRequires: gmp-devel
 BuildRequires: libdb-devel
