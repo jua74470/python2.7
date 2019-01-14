@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: Python
 Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
@@ -2028,6 +2028,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org> - 2.7.15-12
+- Rebuilt for libcrypt.so.2 (#1666033)
+
 * Mon Sep 24 2018 Miro Hrončok <mhroncok@redhat.com> - 2.7.15-11
 - Security fix for CVE-2018-14647 (#1631822)
 
