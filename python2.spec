@@ -125,7 +125,6 @@ Name: %{python}
 Version: 2.7.15
 Release: 12%{?dist}
 License: Python
-Group: Development/Languages
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
 
@@ -831,7 +830,6 @@ This package contains /usr/bin/python - the "python" command that runs Python 2.
 
 %package libs
 Summary: Runtime libraries for Python 2
-Group: Applications/System
 %?deprecated
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
@@ -867,7 +865,6 @@ This package contains files used to embed Python 2 into applications.
 
 %package devel
 Summary: Libraries and header files needed for Python 2 development
-Group: Development/Libraries
 %?deprecated
 
 Requires: %{python}%{?_isa} = %{version}-%{release}
@@ -910,7 +907,6 @@ with and native libraries for Python 2
 
 %package tools
 Summary: A collection of development tools included with Python 2
-Group: Development/Tools
 %?deprecated
 
 Requires: %{name} = %{version}-%{release}
@@ -926,7 +922,6 @@ color editor (pynche), and a python gettext program (pygettext.py).
 
 %package tkinter
 Summary: A graphical user interface for the Python 2 scripting language
-Group: Development/Languages
 %?deprecated
 
 Requires: %{name} = %{version}-%{release}
@@ -948,7 +943,6 @@ user interface for Python 2 programming.
 
 %package test
 Summary: The test modules from the main python2 package
-Group: Development/Languages
 %?deprecated
 
 Requires: %{name} = %{version}-%{release}
@@ -968,7 +962,6 @@ code that uses more than just unittest and/or test.support.
 %if %{with debug_build}
 %package debug
 Summary: Debug version of the Python 2 runtime
-Group: Applications/System
 %?deprecated
 
 # The debug build is an all-in-one package version of the regular build, and
