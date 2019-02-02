@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 12%{?dist}
+Release: 13%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -2021,6 +2021,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.15-13
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org> - 2.7.15-12
 - Rebuilt for libcrypt.so.2 (#1666033)
 
