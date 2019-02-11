@@ -16,3 +16,4 @@
     - virtualenv
     - python3-tox
     - python2-devel
+    - glibc-all-langpacks # for locale tests
