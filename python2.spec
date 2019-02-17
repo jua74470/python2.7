@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 Version: 2.7.15
-Release: 13%{?dist}
+Release: 14%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -2021,6 +2021,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.7.15-14
+- Rebuild for readline 8.0
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.15-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
