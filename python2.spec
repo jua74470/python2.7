@@ -122,8 +122,11 @@
 Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
-Version: 2.7.15
-Release: 14%{?dist}
+%global general_version %{pybasever}.16
+%global prerel rc1
+%global upstream_version %{general_version}%{?prerel}
+Version: %{general_version}%{?prerel:~%{prerel}}
+Release: 1%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -154,8 +157,7 @@ BuildRequires: readline-devel
 BuildRequires: sqlite-devel
 BuildRequires: tcl-devel
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1609291
-BuildRequires: compat-openssl10-devel
+BuildRequires: openssl-devel
 
 # For the nis module
 BuildRequires: libnsl2-devel
@@ -221,7 +223,7 @@ Recommends: python2-pip
 # Source code and patches
 # =======================
 
-Source: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+Source: https://www.python.org/ftp/python/%{version}/Python-%{upstream_version}.tar.xz
 
 # Work around bug 562906 until it's fixed in rpm-build by providing a fixed
 # version of pythondeps.sh:
@@ -760,20 +762,6 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
-# 00309 #
-# CVE-2018-1000802
-# shutil._call_external_zip to use subprocess instead of distutils.spawn
-# rhbz#1631662
-# Fixed upstream https://bugs.python.org/issue34540
-Patch309: 00309-shutil-spawn-subprocess.patch
-
-# 00310 #
-# CVE-2018-14647
-# Use XML_SetHashSalt in _elementtree
-# rhbz#1631822
-# Fixed upstream https://bugs.python.org/issue34623
-Patch310: 00310-use-xml-sethashsalt-in-elementtree.patch
-
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1001,7 +989,7 @@ load its own extensions.
 # ======================================================
 
 %prep
-%setup -q -n Python-%{version}
+%setup -q -n Python-%{upstream_version}
 
 %if 0%{?with_systemtap}
 # Provide an example of usage of the tapset:
@@ -1120,9 +1108,6 @@ rm Lib/ensurepip/_bundled/*.whl
 %patch191 -p1
 %patch193 -p1
 %patch289 -p1
-%patch309 -p1
-%patch310 -p1
-
 
 %if 0%{?_module_build}
 %patch4000 -p1
@@ -1581,6 +1566,8 @@ CheckPython() {
   BinaryName=$2
   ConfDir=$(pwd)/build/$ConfName
 
+  export OPENSSL_CONF=/non-existing-file
+
   echo STARTING: CHECKING OF PYTHON FOR CONFIGURATION: $ConfName
 
   # Note that we're running the tests using the version of the code in the
@@ -1666,7 +1653,7 @@ CheckPython \
 %{dynload_dir}/_sha512module.so
 %{dynload_dir}/_shamodule.so
 
-%{dynload_dir}/Python-%{version}-py%{pybasever}.egg-info
+%{dynload_dir}/Python-%{upstream_version}-py%{pybasever}.egg-info
 %{dynload_dir}/_bisectmodule.so
 %{dynload_dir}/_bsddb.so
 %{dynload_dir}/_codecs_cn.so
@@ -2021,6 +2008,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Feb 19 2019 Charalampos Stratakis <cstratak@redhat.com> - 2.7.16~rc1-1
+- Update to 2.7.16rc1
+
 * Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.7.15-14
 - Rebuild for readline 8.0
 

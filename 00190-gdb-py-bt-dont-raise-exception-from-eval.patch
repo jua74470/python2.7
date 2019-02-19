@@ -1,11 +1,14 @@
---- Python-2.7.5-orig/Tools/gdb/libpython.py	2013-05-12 03:32:54.000000000 +0000
-+++ Python-2.7.5-orig/Tools/gdb/libpython.py	2013-09-15 09:56:25.494000000 +0000
-@@ -887,6 +887,8 @@ 
-         newline character'''
+diff --git a/Tools/gdb/libpython.py b/Tools/gdb/libpython.py
+index 9def56e..c0df208 100755
+--- a/Tools/gdb/libpython.py
++++ b/Tools/gdb/libpython.py
+@@ -939,6 +939,9 @@ class PyFrameObjectPtr(PyObjectPtr):
          if self.is_optimized_out():
              return '(frame information optimized out)'
+ 
 +        if self.filename() == '<string>':
 +            return '(in an eval block)'
-         filename = self.filename()
-         try:
-             f = open(filename, 'r')
++
+         lineno = self.current_line_num()
+         if lineno is None:
+             return '(failed to get frame line number)'
