@@ -841,8 +841,8 @@ Requires: gdbm%{?_isa} >= 1:1.13
 Requires: python-setuptools-wheel
 Requires: python-pip-wheel
 %else
-Provides: bundled(python2-pip) = 9.0.3
-Provides: bundled(python2-setuptools) = 39.0.1
+Provides: bundled(python2-pip) = 18.1
+Provides: bundled(python2-setuptools) = 40.6.2
 %endif
 
 Provides: python-libs = %{version}-%{release}
