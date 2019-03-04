@@ -123,7 +123,7 @@ Summary: An interpreted, interactive, object-oriented programming language
 Name: %{python}
 # Remember to also rebase python2-docs when changing this:
 %global general_version %{pybasever}.16
-%global prerel rc1
+#global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
 Release: 1%{?dist}
@@ -2008,6 +2008,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Mar 04 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-1
+- Update to 2.7.16 final
+
 * Tue Feb 19 2019 Charalampos Stratakis <cstratak@redhat.com> - 2.7.16~rc1-1
 - Update to 2.7.16rc1
 
