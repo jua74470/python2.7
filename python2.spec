@@ -740,12 +740,6 @@ Patch187: 00187-add-RPATH-to-pyexpat.patch
 # /usr/share/python-wheels
 Patch189: 00189-use-rpm-wheels.patch
 
-# 00190 #
-# Fixes gdb py-bt command not to raise exception while processing
-# statements from eval
-# rhbz#1008154 (patch by Attila Fazekas)
-Patch190: 00190-gdb-py-bt-dont-raise-exception-from-eval.patch
-
 # 00191 #
 # Disabling NOOP test as it fails without internet connection
 Patch191: 00191-disable-NOOP.patch
@@ -1104,7 +1098,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 rm Lib/ensurepip/_bundled/*.whl
 %endif
 
-%patch190 -p1
 %patch191 -p1
 %patch193 -p1
 %patch289 -p1
