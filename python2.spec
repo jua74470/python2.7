@@ -615,13 +615,6 @@ Patch146: 00146-hashlib-fips.patch
 # Sent upstream as http://bugs.python.org/issue14785
 Patch147: 00147-add-debug-malloc-stats.patch
 
-# 00153 #
-# Strip out lines of the form "warning: Unable to open ..." from gdb's stderr
-# when running test_gdb.py; also cope with change to gdb in F17 onwards in
-# which values are printed as "v@entry" rather than just "v":
-# Not yet sent upstream
-Patch153: 00153-fix-test_gdb-noise.patch
-
 # 00155 #
 # Avoid allocating thunks in ctypes unless absolutely necessary, to avoid
 # generating SELinux denials on "import ctypes" and "import uuid" when
@@ -1077,7 +1070,6 @@ rm -r Modules/zlib || exit 1
 %endif
 #patch146 -p1
 %patch147 -p1
-%patch153 -p0
 %patch155 -p1
 %patch156 -p1
 %patch157 -p1
