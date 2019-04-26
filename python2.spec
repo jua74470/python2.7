@@ -126,7 +126,7 @@ Name: %{python}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -1539,6 +1539,10 @@ find %{buildroot} -type f -a -name "*.py" -print0 | \
 /usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}_d.so.1.0
 %endif
 
+# Remove pyc/pyo files from /usr/bin
+# They are not needed, and due to them, the resulting RPM is not multilib-clean
+# https://bugzilla.redhat.com/show_bug.cgi?id=1703575
+rm %{buildroot}%{_bindir}/*.py{c,o}
 
 # ======================================================
 # Running the upstream test suite
@@ -1993,6 +1997,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Apr 26 2019 Tomas Orsava <torsava@redhat.com> - 2.7.16-2
+- Remove pyc/pyo files from /usr/bin (#1703575)
+
 * Mon Mar 04 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-1
 - Update to 2.7.16 final
 
