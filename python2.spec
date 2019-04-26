@@ -2131,7 +2131,7 @@ Resolves: rhbz#1496757
 - Change fixed Obsoletes version with a dynamic one (rhbz#1457336)
 
 * Thu May 18 2017 Karsten Hopp <karsten@redhat.com> - 2.7.13-10
-- revert logic for modularity patch and enable gdbm for modularity 
+- revert logic for modularity patch and enable gdbm for modularity
 
 * Tue May 16 2017 Tomas Orsava <torsava@redhat.com> - 2.7.13-9
 - Added a dependency to the devel subpackage on python3-rpm-generators which
