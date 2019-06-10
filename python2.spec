@@ -1624,7 +1624,7 @@ CheckPython \
 
 %files -n python-unversioned-command
 %{_bindir}/python
-%{_mandir}/*/python.1.*
+%{_mandir}/*/python.1*
 
 %files libs
 %{!?_licensedir:%global license %%doc}
