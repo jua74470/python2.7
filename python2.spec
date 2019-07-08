@@ -193,6 +193,9 @@ BuildRequires: valgrind-devel
 
 BuildRequires: zlib-devel
 
+# For %%python_provide
+BuildRequires: python-rpm-macros
+
 %if %{with rpmwheels}
 BuildRequires: python-setuptools-wheel
 BuildRequires: python-pip-wheel
@@ -828,8 +831,8 @@ Provides: bundled(python2-pip) = 18.1
 Provides: bundled(python2-setuptools) = 40.6.2
 %endif
 
-Provides: python-libs = %{version}-%{release}
-Provides: python-libs%{?_isa} = %{version}-%{release}
+%{?python_provide:%python_provide python2-libs}
+%{?python_provide:%python_provide python2-libs%{?_isa}}
 
 %description libs
 This package contains files used to embed Python 2 into applications.
@@ -869,8 +872,8 @@ Requires: redhat-rpm-config
 # package
 Conflicts: %{python} < %{version}-%{release}
 
-Provides: python-devel = %{version}-%{release}
-Provides: python-devel%{?_isa} = %{version}-%{release}
+%{?python_provide:%python_provide python2-devel}
+%{?python_provide:%python_provide python2-devel%{?_isa}}
 
 %description devel
 This package contains libraries and header files used to build applications
@@ -883,8 +886,8 @@ Summary: A collection of development tools included with Python 2
 Requires: %{name} = %{version}-%{release}
 Requires: %{python}-tkinter = %{version}-%{release}
 
-Provides: python-tools = %{version}-%{release}
-Provides: python-tools%{?_isa} = %{version}-%{release}
+%{?python_provide:%python_provide python2-tools}
+%{?python_provide:%python_provide python2-tools%{?_isa}}
 
 %description tools
 This package includes several tools to help with the development of Python 2
@@ -897,12 +900,14 @@ Summary: A graphical user interface for the Python 2 scripting language
 
 Requires: %{name} = %{version}-%{release}
 
+%if 0%{?fedora} < 31
 Provides: tkinter = %{version}-%{release}
 Provides: tkinter%{?_isa} = %{version}-%{release}
 Provides: tkinter2 = %{version}-%{release}
 Provides: tkinter2%{?_isa} = %{version}-%{release}
-Provides: python-tkinter = %{version}-%{release}
-Provides: python-tkinter%{?_isa} = %{version}-%{release}
+%endif
+%{?python_provide:%python_provide python2-tkinter}
+%{?python_provide:%python_provide python2-tkinter%{?_isa}}
 
 %description tkinter
 
@@ -918,8 +923,8 @@ Summary: The test modules from the main python2 package
 
 Requires: %{name} = %{version}-%{release}
 
-Provides: python-test = %{version}-%{release}
-Provides: python-test%{?_isa} = %{version}-%{release}
+%{?python_provide:%python_provide python2-test}
+%{?python_provide:%python_provide python2-test%{?_isa}}
 
 %description test
 
@@ -945,8 +950,8 @@ Requires: %{name}-test%{?_isa} = %{version}-%{release}
 Requires: %{python}-tkinter%{?_isa} = %{version}-%{release}
 Requires: %{name}-tools%{?_isa} = %{version}-%{release}
 
-Provides: python-debug = %{version}-%{release}
-Provides: python-debug%{?_isa} = %{version}-%{release}
+%{?python_provide:%python_provide python2-debug}
+%{?python_provide:%python_provide python2-debug%{?_isa}}
 
 %description debug
 python2-debug provides a version of the Python 2 runtime with numerous debugging
