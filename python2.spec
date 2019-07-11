@@ -1369,8 +1369,6 @@ find %{buildroot}/ -name ".cvsignore"|xargs rm -f
 find %{buildroot}/ -name "*.bat"|xargs rm -f
 find . -name "*~"|xargs rm -f
 find . -name ".cvsignore"|xargs rm -f
-#zero length
-rm -f %{buildroot}%{pylibdir}/LICENSE.txt
 
 
 # Provide binaries in the form of bin2 and bin2.7, thus implementing
@@ -1609,8 +1607,6 @@ CheckPython \
 
 
 %files
-%{!?_licensedir:%global license %%doc}
-%license LICENSE
 %doc README
 %{_bindir}/pydoc2*
 %{_bindir}/%{python}
@@ -1618,9 +1614,8 @@ CheckPython \
 %{_mandir}/*/python2*
 
 %files libs
-%{!?_licensedir:%global license %%doc}
-%license LICENSE
 %doc README
+%license %{pylibdir}/LICENSE.txt
 %dir %{pylibdir}
 %dir %{dynload_dir}
 
