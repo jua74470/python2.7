@@ -122,7 +122,7 @@ Name: %{python}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -204,12 +204,6 @@ BuildRequires: python-pip-wheel
 # Providing python27 as now multiple interpreters exist in Fedora
 # alongside the system one e.g. python26, python33 etc
 Provides:   python27 = %{version}-%{release}
-
-# https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
-# We recommend /usr/bin/python so users get it by default
-# Versioned recommends are problematic, and we know that the package requires
-# python2 back with fixed version, so we just use the path here:
-Recommends: %{_bindir}/python
 
 # Previously, this was required for our rewheel patch to work.
 # This is technically no longer needed, but we keep it recommended
@@ -784,22 +778,6 @@ package.
 
 This package provides the "python2" executable; most of the actual
 implementation is within the "python2-libs" package.
-
-
-%package -n python-unversioned-command
-Summary: The "python" command that runs Python 2
-BuildArch: noarch
-# https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
-%?deprecated
-
-# In theory this could require any python2 version
-Requires: python2 == %{version}-%{release}
-# But since we want to provide versioned python, we require exact version
-Provides: python = %{version}-%{release}
-# This also save us an explicit conflict for older python2 builds
-
-%description -n python-unversioned-command
-This package contains /usr/bin/python - the "python" command that runs Python 2.
 
 
 %package libs
@@ -1394,29 +1372,25 @@ rm -f %{buildroot}%{pylibdir}/LICENSE.txt
 
 # Provide binaries in the form of bin2 and bin2.7, thus implementing
 # (and expanding) the recommendations of PEP 394.
+# Do NOT provide unversioned binaries
+# https://fedoraproject.org/wiki/Changes/Python_means_Python3
 mv %{buildroot}%{_bindir}/idle %{buildroot}%{_bindir}/idle%{pybasever}
 ln -s ./idle%{pybasever} %{buildroot}%{_bindir}/idle2
-ln -s ./idle2 %{buildroot}%{_bindir}/idle
 
 mv %{buildroot}%{_bindir}/pynche %{buildroot}%{_bindir}/pynche%{pybasever}
 ln -s ./pynche%{pybasever} %{buildroot}%{_bindir}/pynche2
-ln -s ./pynche2 %{buildroot}%{_bindir}/pynche
 
 mv %{buildroot}%{_bindir}/pydoc %{buildroot}%{_bindir}/pydoc%{pybasever}
 ln -s ./pydoc%{pybasever} %{buildroot}%{_bindir}/pydoc2
-ln -s ./pydoc2 %{buildroot}%{_bindir}/pydoc
 
 mv %{buildroot}%{_bindir}/pygettext.py %{buildroot}%{_bindir}/pygettext%{pybasever}.py
 ln -s ./pygettext%{pybasever}.py %{buildroot}%{_bindir}/pygettext2.py
-ln -s ./pygettext2.py %{buildroot}%{_bindir}/pygettext.py
 
 mv %{buildroot}%{_bindir}/msgfmt.py %{buildroot}%{_bindir}/msgfmt%{pybasever}.py
 ln -s ./msgfmt%{pybasever}.py %{buildroot}%{_bindir}/msgfmt2.py
-ln -s ./msgfmt2.py %{buildroot}%{_bindir}/msgfmt.py
 
 mv %{buildroot}%{_bindir}/smtpd.py %{buildroot}%{_bindir}/smtpd%{pybasever}.py
 ln -s ./smtpd%{pybasever}.py %{buildroot}%{_bindir}/smtpd2.py
-ln -s ./smtpd2.py %{buildroot}%{_bindir}/smtpd.py
 
 # Fix for bug #136654
 rm -f %{buildroot}%{pylibdir}/email/test/data/audiotest.au %{buildroot}%{pylibdir}/test/audiotest.au
@@ -1545,6 +1519,19 @@ find %{buildroot} -type f -a -name "*.py" -print0 | \
 # https://bugzilla.redhat.com/show_bug.cgi?id=1703575
 rm %{buildroot}%{_bindir}/*.py{c,o}
 
+# Remove all remaining unversioned commands
+# https://fedoraproject.org/wiki/Changes/Python_means_Python3
+rm %{buildroot}%{_bindir}/python
+rm %{buildroot}%{_bindir}/python-config
+rm %{buildroot}%{_mandir}/*/python.1*
+rm %{buildroot}%{_libdir}/pkgconfig/python.pc
+%if %{with debug_build}
+rm %{buildroot}%{_bindir}/python-debug
+rm %{buildroot}%{_bindir}/python-debug-config
+rm %{buildroot}%{_libdir}/pkgconfig/python-debug.pc
+%endif
+
+
 # ======================================================
 # Running the upstream test suite
 # ======================================================
@@ -1622,14 +1609,10 @@ CheckPython \
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README
-%{_bindir}/pydoc*
+%{_bindir}/pydoc2*
 %{_bindir}/%{python}
 %{_bindir}/python%{pybasever}
 %{_mandir}/*/python2*
-
-%files -n python-unversioned-command
-%{_bindir}/python
-%{_mandir}/*/python.1*
 
 %files libs
 %{!?_licensedir:%global license %%doc}
@@ -1792,7 +1775,6 @@ CheckPython \
 
 %files devel
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
-%{_libdir}/pkgconfig/python.pc
 %{_libdir}/pkgconfig/python2.pc
 %{pylibdir}/config/*
 %exclude %{pylibdir}/config/Makefile
@@ -1800,7 +1782,6 @@ CheckPython \
 %{_includedir}/python%{pybasever}/*.h
 %exclude %{_includedir}/python%{pybasever}/%{_pyconfig_h}
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
-%{_bindir}/python-config
 %{_bindir}/python2-config
 %{_bindir}/python%{pybasever}-config
 %{_libdir}/libpython%{pybasever}.so
@@ -1808,15 +1789,15 @@ CheckPython \
 %files tools
 %doc Tools/pynche/README.pynche
 %{site_packages}/pynche
-%{_bindir}/smtpd*.py*
+%{_bindir}/smtpd2*.py
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1111275
 %exclude %{_bindir}/2to3*
 
-%{_bindir}/idle*
-%{_bindir}/pynche*
-%{_bindir}/pygettext*.py*
-%{_bindir}/msgfmt*.py*
+%{_bindir}/idle2*
+%{_bindir}/pynche2*
+%{_bindir}/pygettext2*.py
+%{_bindir}/msgfmt2*.py
 %{tools_dir}
 %{demo_dir}
 %{pylibdir}/Doc
@@ -1858,7 +1839,6 @@ CheckPython \
 %files debug
 
 # Analog of the core subpackage's files:
-%{_bindir}/python-debug
 %{_bindir}/%{python}-debug
 %{_bindir}/python%{pybasever}-debug
 
@@ -1953,11 +1933,9 @@ CheckPython \
 # Analog of the -devel subpackage's files:
 %dir %{pylibdir}/config-debug
 %{_libdir}/pkgconfig/python-%{pybasever}-debug.pc
-%{_libdir}/pkgconfig/python-debug.pc
 %{_libdir}/pkgconfig/python2-debug.pc
 %{pylibdir}/config-debug/*
 %{_includedir}/python%{pybasever}-debug/*.h
-%{_bindir}/python-debug-config
 %{_bindir}/python2-debug-config
 %{_bindir}/python%{pybasever}-debug-config
 %{_libdir}/libpython%{pybasever}_d.so
@@ -1998,6 +1976,12 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Jul 12 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-3
+- https://fedoraproject.org/wiki/Changes/Python_means_Python3
+- The python-unversioned-command package is no longer Python 2, but 3
+- The python, pydoc, python-config, python-debug, idle, pygettext.py and
+  msgfmt.py commands are now in python3
+
 * Fri Apr 26 2019 Tomas Orsava <torsava@redhat.com> - 2.7.16-2
 - Remove pyc/pyo files from /usr/bin (#1703575)
 - Update the macro that disables automatic bytecompilation to the new correct
