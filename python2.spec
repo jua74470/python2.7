@@ -129,6 +129,9 @@ Provides: python(abi) = %{pybasever}
 
 %?deprecated
 
+# People might want to dnf install pythonX.Y instead of pythonXY
+Provides: python%{pybasever} = %{version}-%{release}
+
 
 # =======================
 # Build-time requirements
