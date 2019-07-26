@@ -122,7 +122,7 @@ Name: %{python}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -1974,6 +1974,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.16-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Fri Jul 12 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-3
 - https://fedoraproject.org/wiki/Changes/Python_means_Python3
 - The python-unversioned-command package is no longer Python 2, but 3
