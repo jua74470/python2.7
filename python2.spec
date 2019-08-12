@@ -122,7 +122,7 @@ Name: %{python}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -823,15 +823,18 @@ Summary: Libraries and header files needed for Python 2 development
 %?deprecated
 
 Requires: %{python}%{?_isa} = %{version}-%{release}
-Requires: python-rpm-macros
-Requires: python2-rpm-macros
 Requires: pkgconfig
+
+# The RPM related dependencies bring nothing to a non-RPM Python developer
+# But we want them when packages BuildRequire python2-devel
+Requires: (python-rpm-macros if rpm-build)
+Requires: (python2-rpm-macros if rpm-build)
 
 %if %{without python3_bootstrap}
 # When bootstrapping python3, we need to build setuptools
 # But setuptools BR python2-devel and that brings in python3-rpm-generators
 # python3-rpm-generators needs python3-setuptools, so we cannot have it yet
-Requires: python3-rpm-generators
+Requires: (python3-rpm-generators if rpm-build)
 %endif
 
 # This is not "API" (packages that need setuptools should still BuildRequire it)
@@ -841,13 +844,13 @@ Requires: python3-rpm-generators
 # installed when -devel is required.
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1623922
 # See https://fedoraproject.org/wiki/Packaging:Directory_Replacement
-Requires: python2-setuptools
+Requires: (python2-setuptools if rpm-build)
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1217376
 # https://bugzilla.redhat.com/show_bug.cgi?id=1496757
 # https://bugzilla.redhat.com/show_bug.cgi?id=1218294
 # TODO change to a specific subpackage once available (#1218294)
-Requires: redhat-rpm-config
+Requires: (redhat-rpm-config if gcc)
 
 # Needed here because of the migration of Makefile from -devel to the main
 # package
@@ -1974,6 +1977,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Aug 20 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-7
+- Conditionalize python2-devel runtime dependencies
+
 * Wed Aug 14 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-6
 - Rebuilt for Python 3.8
 
