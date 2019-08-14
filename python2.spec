@@ -1,3 +1,6 @@
+%global _without_tests 1
+%global _without_rpmwheels 1
+%global _with_python3_bootstrap 1
 # ======================================================
 # Conditionals and other variables controlling the build
 # ======================================================
@@ -122,7 +125,7 @@ Name: %{python}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Python
 Requires: %{python}-libs%{?_isa} = %{version}-%{release}
 Provides: python(abi) = %{pybasever}
@@ -1974,6 +1977,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Aug 14 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-5
+- Bootstrap for Python 3.8
+
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.16-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
