@@ -7,21 +7,15 @@
 
 # Whether to use RPM build wheels from the python-{pip,setuptools}-wheel package
 # Uses upstream bundled prebuilt wheels otherwise
+# WARNING: Always check if the RPM built wheel versions support Python 2
 %bcond_without rpmwheels
 
-# Extra build for debugging the interpreter or C-API extensions
-# (the -debug subpackages)
-%bcond_without debug_build
-
-# Only use this when bootstrapping python3
-# Needed to build setuptools for the first time
-%bcond_with python3_bootstrap
+# Run the test suite in %%check
+%bcond_without tests
 
 %global unicode ucs4
-
-%global python python2
-
 %global pybasever 2.7
+%global pyshortver 27
 %global pylibdir %{_libdir}/python%{pybasever}
 %global tools_dir %{pylibdir}/Tools
 %global demo_dir %{pylibdir}/Demo
@@ -40,66 +34,29 @@
 %global py_INSTSONAME_optimized libpython%{pybasever}.so.%{py_SOVERSION}
 %global py_INSTSONAME_debug     libpython%{pybasever}_d.so.%{py_SOVERSION}
 
-# Disabled for now:
 %global with_huntrleaks 0
-
 %global with_gdb_hooks 1
-
 %global with_systemtap 1
-
-# some arches don't have valgrind so we need to disable its support on them
-%ifnarch s390 %{mips} riscv64
-%global with_valgrind 1
-%else
 %global with_valgrind 0
-%endif
-
 %global with_gdbm 1
-
-%if 0%{?_module_build}
-%global with_valgrind 0
-%global with_systemtap 0
-
-# (Don't) Run the test suite in %%check
-%bcond_with tests
-%else
-# Run the test suite in %%check
-%bcond_without tests
-%endif
 
 # Disable automatic bytecompilation. The python2.7 binary is not yet
 # available in /usr/bin when Python is built. Also, the bytecompilation fails
 # on files that test invalid syntax.
 %global __brp_python_bytecompile %{nil}
-
-# We need to get a newer configure generated out of configure.in for the following
-# patches:
-#   patch 4 (CFLAGS)
-#   patch 52 (valgrind)
-#   patch 55 (systemtap)
-#   patch 145 (linux2)
-#
-# For patch 55 (systemtap), we need to get a new header for configure to use
-#
-# configure.in requires autoconf-2.65, but the version in Fedora is currently
-# autoconf-2.66
-#
-# For now, we'll generate a patch to the generated configure script and
-# pyconfig.h.in on a machine that has a local copy of autoconf 2.65
-#
-# Instructions on obtaining such a copy can be seen at
-#   http://bugs.python.org/issue7997
-#
-# To make it easy to regenerate the patch, this specfile can be run in two
-# ways:
-# (i) regenerate_autotooling_patch  0 : the normal approach: prep the
-# source tree using a pre-generated patch to the "configure" script, and do a
-# full build
-# (ii) regenerate_autotooling_patch 1 : intended to be run on a developer's
-# workstation: prep the source tree without patching configure, then rerun a
-# local copy of autoconf-2.65, regenerate the patch, then exit, without doing
-# the rest of the build
 %global regenerate_autotooling_patch 0
+
+# ==================
+# Top-level metadata
+# ==================
+Summary: Version %{pybasever} of the Python interpreter
+Name: python%{pyshortver}
+%global general_version %{pybasever}.16
+#global prerel ...
+%global upstream_version %{general_version}%{?prerel}
+Version: %{general_version}%{?prerel:~%{prerel}}
+Release: 8%{?dist}
+License: Python
 
 # Python 2 is deprecated in Fedora 30+, see:
 #   https://fedoraproject.org/wiki/Changes/Mass_Python_2_Package_Removal
@@ -107,30 +64,21 @@
 #   see: https://fedoraproject.org/wiki/Packaging:Deprecating_Packages
 # Python 2 will not be supported after 2019. Use the python3 package instead
 # if possible.
-%if 0%{fedora} >= 30
-%global deprecated Provides: deprecated()
-%endif
-
-
-# ==================
-# Top-level metadata
-# ==================
-Summary: An interpreted, interactive, object-oriented programming language
-Name: %{python}
-# Remember to also rebase python2-docs when changing this:
-%global general_version %{pybasever}.16
-#global prerel ...
-%global upstream_version %{general_version}%{?prerel}
-Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 7%{?dist}
-License: Python
-Requires: %{python}-libs%{?_isa} = %{version}-%{release}
-Provides: python(abi) = %{pybasever}
-
-%?deprecated
+Provides: deprecated()
 
 # People might want to dnf install pythonX.Y instead of pythonXY
 Provides: python%{pybasever} = %{version}-%{release}
+
+# People might want to dnf install python2 instead of pythonXY
+Provides: python2 = %{version}-%{release}
+
+# We want to be nice for the packages that still remain, so we keep providing this
+# TODO stop doing this in undefined future
+Provides: python(abi) = %{pybasever}
+
+# To test the python27 without disrupting everything, we keep providing the devel part until mid September 2019
+Provides: python2-devel = %{version}-%{release}
+Provides: python2-tkinter = %{version}-%{release}
 
 
 # =======================
@@ -140,41 +88,35 @@ Provides: python%{pybasever} = %{version}-%{release}
 # (keep this list alphabetized)
 
 BuildRequires: autoconf
-%if ! 0%{?_module_build}
 BuildRequires: bluez-libs-devel
-%endif
 BuildRequires: bzip2
 BuildRequires: bzip2-devel
+BuildRequires: expat-devel
+BuildRequires: findutils
+BuildRequires: gcc-c++
 BuildRequires: glibc-all-langpacks
 BuildRequires: glibc-devel
 BuildRequires: gmp-devel
+BuildRequires: libGL-devel
+BuildRequires: libX11-devel
 BuildRequires: libdb-devel
 BuildRequires: libffi-devel
-BuildRequires: ncurses-devel
-BuildRequires: pkgconfig
-BuildRequires: readline-devel
-BuildRequires: sqlite-devel
-BuildRequires: tcl-devel
-
-BuildRequires: openssl-devel
-
-# For the nis module
 BuildRequires: libnsl2-devel
 BuildRequires: libtirpc-devel
+BuildRequires: ncurses-devel
+BuildRequires: openssl-devel
+BuildRequires: pkgconf-pkg-config
+BuildRequires: readline-devel
+BuildRequires: sqlite-devel
+BuildRequires: tar
+BuildRequires: tcl-devel
+BuildRequires: tix-devel
+BuildRequires: tk-devel
+BuildRequires: zlib-devel
 
-# expat 2.1.0 added the symbol XML_SetHashSalt without bumping SONAME.  We use
-# it (in pyexpat) in order to enable the fix in Python-2.7.3 for CVE-2012-0876:
-BuildRequires: expat-devel >= 2.1.0
-
-BuildRequires: findutils
-BuildRequires: gcc-c++
 %if %{with_gdbm}
 # ABI change without soname bump, reverted
 BuildRequires: gdbm-devel >= 1:1.13
-%endif
-%if ! 0%{?_module_build}
-BuildRequires: libGL-devel
-BuildRequires: libX11-devel
 %endif
 
 %if 0%{?with_systemtap}
@@ -184,35 +126,46 @@ BuildRequires: systemtap-sdt-devel
 %global tapsetdir      /usr/share/systemtap/tapset
 %endif # with_systemtap
 
-BuildRequires: tar
-%if ! 0%{?_module_build}
-BuildRequires: tix-devel
-BuildRequires: tk-devel
-%endif
-
 %if 0%{?with_valgrind}
 BuildRequires: valgrind-devel
 %endif
 
-BuildRequires: zlib-devel
-
-# For %%python_provide
-BuildRequires: python-rpm-macros
-
 %if %{with rpmwheels}
 BuildRequires: python-setuptools-wheel
 BuildRequires: python-pip-wheel
+Requires: python-setuptools-wheel
+Requires: python-pip-wheel
+%else
+Provides: bundled(python2-pip) = 18.1
+Provides: bundled(python2-setuptools) = 40.6.2
 %endif
 
-# Providing python27 as now multiple interpreters exist in Fedora
-# alongside the system one e.g. python26, python33 etc
-Provides:   python27 = %{version}-%{release}
+# For /usr/lib64/pkgconfig/
+Requires: pkgconf-pkg-config
 
-# Previously, this was required for our rewheel patch to work.
-# This is technically no longer needed, but we keep it recommended
-# for the developer experience.
-Recommends: python2-setuptools
-Recommends: python2-pip
+# The RPM related dependencies bring nothing to a non-RPM Python developer
+# But we want them when packages BuildRequire python2-devel
+Requires: (python-rpm-macros if rpm-build)
+Requires: (python2-rpm-macros if rpm-build)
+
+# When bootstrapping python3, we need to build setuptools
+# But setuptools BR python2-devel and that brings in python3-rpm-generators
+# python3-rpm-generators needs python3-setuptools, so we cannot have it yet
+Requires: (python3-rpm-generators if rpm-build)
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1217376
+# https://bugzilla.redhat.com/show_bug.cgi?id=1496757
+# https://bugzilla.redhat.com/show_bug.cgi?id=1218294
+# TODO change to a specific subpackage once available (#1218294)
+Requires: (redhat-rpm-config if gcc)
+
+Obsoletes: python2 < %{version}-%{release}
+Obsoletes: python2-debug < %{version}-%{release}
+Obsoletes: python2-devel < %{version}-%{release}
+Obsoletes: python2-libs < %{version}-%{release}
+Obsoletes: python2-test < %{version}-%{release}
+Obsoletes: python2-tkinter < %{version}-%{release}
+Obsoletes: python2-tools < %{version}-%{release}
 
 
 # =======================
@@ -221,16 +174,10 @@ Recommends: python2-pip
 
 Source: https://www.python.org/ftp/python/%{version}/Python-%{upstream_version}.tar.xz
 
-# Work around bug 562906 until it's fixed in rpm-build by providing a fixed
-# version of pythondeps.sh:
-Source2: pythondeps.sh
-%global __python_requires %{SOURCE2}
-
 # Systemtap tapset to make it easier to use the systemtap static probes
 # (actually a template; LIBRARY_PATH will get fixed up during install)
 # Written by dmalcolm; not yet sent upstream
 Source3: libpython.stp
-
 
 # Example systemtap script using the tapset
 # Written by wcohen, mjw, dmalcolm; not yet sent upstream
@@ -239,8 +186,6 @@ Source4: systemtap-example.stp
 # Another example systemtap script that uses the tapset
 # Written by dmalcolm; not yet sent upstream
 Source5: pyfuntop.stp
-
-Source7: pynche
 
 # Modules/Setup.dist is ultimately used by the "makesetup" script to construct
 # the Makefile and config.c
@@ -758,13 +703,10 @@ Patch289: 00289-disable-nis-detection.patch
 #   %%{regenerate_autotooling_patch}
 # above:
 
-# Disable tk for modularity builds to break up build dependencies
-Patch04000: 04000-modularity-disable-tk.patch
-
 Patch5000: 05000-autotool-intermediates.patch
 
 # ======================================================
-# Additional metadata, and subpackages
+# Additional metadata
 # ======================================================
 
 URL: https://www.python.org/
@@ -776,185 +718,10 @@ how built-in objects like dictionaries and strings work, have changed
 considerably, and a lot of deprecated features have finally been removed in the
 3.x line.
 
-Note that documentation for Python 2 is provided in the python2-docs
-package.
+Note that Python 2 is not supported upstream after 2020-01-01, please use the
+python3 package instead if you can.
 
-This package provides the "python2" executable; most of the actual
-implementation is within the "python2-libs" package.
-
-
-%package libs
-Summary: Runtime libraries for Python 2
-%?deprecated
-
-# Needed for ctypes, to load libraries, worked around for Live CDs size
-# Requires: binutils
-
-# expat 2.1.0 added the symbol XML_SetHashSalt without bumping SONAME.  We use
-# this symbol (in pyexpat), so we must explicitly state this dependency to
-# prevent "import pyexpat" from failing with a linker error if someone hasn't
-# yet upgraded expat:
-Requires: expat >= 2.1.0
-
-# Python built with glibc >= 2.24.90-26 needs to require it (rhbz#1410644).
-Requires: glibc%{?_isa} >= 2.24.90-26
-
-%if %{with_gdbm}
-# ABI change without soname bump, reverted
-Requires: gdbm%{?_isa} >= 1:1.13
-%endif
-
-%if %{with rpmwheels}
-Requires: python-setuptools-wheel
-Requires: python-pip-wheel
-%else
-Provides: bundled(python2-pip) = 18.1
-Provides: bundled(python2-setuptools) = 40.6.2
-%endif
-
-%{?python_provide:%python_provide python2-libs}
-%{?python_provide:%python_provide python2-libs%{?_isa}}
-
-%description libs
-This package contains files used to embed Python 2 into applications.
-
-%package devel
-Summary: Libraries and header files needed for Python 2 development
-%?deprecated
-
-Requires: %{python}%{?_isa} = %{version}-%{release}
-Requires: pkgconfig
-
-# The RPM related dependencies bring nothing to a non-RPM Python developer
-# But we want them when packages BuildRequire python2-devel
-Requires: (python-rpm-macros if rpm-build)
-Requires: (python2-rpm-macros if rpm-build)
-
-%if %{without python3_bootstrap}
-# When bootstrapping python3, we need to build setuptools
-# But setuptools BR python2-devel and that brings in python3-rpm-generators
-# python3-rpm-generators needs python3-setuptools, so we cannot have it yet
-Requires: (python3-rpm-generators if rpm-build)
-%endif
-
-# This is not "API" (packages that need setuptools should still BuildRequire it)
-# However some packages apparently can build both with and without setuptools
-# producing egg-info as file or directory (depending on setuptools presence).
-# Directory-to-file updates are problematic in RPM, so we ensure setuptools is
-# installed when -devel is required.
-# See https://bugzilla.redhat.com/show_bug.cgi?id=1623922
-# See https://fedoraproject.org/wiki/Packaging:Directory_Replacement
-Requires: (python2-setuptools if rpm-build)
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1217376
-# https://bugzilla.redhat.com/show_bug.cgi?id=1496757
-# https://bugzilla.redhat.com/show_bug.cgi?id=1218294
-# TODO change to a specific subpackage once available (#1218294)
-Requires: (redhat-rpm-config if gcc)
-
-# Needed here because of the migration of Makefile from -devel to the main
-# package
-Conflicts: %{python} < %{version}-%{release}
-
-%{?python_provide:%python_provide python2-devel}
-%{?python_provide:%python_provide python2-devel%{?_isa}}
-
-%description devel
-This package contains libraries and header files used to build applications
-with and native libraries for Python 2
-
-%package tools
-Summary: A collection of development tools included with Python 2
-%?deprecated
-
-Requires: %{name} = %{version}-%{release}
-Requires: %{python}-tkinter = %{version}-%{release}
-
-%{?python_provide:%python_provide python2-tools}
-%{?python_provide:%python_provide python2-tools%{?_isa}}
-
-%description tools
-This package includes several tools to help with the development of Python 2
-programs, including IDLE (an IDE with editing and debugging facilities), a
-color editor (pynche), and a python gettext program (pygettext.py).
-
-%package tkinter
-Summary: A graphical user interface for the Python 2 scripting language
-%?deprecated
-
-Requires: %{name} = %{version}-%{release}
-
-%if 0%{?fedora} < 31
-Provides: tkinter = %{version}-%{release}
-Provides: tkinter%{?_isa} = %{version}-%{release}
-Provides: tkinter2 = %{version}-%{release}
-Provides: tkinter2%{?_isa} = %{version}-%{release}
-%endif
-%{?python_provide:%python_provide python2-tkinter}
-%{?python_provide:%python_provide python2-tkinter%{?_isa}}
-
-%description tkinter
-
-The Tkinter (Tk interface) program is an graphical user interface for
-the Python 2 scripting language.
-
-You should install the python2tkinter package if you'd like to use a graphical
-user interface for Python 2 programming.
-
-%package test
-Summary: The test modules from the main python2 package
-%?deprecated
-
-Requires: %{name} = %{version}-%{release}
-
-%{?python_provide:%python_provide python2-test}
-%{?python_provide:%python_provide python2-test%{?_isa}}
-
-%description test
-
-The test modules from the main python2 package: %{name}
-These have been removed to save space, as they are never or almost
-never used in production.
-
-You might want to install the python2-test package if you're developing python 2
-code that uses more than just unittest and/or test.support.
-
-%if %{with debug_build}
-%package debug
-Summary: Debug version of the Python 2 runtime
-%?deprecated
-
-# The debug build is an all-in-one package version of the regular build, and
-# shares the same .py/.pyc files and directories as the regular build.  Hence
-# we depend on all of the subpackages of the regular build:
-Requires: %{name}%{?_isa} = %{version}-%{release}
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Requires: %{name}-devel%{?_isa} = %{version}-%{release}
-Requires: %{name}-test%{?_isa} = %{version}-%{release}
-Requires: %{python}-tkinter%{?_isa} = %{version}-%{release}
-Requires: %{name}-tools%{?_isa} = %{version}-%{release}
-
-%{?python_provide:%python_provide python2-debug}
-%{?python_provide:%python_provide python2-debug%{?_isa}}
-
-%description debug
-python2-debug provides a version of the Python 2 runtime with numerous debugging
-features enabled, aimed at advanced Python users, such as developers of Python
-extension modules.
-
-This version uses more memory and will be slower than the regular Python 2 build,
-but is useful for tracking down reference-counting issues, and other bugs.
-
-The bytecodes are unchanged, so that .pyc files are compatible between the two
-version of Python 2, but the debugging features mean that C/C++ extension modules
-are ABI-incompatible with those built for the standard runtime.
-
-It shares installation directories with the standard Python 2 runtime, so that
-.py and .pyc files can be shared.  All compiled extension modules gain a "_d"
-suffix ("foo_d.so" rather than "foo.so") so that each Python 2 implementation can
-load its own extensions.
-%endif # with debug_build
-
+This package also provides the "python2" executable.
 
 # ======================================================
 # The prep phase of the build:
@@ -1079,10 +846,6 @@ rm Lib/ensurepip/_bundled/*.whl
 %patch193 -p1
 %patch289 -p1
 
-%if 0%{?_module_build}
-%patch4000 -p1
-%endif
-
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
 
@@ -1206,26 +969,10 @@ LD_LIBRARY_PATH="$topdir/$ConfDir" PATH=$PATH:$topdir/$ConfDir make -s EXTRA_CFL
 
 # Use "BuildPython" to support building with different configurations:
 
-%if %{with debug_build}
-BuildPython debug \
-  python-debug \
-  python%{pybasever}-debug \
-%ifarch %{ix86} x86_64 ppc %{power64}
-  "--with-pydebug --with-tsc --with-count-allocs --with-call-profile" \
-%else
-  "--with-pydebug --with-count-allocs --with-call-profile" \
-%endif
-  false
-%endif # with debug_build
-
 BuildPython optimized \
   python \
   python%{pybasever} \
-%ifarch %{ix86} x86_64
-  "--enable-optimizations" \
-%else
   "" \
-%endif
   true
 
 
@@ -1299,13 +1046,6 @@ LD_LIBRARY_PATH="$topdir/$ConfDir" $topdir/$ConfDir/$BinaryName -O \
 
 # Use "InstallPython" to support building with different configurations:
 
-# Install the "debug" build first, so that we can move some files aside
-%if %{with debug_build}
-InstallPython debug \
-  python%{pybasever}-debug \
-  %{py_INSTSONAME_debug}
-%endif # with debug_build
-
 # Now the optimized build:
 InstallPython optimized \
   python%{pybasever} \
@@ -1341,8 +1081,6 @@ fi
 mkdir -p ${RPM_BUILD_ROOT}%{site_packages}
 
 #pynche
-install -p -m755 %{SOURCE7} ${RPM_BUILD_ROOT}%{_bindir}/pynche
-chmod 755 ${RPM_BUILD_ROOT}%{_bindir}/pynche
 rm -f Tools/pynche/*.pyw
 cp -rp Tools/pynche \
   ${RPM_BUILD_ROOT}%{site_packages}/
@@ -1381,9 +1119,6 @@ find . -name ".cvsignore"|xargs rm -f
 mv %{buildroot}%{_bindir}/idle %{buildroot}%{_bindir}/idle%{pybasever}
 ln -s ./idle%{pybasever} %{buildroot}%{_bindir}/idle2
 
-mv %{buildroot}%{_bindir}/pynche %{buildroot}%{_bindir}/pynche%{pybasever}
-ln -s ./pynche%{pybasever} %{buildroot}%{_bindir}/pynche2
-
 mv %{buildroot}%{_bindir}/pydoc %{buildroot}%{_bindir}/pydoc%{pybasever}
 ln -s ./pydoc%{pybasever} %{buildroot}%{_bindir}/pydoc2
 
@@ -1414,11 +1149,7 @@ install -d %{buildroot}/%{_prefix}/lib/python%{pybasever}/site-packages
 %global _pyconfig_h %{_pyconfig32_h}
 %endif
 
-%if %{with debug_build}
-%global PyIncludeDirs python%{pybasever} python%{pybasever}-debug
-%else
 %global PyIncludeDirs python%{pybasever}
-%endif
 
 for PyIncludeDir in %{PyIncludeDirs} ; do
   mv %{buildroot}%{_includedir}/$PyIncludeDir/pyconfig.h \
@@ -1490,12 +1221,6 @@ sed \
    %{SOURCE3} \
    > %{buildroot}%{tapsetdir}/%{libpython_stp_optimized}
 
-%if %{with debug_build}
-sed \
-   -e "s|LIBRARY_PATH|%{_libdir}/%{py_INSTSONAME_debug}|" \
-   %{SOURCE3} \
-   > %{buildroot}%{tapsetdir}/%{libpython_stp_debug}
-%endif # with debug_build
 %endif # with_systemtap
 
 # Do bytecompilation with the newly installed interpreter.
@@ -1514,9 +1239,6 @@ find %{buildroot} -type f -a -name "*.py" -print0 | \
 # Make library-files user writable
 /usr/bin/chmod 755 %{buildroot}%{dynload_dir}/*.so
 /usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}.so.1.0
-%if %{with debug_build}
-/usr/bin/chmod 755 %{buildroot}%{_libdir}/libpython%{pybasever}_d.so.1.0
-%endif
 
 # Remove pyc/pyo files from /usr/bin
 # They are not needed, and due to them, the resulting RPM is not multilib-clean
@@ -1529,11 +1251,6 @@ rm %{buildroot}%{_bindir}/python
 rm %{buildroot}%{_bindir}/python-config
 rm %{buildroot}%{_mandir}/*/python.1*
 rm %{buildroot}%{_libdir}/pkgconfig/python.pc
-%if %{with debug_build}
-rm %{buildroot}%{_bindir}/python-debug
-rm %{buildroot}%{_bindir}/python-debug-config
-rm %{buildroot}%{_libdir}/pkgconfig/python-debug.pc
-%endif
 
 
 # ======================================================
@@ -1592,11 +1309,6 @@ CheckPython() {
 export LC_ALL=C.utf-8
 
 # Check each of the configurations:
-%if %{with debug_build}
-CheckPython \
-  debug \
-  python%{pybasever}-debug
-%endif # with debug_build
 CheckPython \
   optimized \
   python%{pybasever}
@@ -1611,14 +1323,12 @@ CheckPython \
 
 %files
 %doc README
+%license %{pylibdir}/LICENSE.txt
 %{_bindir}/pydoc2*
-%{_bindir}/%{python}
+%{_bindir}/python2
 %{_bindir}/python%{pybasever}
 %{_mandir}/*/python2*
 
-%files libs
-%doc README
-%license %{pylibdir}/LICENSE.txt
 %dir %{pylibdir}
 %dir %{dynload_dir}
 
@@ -1732,14 +1442,6 @@ CheckPython \
 %dir %{pylibdir}/sqlite3
 %{pylibdir}/sqlite3/*.py*
 
-# Some bits of test are used for actual testing of stuff, not just python itself:
-# See also https://bugzilla.redhat.com/show_bug.cgi?id=1528899
-%dir %{pylibdir}/test
-%{pylibdir}/test/__init__.py*
-%{pylibdir}/test/support/
-%{pylibdir}/test/script_helper.py*
-%{pylibdir}/test/test_support.py*
-
 %{pylibdir}/unittest
 %{pylibdir}/wsgiref
 %{pylibdir}/xml
@@ -1774,7 +1476,7 @@ CheckPython \
 %endif
 
 
-%files devel
+#files devel
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
 %{_libdir}/pkgconfig/python2.pc
 %{pylibdir}/config/*
@@ -1787,7 +1489,7 @@ CheckPython \
 %{_bindir}/python%{pybasever}-config
 %{_libdir}/libpython%{pybasever}.so
 
-%files tools
+#files tools
 %doc Tools/pynche/README.pynche
 %{site_packages}/pynche
 %{_bindir}/smtpd2*.py
@@ -1796,20 +1498,17 @@ CheckPython \
 %exclude %{_bindir}/2to3*
 
 %{_bindir}/idle2*
-%{_bindir}/pynche2*
 %{_bindir}/pygettext2*.py
 %{_bindir}/msgfmt2*.py
 %{tools_dir}
 %{demo_dir}
 %{pylibdir}/Doc
 
-%files tkinter
+#files tkinter
 %{pylibdir}/lib-tk
-%if ! 0%{?_module_build}
 %{dynload_dir}/_tkinter.so
-%endif
 
-%files test
+#files test
 %{pylibdir}/bsddb/test
 %{pylibdir}/ctypes/test
 %{pylibdir}/distutils/tests
@@ -1817,157 +1516,10 @@ CheckPython \
 %{pylibdir}/json/tests
 %{pylibdir}/lib2to3/tests
 %{pylibdir}/sqlite3/test
-%{pylibdir}/test/*
-
-# Some bits of test are used for actual testing of stuff, not just python itself:
-# See also https://bugzilla.redhat.com/show_bug.cgi?id=1528899
-%exclude %{pylibdir}/test/__init__.py*
-%exclude %{pylibdir}/test/support/
-%exclude %{pylibdir}/test/script_helper.py*
-%exclude %{pylibdir}/test/test_support.py*
+%{pylibdir}/test/
 
 %{dynload_dir}/_ctypes_test.so
 %{dynload_dir}/_testcapimodule.so
-
-
-# We don't bother splitting the debug build out into further subpackages:
-# if you need it, you're probably a developer.
-
-# Hence the manifest is the combination of analogous files in the manifests of
-# all of the other subpackages
-
-%if %{with debug_build}
-%files debug
-
-# Analog of the core subpackage's files:
-%{_bindir}/%{python}-debug
-%{_bindir}/python%{pybasever}-debug
-
-# Analog of the -libs subpackage's files, with debug builds of the built-in
-# "extension" modules:
-
-%{dynload_dir}/_md5module_d.so
-%{dynload_dir}/_sha256module_d.so
-%{dynload_dir}/_sha512module_d.so
-%{dynload_dir}/_shamodule_d.so
-
-%{dynload_dir}/_bisectmodule_d.so
-%{dynload_dir}/_bsddb_d.so
-%{dynload_dir}/_codecs_cn_d.so
-%{dynload_dir}/_codecs_hk_d.so
-%{dynload_dir}/_codecs_iso2022_d.so
-%{dynload_dir}/_codecs_jp_d.so
-%{dynload_dir}/_codecs_kr_d.so
-%{dynload_dir}/_codecs_tw_d.so
-%{dynload_dir}/_collectionsmodule_d.so
-%{dynload_dir}/_csv_d.so
-%{dynload_dir}/_ctypes_d.so
-%{dynload_dir}/_curses_d.so
-%{dynload_dir}/_curses_panel_d.so
-%{dynload_dir}/_elementtree_d.so
-%{dynload_dir}/_functoolsmodule_d.so
-%{dynload_dir}/_hashlib_d.so
-%{dynload_dir}/_heapq_d.so
-%{dynload_dir}/_hotshot_d.so
-%{dynload_dir}/_io_d.so
-%{dynload_dir}/_json_d.so
-%{dynload_dir}/_localemodule_d.so
-%{dynload_dir}/_lsprof_d.so
-%{dynload_dir}/_multibytecodecmodule_d.so
-%{dynload_dir}/_multiprocessing_d.so
-%{dynload_dir}/_randommodule_d.so
-%{dynload_dir}/_socketmodule_d.so
-%{dynload_dir}/_sqlite3_d.so
-%{dynload_dir}/_ssl_d.so
-%{dynload_dir}/_struct_d.so
-%{dynload_dir}/arraymodule_d.so
-%{dynload_dir}/audioop_d.so
-%{dynload_dir}/binascii_d.so
-%{dynload_dir}/bz2_d.so
-%{dynload_dir}/cPickle_d.so
-%{dynload_dir}/cStringIO_d.so
-%{dynload_dir}/cmathmodule_d.so
-%{dynload_dir}/_cryptmodule_d.so
-%{dynload_dir}/datetime_d.so
-%{dynload_dir}/dbm_d.so
-%{dynload_dir}/dlmodule_d.so
-%{dynload_dir}/fcntlmodule_d.so
-%{dynload_dir}/future_builtins_d.so
-%if %{with_gdbm}
-%{dynload_dir}/gdbmmodule_d.so
-%endif
-%{dynload_dir}/grpmodule_d.so
-%{dynload_dir}/imageop_d.so
-%{dynload_dir}/itertoolsmodule_d.so
-%{dynload_dir}/linuxaudiodev_d.so
-%{dynload_dir}/math_d.so
-%{dynload_dir}/mmapmodule_d.so
-%{dynload_dir}/nismodule_d.so
-%{dynload_dir}/operator_d.so
-%{dynload_dir}/ossaudiodev_d.so
-%{dynload_dir}/parsermodule_d.so
-%{dynload_dir}/pyexpat_d.so
-%{dynload_dir}/readline_d.so
-%{dynload_dir}/resource_d.so
-%{dynload_dir}/selectmodule_d.so
-%{dynload_dir}/spwdmodule_d.so
-%{dynload_dir}/stropmodule_d.so
-%{dynload_dir}/syslog_d.so
-%{dynload_dir}/termios_d.so
-%{dynload_dir}/timemodule_d.so
-%{dynload_dir}/timingmodule_d.so
-%{dynload_dir}/unicodedata_d.so
-%{dynload_dir}/xxsubtype_d.so
-%{dynload_dir}/zlibmodule_d.so
-
-# No need to split things out the "Makefile" and the config-32/64.h file as we
-# do for the regular build above (bug 531901), since they're all in one package
-# now; they're listed below, under "-devel":
-
-%{_libdir}/%{py_INSTSONAME_debug}
-%if 0%{?with_systemtap}
-%dir %(dirname %{tapsetdir})
-%dir %{tapsetdir}
-%{tapsetdir}/%{libpython_stp_debug}
-%endif
-
-# Analog of the -devel subpackage's files:
-%dir %{pylibdir}/config-debug
-%{_libdir}/pkgconfig/python-%{pybasever}-debug.pc
-%{_libdir}/pkgconfig/python2-debug.pc
-%{pylibdir}/config-debug/*
-%{_includedir}/python%{pybasever}-debug/*.h
-%{_bindir}/python2-debug-config
-%{_bindir}/python%{pybasever}-debug-config
-%{_libdir}/libpython%{pybasever}_d.so
-
-# Analog of the -tools subpackage's files:
-#  None for now; we could build precanned versions that have the appropriate
-# shebang if needed
-
-%if ! 0%{?_module_build}
-# Analog  of the tkinter subpackage's files:
-%{dynload_dir}/_tkinter_d.so
-%endif
-
-# Analog  of the -test subpackage's files:
-%{dynload_dir}/_ctypes_test_d.so
-%{dynload_dir}/_testcapimodule_d.so
-
-%endif # with debug_build
-
-# We put the debug-gdb.py file inside /usr/lib/debug to avoid noise from
-# ldconfig (rhbz:562980).
-#
-# The /usr/lib/rpm/redhat/macros defines the __debug_package macro to use
-# debugfiles.list, and it appears that everything below /usr/lib/debug and
-# (/usr/src/debug) gets added to this file (via LISTFILES) in
-# /usr/lib/rpm/find-debuginfo.sh
-#
-# Hence by installing it below /usr/lib/debug we ensure it is added to the
-# -debuginfo subpackage
-# (if it doesn't, then the rpmbuild ought to fail since the debug-gdb.py
-# payload file would be unpackaged)
 
 # Workaround for rhbz#1476593
 %undefine _debuginfo_subpackages
@@ -1977,6 +1529,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Aug 21 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-8
+- Make the python27 package flat
+
 * Tue Aug 20 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-7
 - Conditionalize python2-devel runtime dependencies
 
