@@ -15,5 +15,5 @@
     - gcc
     - virtualenv
     - python3-tox
-    - python2-devel
+    - python27
     - glibc-all-langpacks # for locale tests
