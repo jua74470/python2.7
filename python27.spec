@@ -55,7 +55,7 @@ Name: python%{pyshortver}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: Python
 
 # Python 2 is deprecated in Fedora 30+, see:
@@ -1434,7 +1434,6 @@ CheckPython \
 %dir %{pylibdir}/json
 %{pylibdir}/json/*.py*
 %{pylibdir}/lib2to3
-%exclude %{pylibdir}/lib2to3/tests
 %{pylibdir}/logging
 %{pylibdir}/multiprocessing
 %{pylibdir}/plat-linux2
@@ -1449,14 +1448,6 @@ CheckPython \
 %attr(0755,root,root) %dir %{_prefix}/lib/python%{pybasever}
 %attr(0755,root,root) %dir %{_prefix}/lib/python%{pybasever}/site-packages
 %endif
-
-# "Makefile" and the config-32/64.h file are needed by
-# distutils/sysconfig.py:_init_posix(), so we include them in the libs
-# package, along with their parent directories (bug 531901):
-%dir %{pylibdir}/config
-%{pylibdir}/config/Makefile
-%dir %{_includedir}/python%{pybasever}
-%{_includedir}/python%{pybasever}/%{_pyconfig_h}
 
 %{_libdir}/%{py_INSTSONAME_optimized}
 %if 0%{?with_systemtap}
@@ -1479,11 +1470,11 @@ CheckPython \
 #files devel
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
 %{_libdir}/pkgconfig/python2.pc
-%{pylibdir}/config/*
-%exclude %{pylibdir}/config/Makefile
+%{pylibdir}/config/
 %{pylibdir}/distutils/command/wininst-*.exe
+%dir %{_includedir}/python%{pybasever}/
 %{_includedir}/python%{pybasever}/*.h
-%exclude %{_includedir}/python%{pybasever}/%{_pyconfig_h}
+
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_bindir}/python2-config
 %{_bindir}/python%{pybasever}-config
@@ -1514,7 +1505,6 @@ CheckPython \
 %{pylibdir}/distutils/tests
 %{pylibdir}/email/test
 %{pylibdir}/json/tests
-%{pylibdir}/lib2to3/tests
 %{pylibdir}/sqlite3/test
 %{pylibdir}/test/
 
@@ -1529,6 +1519,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Aug 29 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-9
+- Restore files %%excluded by accident
+
 * Wed Aug 21 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-8
 - Make the python27 package flat
 
