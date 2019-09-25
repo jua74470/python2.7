@@ -1023,7 +1023,7 @@ make install DESTDIR=%{buildroot}
 # but doing so generated noise when ldconfig was rerun (rhbz:562980)
 #
 %if 0%{?with_gdb_hooks}
-DirHoldingGdbPy=%{_prefix}/lib/debug/%{_libdir}
+DirHoldingGdbPy=%{_usr}/lib/debug/%{_libdir}
 PathOfGdbPy=$DirHoldingGdbPy/$PyInstSoName-%{version}-%{release}.%{_arch}.debug-gdb.py
 
 mkdir -p %{buildroot}$DirHoldingGdbPy
