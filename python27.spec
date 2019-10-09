@@ -51,11 +51,11 @@
 # ==================
 Summary: Version %{pybasever} of the Python interpreter
 Name: python%{pyshortver}
-%global general_version %{pybasever}.16
-#global prerel ...
+%global general_version %{pybasever}.17
+%global prerel rc1
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 9%{?dist}
+Release: 1%{?dist}
 License: Python
 
 # Python 2 is deprecated in Fedora 30+, see:
@@ -136,8 +136,8 @@ BuildRequires: python-pip-wheel
 Requires: python-setuptools-wheel
 Requires: python-pip-wheel
 %else
-Provides: bundled(python2-pip) = 18.1
-Provides: bundled(python2-setuptools) = 40.6.2
+Provides: bundled(python2-pip) = 19.2.3
+Provides: bundled(python2-setuptools) = 41.2.0
 %endif
 
 # For /usr/lib64/pkgconfig/
@@ -172,7 +172,7 @@ Obsoletes: python2-tools < %{version}-%{release}
 # Source code and patches
 # =======================
 
-Source: https://www.python.org/ftp/python/%{version}/Python-%{upstream_version}.tar.xz
+Source: https://www.python.org/ftp/python/%{general_version}/Python-%{upstream_version}.tar.xz
 
 # Systemtap tapset to make it easier to use the systemtap static probes
 # (actually a template; LIBRARY_PATH will get fixed up during install)
@@ -569,22 +569,6 @@ Patch155: 00155-avoid-ctypes-thunks.patch
 # Not yet sent upstream
 Patch156: 00156-gdb-autoload-safepath.patch
 
-# 00157 #
-# Update uid/gid handling throughout the standard library: uid_t and gid_t are
-# unsigned 32-bit values, but existing code often passed them through C long
-# values, which are signed 32-bit values on 32-bit architectures, leading to
-# negative int objects for uid/gid values >= 2^31 on 32-bit architectures.
-#
-# Introduce _PyObject_FromUid/Gid to convert uid_t/gid_t values to python
-# objects, using int objects where the value will fit (long objects otherwise),
-# and _PyArg_ParseUid/Gid to convert int/long to uid_t/gid_t, with -1 allowed
-# as a special case (since this is given special meaning by the chown syscall)
-#
-# Update standard library to use this throughout for uid/gid values, so that
-# very large uid/gid values are round-trippable, and -1 remains usable.
-# (rhbz#697470)
-Patch157: 00157-uid-gid-overflows.patch
-
 # 00165 #
 # Backport to Python 2 from Python 3.3 of improvements to the "crypt" module
 # adding precanned ways of salting a password (rhbz#835021)
@@ -602,18 +586,6 @@ Patch165: 00165-crypt-module-salt-backport.patch
 #
 # Not yet sent upstream
 Patch167: 00167-disable-stack-navigation-tests-when-optimized-in-test_gdb.patch
-
-# 00168 #
-# Update distutils.sysconfig so that if CFLAGS is defined in the environment,
-# when building extension modules, it is appended to the full compilation
-# flags from Python's Makefile, rather than instead reducing the compilation
-# flags to the subset within OPT and adding it to those.
-#
-# In particular, this should ensure that "-fno-strict-aliasing" is used by
-# "python setup.py build" even when CFLAGS is defined in the environment.
-#
-# (rhbz#849994)
-Patch168: 00168-distutils-cflags.patch
 
 # 00169 #
 # Use SHA-256 rather than implicitly using MD5 within the challenge handling
@@ -824,11 +796,9 @@ rm -r Modules/zlib || exit 1
 %patch147 -p1
 %patch155 -p1
 %patch156 -p1
-%patch157 -p1
 %patch165 -p1
 mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch167 -p1
-%patch168 -p1
 %patch169 -p1
 %patch170 -p1
 %patch174 -p1 -b .fix-for-usr-move
@@ -1519,6 +1489,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Oct 09 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.17~rc1-1
+- Rebase to 2.7.17rc1
+
 * Thu Aug 29 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.16-9
 - Restore files %%excluded by accident
 
