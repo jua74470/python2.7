@@ -52,7 +52,7 @@
 Summary: Version %{pybasever} of the Python interpreter
 Name: python%{pyshortver}
 %global general_version %{pybasever}.17
-%global prerel rc1
+#global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
 Release: 1%{?dist}
@@ -1489,6 +1489,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sun Oct 20 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.17-1
+- Update to 2.7.17
+
 * Wed Oct 09 2019 Miro Hrončok <mhroncok@redhat.com> - 2.7.17~rc1-1
 - Rebase to 2.7.17rc1
 
