@@ -33,13 +33,16 @@
 %py2_install() %{expand:\\\
   CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
   %{__python2} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
 }
 
 %py2_install_egg() %{expand:\\\
   mkdir -p %{buildroot}%{python2_sitelib}
   easy_install-%{python2_version} -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python2_version}.egg %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
 }
 
 %py2_install_wheel() %{expand:\\\
   pip%{python2_version} install -I dist/%{1} --root %{buildroot} --no-deps
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
 }
