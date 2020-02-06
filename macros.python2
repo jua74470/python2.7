@@ -4,6 +4,7 @@
 %python2_version_nodots %(%{__python2} -Esc "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
 
 %py2_shbang_opts -s
+%py2_shbang_opts_nodash %(opts=%{py2_shbang_opts}; echo ${opts#-})
 
 # Use the slashes after expand so that the command starts on the same line as
 # the macro
