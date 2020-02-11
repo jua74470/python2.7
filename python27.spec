@@ -7,8 +7,8 @@
 
 # Whether to use RPM build wheels from the python-{pip,setuptools}-wheel package
 # Uses upstream bundled prebuilt wheels otherwise
-# WARNING: Always check if the RPM built wheel versions support Python 2
-%bcond_without rpmwheels
+# setuptools >= 45.0 no longer support Python 2.7, hence disabled
+%bcond_with rpmwheels
 
 # Run the test suite in %%check
 %bcond_without tests
@@ -55,7 +55,7 @@ Name: python%{pyshortver}
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1549,6 +1549,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Feb 11 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.17-3
+- Use bundled wheels, to allow updating setuptools in Fedora
+
 * Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.17-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
