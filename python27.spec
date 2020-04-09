@@ -51,11 +51,13 @@
 # ==================
 Summary: Version %{pybasever} of the Python interpreter
 Name: python%{pyshortver}
-%global general_version %{pybasever}.17
-#global prerel ...
+URL: https://www.python.org/
+
+%global general_version %{pybasever}.18
+%global prerel rc1
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 3%{?dist}
+Release: 1%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -146,6 +148,7 @@ BuildRequires: tcl-devel
 BuildRequires: tix-devel
 BuildRequires: tk-devel
 BuildRequires: zlib-devel
+BuildRequires: gnupg2
 
 %if %{with_gdbm}
 # ABI change without soname bump, reverted
@@ -232,7 +235,9 @@ Obsoletes: python2-tools < %{version}-%{release}
 # Source code and patches
 # =======================
 
-Source: https://www.python.org/ftp/python/%{general_version}/Python-%{upstream_version}.tar.xz
+Source0: %{url}ftp/python/%{general_version}/Python-%{upstream_version}.tar.xz
+Source1: %{url}ftp/python/%{general_version}/Python-%{upstream_version}.tar.xz.asc
+Source2: %{url}static/files/pubkeys.txt
 
 # Systemtap tapset to make it easier to use the systemtap static probes
 # (actually a template; LIBRARY_PATH will get fixed up during install)
@@ -741,8 +746,6 @@ Patch5000: 05000-autotool-intermediates.patch
 # Additional metadata
 # ======================================================
 
-URL: https://www.python.org/
-
 %description
 Python 2 is an old version of the language that is incompatible with the 3.x
 line of releases. The language is mostly the same, but many details, especially
@@ -760,6 +763,7 @@ This package also provides the "python2" executable.
 # ======================================================
 
 %prep
+%gpgverify -k2 -s1 -d0
 %setup -q -n Python-%{upstream_version}
 
 %if 0%{?with_systemtap}
@@ -1549,6 +1553,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Apr 09 2020 Marcel Plch <mplch@redhat.com> - 2.7.18~rc1-1
+- Update to 2.7.18rc1
+
 * Tue Feb 11 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.17-3
 - Use bundled wheels, to allow updating setuptools in Fedora
 
