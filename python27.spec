@@ -54,7 +54,7 @@ Name: python%{pyshortver}
 URL: https://www.python.org/
 
 %global general_version %{pybasever}.18
-%global prerel rc1
+#global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
 Release: 1%{?dist}
@@ -1553,6 +1553,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Apr 20 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-1
+- Update to 2.7.18
+- This is is the last Python 2.7 release and therefore the last Python 2 release
+
 * Thu Apr 09 2020 Marcel Plch <mplch@redhat.com> - 2.7.18~rc1-1
 - Update to 2.7.18rc1
 
