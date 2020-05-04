@@ -46,4 +46,10 @@
 %py2_install_wheel() %{expand:\\\
   pip%{python2_version} install -I dist/%{1} --root %{buildroot} --no-deps
   rm -rfv %{buildroot}%{_bindir}/__pycache__
+  for distinfo in %{buildroot}%{python2_sitelib}/*.dist-info %{buildroot}%{python2_sitearch}/*.dist-info; do
+    if [ -f ${distinfo}/direct_url.json ]; then
+      rm -fv ${distinfo}/direct_url.json
+      sed -i '/direct_url.json/d' ${distinfo}/RECORD
+    fi
+  done
 }
