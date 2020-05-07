@@ -50,14 +50,14 @@
 # Top-level metadata
 # ==================
 Summary: Version %{pybasever} of the Python interpreter
-Name: python%{pyshortver}
+Name: python%{pybasever}
 URL: https://www.python.org/
 
 %global general_version %{pybasever}.18
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -101,8 +101,9 @@ License: Python and MIT and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (
 # if possible.
 Provides: deprecated()
 
-# People might want to dnf install pythonX.Y instead of pythonXY
-Provides: python%{pybasever} = %{version}-%{release}
+# This package was renamed from python27 in Fedora 33
+Provides:  python%{pyshortver} = %{version}-%{release}
+Obsoletes: python%{pyshortver} < %{version}-%{release}
 
 # People might want to dnf install python2 instead of pythonXY
 Provides: python2 = %{version}-%{release}
@@ -1553,6 +1554,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu May 07 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-2
+- Rename from python27 to python2.7
+
 * Mon Apr 20 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-1
 - Update to 2.7.18
 - This is is the last Python 2.7 release and therefore the last Python 2 release
