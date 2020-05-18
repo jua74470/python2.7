@@ -5,6 +5,8 @@
 
 %py2_shbang_opts -s
 %py2_shbang_opts_nodash %(opts=%{py2_shbang_opts}; echo ${opts#-})
+%py2_shebang_flags %(opts=%{py2_shbang_opts}; echo ${opts#-})
+%py2_shebang_fix %{expand:/usr/bin/pathfix.py -pni %{__python2} -k%{?py2_shebang_flags:a %py2_shebang_flags}}
 
 # Use the slashes after expand so that the command starts on the same line as
 # the macro
