@@ -980,7 +980,7 @@ BuildPython() {
   $ExtraConfigArgs \
   %{nil}
 
-make EXTRA_CFLAGS="$CFLAGS" %{?_smp_mflags}
+%make_build EXTRA_CFLAGS="$CFLAGS"
 
 # We need to fix shebang lines across the full source tree.
 #
@@ -1048,7 +1048,7 @@ InstallPython() {
 
   pushd $ConfDir
 
-make install DESTDIR=%{buildroot}
+%make_install
 
 # We install a collection of hooks for gdb that make it easier to debug
 # executables linked against libpython (such as /usr/lib/python itself)
