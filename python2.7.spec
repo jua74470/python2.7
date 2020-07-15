@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -150,6 +150,7 @@ BuildRequires: tix-devel
 BuildRequires: tk-devel
 BuildRequires: zlib-devel
 BuildRequires: gnupg2
+BuildRequires: git-core
 
 %if %{with_gdbm}
 # ABI change without soname bump, reverted
@@ -728,6 +729,12 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
+# 00351 #
+# Avoid infinite loop when reading specially crafted TAR files using the tarfile module
+# (CVE-2019-20907).
+# See: https://bugs.python.org/issue39017
+Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -880,6 +887,9 @@ rm Lib/ensurepip/_bundled/*.whl
 %patch191 -p1
 %patch193 -p1
 %patch289 -p1
+
+# Patch 351 adds binary file for testing. We need to apply it using Git.
+git apply %{PATCH351}
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1554,6 +1564,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Jul 15 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-3
+- Avoid infinite loop when reading specially crafted TAR files (CVE-2019-20907)
+  Resolves: https://bugzilla.redhat.com/show_bug.cgi?id=1856481
+
 * Thu May 07 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-2
 - Rename from python27 to python2.7
 
