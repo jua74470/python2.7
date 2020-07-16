@@ -41,12 +41,12 @@
 
 %py2_install_egg() %{expand:\\\
   mkdir -p %{buildroot}%{python2_sitelib}
-  easy_install-%{python2_version} -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python2_version}.egg %{?*}
+  %{__python2} -m easy_install  -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python2_version}.egg %{?*}
   rm -rfv %{buildroot}%{_bindir}/__pycache__
 }
 
 %py2_install_wheel() %{expand:\\\
-  pip%{python2_version} install -I dist/%{1} --root %{buildroot} --no-deps
+  %{__python2} -m pip install -I dist/%{1} --root %{buildroot} --no-deps
   rm -rfv %{buildroot}%{_bindir}/__pycache__
   for distinfo in %{buildroot}%{python2_sitelib}/*.dist-info %{buildroot}%{python2_sitearch}/*.dist-info; do
     if [ -f ${distinfo}/direct_url.json ]; then
