@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 3%{?dist}
+Release: 4%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1564,6 +1564,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Wed Jul 15 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-3
 - Avoid infinite loop when reading specially crafted TAR files (CVE-2019-20907)
   Resolves: https://bugzilla.redhat.com/show_bug.cgi?id=1856481
