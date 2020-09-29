@@ -1,8 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:43:04 +0200
+Subject: [PATCH] 00289-disable-nis-detection.patch
+
+00289 #
+Disable automatic detection for the nis module
+(we handle it it in Setup.dist, see Patch0)
+---
+ setup.py | 51 +--------------------------------------------------
+ 1 file changed, 1 insertion(+), 50 deletions(-)
+
 diff --git a/setup.py b/setup.py
-index 585e380..9993f11 100644
+index abc9c74281e..a8b53a523c9 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -1346,11 +1346,7 @@ class PyBuildExt(build_ext):
+@@ -1377,11 +1377,7 @@ class PyBuildExt(build_ext):
              else:
                  missing.append('resource')
  
@@ -15,7 +27,7 @@ index 585e380..9993f11 100644
  
          # Curses support, requiring the System V version of curses, often
          # provided by the ncurses library.
-@@ -2162,51 +2158,6 @@ class PyBuildExt(build_ext):
+@@ -2193,51 +2189,6 @@ class PyBuildExt(build_ext):
              # for dlopen, see bpo-32647
              ext.libraries.append('dl')
  

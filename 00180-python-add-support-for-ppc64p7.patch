@@ -1,8 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:41:39 +0200
+Subject: [PATCH] 00180-python-add-support-for-ppc64p7.patch
+
+00180 #
+Enable building on ppc64p7
+Not appropriate for upstream, Fedora-specific naming
+---
+ config.sub | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/config.sub b/config.sub
-index 3478c1f..e422173 100755
+index 40ea5dfe115..932128b337e 100755
 --- a/config.sub
 +++ b/config.sub
-@@ -1040,7 +1040,7 @@ case $basic_machine in
+@@ -1045,7 +1045,7 @@ case $basic_machine in
  		;;
  	ppc64)	basic_machine=powerpc64-unknown
  		;;

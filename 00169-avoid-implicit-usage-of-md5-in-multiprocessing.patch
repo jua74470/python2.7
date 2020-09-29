@@ -1,7 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:40:53 +0200
+Subject: [PATCH] 00169-avoid-implicit-usage-of-md5-in-multiprocessing.patch
+
+00169 #
+Use SHA-256 rather than implicitly using MD5 within the challenge handling
+in multiprocessing.connection
+
+Sent upstream as http://bugs.python.org/issue17258
+(rhbz#879695)
+---
+ Lib/multiprocessing/connection.py | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
 diff --git a/Lib/multiprocessing/connection.py b/Lib/multiprocessing/connection.py
+index 645a26f069e..d4dc6ac19d5 100644
 --- a/Lib/multiprocessing/connection.py
 +++ b/Lib/multiprocessing/connection.py
-@@ -41,6 +41,10 @@
+@@ -56,6 +56,10 @@ BUFSIZE = 8192
  # A very generous timeout when it comes to local connections...
  CONNECTION_TIMEOUT = 20.
  
@@ -12,7 +28,7 @@ diff --git a/Lib/multiprocessing/connection.py b/Lib/multiprocessing/connection.
  _mmap_counter = itertools.count()
  
  default_family = 'AF_INET'
-@@ -700,12 +704,16 @@
+@@ -413,12 +417,16 @@ CHALLENGE = b'#CHALLENGE#'
  WELCOME = b'#WELCOME#'
  FAILURE = b'#FAILURE#'
  
@@ -30,7 +46,7 @@ diff --git a/Lib/multiprocessing/connection.py b/Lib/multiprocessing/connection.
      response = connection.recv_bytes(256)        # reject large message
      if response == digest:
          connection.send_bytes(WELCOME)
-@@ -719,7 +727,7 @@
+@@ -432,7 +440,7 @@ def answer_challenge(connection, authkey):
      message = connection.recv_bytes(256)         # reject large message
      assert message[:len(CHALLENGE)] == CHALLENGE, 'message = %r' % message
      message = message[len(CHALLENGE):]

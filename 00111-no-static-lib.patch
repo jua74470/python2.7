@@ -1,7 +1,21 @@
-diff -up Python-2.7.6/Makefile.pre.in.no-static-lib Python-2.7.6/Makefile.pre.in
---- Python-2.7.6/Makefile.pre.in.no-static-lib	2014-01-29 13:58:32.933226720 +0100
-+++ Python-2.7.6/Makefile.pre.in	2014-01-29 14:10:25.002247272 +0100
-@@ -437,7 +437,7 @@ coverage:
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:19:34 +0200
+Subject: [PATCH] 00111-no-static-lib.patch
+
+00111 #
+Patch the Makefile.pre.in so that the generated Makefile doesn't try to build
+a libpythonMAJOR.MINOR.a (bug 550692):
+Downstream only: not appropriate for upstream
+---
+ Makefile.pre.in | 26 +-------------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 3be3b535d3c..370c8fecebf 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -487,7 +487,7 @@ coverage-report: regen-grammar
  
  
  # Build the interpreter
@@ -10,7 +24,7 @@ diff -up Python-2.7.6/Makefile.pre.in.no-static-lib Python-2.7.6/Makefile.pre.in
  		$(LINKCC) $(CFLAGS) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
  			Modules/python.o \
  			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
-@@ -464,18 +464,6 @@ sharedmods: $(BUILDPYTHON) pybuilddir.tx
+@@ -528,18 +528,6 @@ sharedmods: $(BUILDPYTHON) pybuilddir.txt Modules/_math.o
  		_TCLTK_INCLUDES='$(TCLTK_INCLUDES)' _TCLTK_LIBS='$(TCLTK_LIBS)' \
  		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
  
@@ -29,7 +43,7 @@ diff -up Python-2.7.6/Makefile.pre.in.no-static-lib Python-2.7.6/Makefile.pre.in
  libpython$(VERSION).so: $(LIBRARY_OBJS)
  	if test $(INSTSONAME) != $(LDLIBRARY); then \
  		$(BLDSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
-@@ -1097,18 +1085,6 @@ libainstall:	all python-config
+@@ -1229,18 +1217,6 @@ libainstall:	@DEF_MAKE_RULE@ python-config
  		else	true; \
  		fi; \
  	done

@@ -1,7 +1,20 @@
-diff -up Python-2.6/configure.ac.rpath Python-2.6/configure.ac
---- Python-2.6/configure.ac.rpath	2008-11-24 02:51:06.000000000 -0500
-+++ Python-2.6/configure.ac	2008-11-24 02:51:21.000000000 -0500
-@@ -729,7 +729,7 @@ if test $enable_shared = "yes"; then
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:17:44 +0200
+Subject: [PATCH] python-2.6-rpath.patch
+
+00016 #
+Remove an "-rpath $(LIBDIR)" argument from the linkage args in configure.in:
+FIXME: is this for OSF, not Linux?
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index efe6922b5de..5930552a4c4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -948,7 +948,7 @@ if test $enable_shared = "yes"; then
  	  ;;
      OSF*)
  	  LDLIBRARY='libpython$(VERSION).so'

@@ -1,5 +1,17 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:42:30 +0200
+Subject: [PATCH] 00189-use-rpm-wheels.patch
+
+00189 #
+Instead of bundled wheels, use our RPM packaged wheels from
+/usr/share/python-wheels
+---
+ Lib/ensurepip/__init__.py | 35 ++++++++++++++++++++++++-----------
+ 1 file changed, 24 insertions(+), 11 deletions(-)
+
 diff --git a/Lib/ensurepip/__init__.py b/Lib/ensurepip/__init__.py
-index 5021ebf..1903cc0 100644
+index 09551411847..1903cc010a6 100644
 --- a/Lib/ensurepip/__init__.py
 +++ b/Lib/ensurepip/__init__.py
 @@ -1,9 +1,10 @@

@@ -1,7 +1,21 @@
-diff -up Python-2.7rc1/Modules/posixmodule.c.statvfs-f-flag-constants Python-2.7rc1/Modules/posixmodule.c
---- Python-2.7rc1/Modules/posixmodule.c.statvfs-f-flag-constants	2010-05-15 17:45:30.000000000 -0400
-+++ Python-2.7rc1/Modules/posixmodule.c	2010-06-07 22:54:16.162068624 -0400
-@@ -9174,6 +9174,43 @@ all_ins(PyObject *d)
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:21:09 +0200
+Subject: [PATCH] 00114-statvfs-f_flag-constants.patch
+
+00114 #
+Add flags for statvfs.f_flag to the constant list in posixmodule (i.e. "os")
+(rhbz:553020); partially upstream as http://bugs.python.org/issue7647
+Not yet sent upstream
+---
+ Modules/posixmodule.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/Modules/posixmodule.c b/Modules/posixmodule.c
+index 7a1a6945c10..25ce36d4876 100644
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -9457,6 +9457,43 @@ all_ins(PyObject *d)
  #endif
  #endif
  

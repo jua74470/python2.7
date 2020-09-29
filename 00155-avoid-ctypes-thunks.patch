@@ -1,7 +1,21 @@
-diff -up Python-2.7.3/Lib/ctypes/__init__.py.rhbz814391 Python-2.7.3/Lib/ctypes/__init__.py
---- Python-2.7.3/Lib/ctypes/__init__.py.rhbz814391	2012-04-20 14:51:19.390990244 -0400
-+++ Python-2.7.3/Lib/ctypes/__init__.py	2012-04-20 14:51:45.141668316 -0400
-@@ -272,11 +272,6 @@ def _reset_cache():
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:38:12 +0200
+Subject: [PATCH] 00155-avoid-ctypes-thunks.patch
+
+00155 #
+Avoid allocating thunks in ctypes unless absolutely necessary, to avoid
+generating SELinux denials on "import ctypes" and "import uuid" when
+embedding Python within httpd (rhbz#814391)
+---
+ Lib/ctypes/__init__.py | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/Lib/ctypes/__init__.py b/Lib/ctypes/__init__.py
+index 88c85ff3887..f4736f2138d 100644
+--- a/Lib/ctypes/__init__.py
++++ b/Lib/ctypes/__init__.py
+@@ -269,11 +269,6 @@ def _reset_cache():
      # _SimpleCData.c_char_p_from_param
      POINTER(c_char).from_param = c_char_p.from_param
      _pointer_type_cache[None] = c_void_p

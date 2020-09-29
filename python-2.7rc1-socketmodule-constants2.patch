@@ -1,7 +1,21 @@
-diff -up Python-2.7rc1/Modules/socketmodule.c.socketmodule2 Python-2.7rc1/Modules/socketmodule.c
---- Python-2.7rc1/Modules/socketmodule.c.socketmodule2	2010-06-07 23:06:59.133498087 -0400
-+++ Python-2.7rc1/Modules/socketmodule.c	2010-06-07 23:11:51.249520087 -0400
-@@ -5253,6 +5253,15 @@ init_socket(void)
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:17:24 +0200
+Subject: [PATCH] python-2.7rc1-socketmodule-constants2.patch
+
+00014 #
+Add various constants to the socketmodule (rhbz#436560):
+TODO: these patches were added in 2.5.1-22 and 2.5.1-24 but appear not to
+have been sent upstream yet:
+---
+ Modules/socketmodule.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/Modules/socketmodule.c b/Modules/socketmodule.c
+index e0ac9a34232..0eec3ac2c04 100644
+--- a/Modules/socketmodule.c
++++ b/Modules/socketmodule.c
+@@ -5449,6 +5449,15 @@ init_socket(void)
  #ifdef  TCP_QUICKACK
      PyModule_AddIntConstant(m, "TCP_QUICKACK", TCP_QUICKACK);
  #endif

@@ -1,7 +1,23 @@
-diff -r e8b8279ca118 setup.py
---- a/setup.py	Sun Jul 21 21:57:52 2013 -0400
-+++ b/setup.py	Tue Aug 20 09:45:31 2013 +0200
-@@ -1480,12 +1480,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:42:17 +0200
+Subject: [PATCH] 00187-add-RPATH-to-pyexpat.patch
+
+00187 #
+Add an explicit RPATH to pyexpat.so pointing at the directory
+containing the system expat (which has the extra XML_SetHashSalt
+symbol), to avoid an ImportError with a link error if there's an
+LD_LIBRARY_PATH containing a "vanilla" build of expat (without the
+symbol)
+---
+ setup.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/setup.py b/setup.py
+index 761efff449b..b401ab836a9 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1536,12 +1536,21 @@ class PyBuildExt(build_ext):
                               'expat/xmltok_impl.h'
                               ]
  

@@ -1,7 +1,24 @@
-diff -up Python-2.6.5/configure.ac.more-configuration-flags Python-2.6.5/configure.ac
---- Python-2.6.5/configure.ac.more-configuration-flags	2010-05-24 18:51:25.410111792 -0400
-+++ Python-2.6.5/configure.ac	2010-05-24 18:59:23.954986388 -0400
-@@ -2515,6 +2515,30 @@ else AC_MSG_RESULT(no)
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:20:52 +0200
+Subject: [PATCH] 00113-more-configuration-flags.patch
+
+00113 #
+Add configure-time support for the COUNT_ALLOCS and CALL_PROFILE options
+described at http://svn.python.org/projects/python/trunk/Misc/SpecialBuilds.txt
+so that if they are enabled, they will be in that build's pyconfig.h, so that
+extension modules will reliably use them
+Not yet sent upstream
+---
+ configure.ac  | 24 ++++++++++++++++++++++++
+ pyconfig.h.in |  6 ++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 19925ce2c6f..e0bc200cf85 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3032,6 +3032,30 @@ else AC_MSG_RESULT(no)
  fi],
  [AC_MSG_RESULT(no)])
  
@@ -32,10 +49,11 @@ diff -up Python-2.6.5/configure.ac.more-configuration-flags Python-2.6.5/configu
  # Check for Python-specific malloc support
  AC_MSG_CHECKING(for --with-pymalloc)
  AC_ARG_WITH(pymalloc,
-diff -up Python-2.6.5/pyconfig.h.in.more-configuration-flags Python-2.6.5/pyconfig.h.in
---- Python-2.6.5/pyconfig.h.in.more-configuration-flags	2010-05-24 18:51:45.677988086 -0400
-+++ Python-2.6.5/pyconfig.h.in	2010-05-24 19:00:44.163987730 -0400
-@@ -1019,6 +1019,12 @@
+diff --git a/pyconfig.h.in b/pyconfig.h.in
+index 652279857ef..a81dc34c693 100644
+--- a/pyconfig.h.in
++++ b/pyconfig.h.in
+@@ -1169,6 +1169,12 @@
  /* Define to profile with the Pentium timestamp counter */
  #undef WITH_TSC
  

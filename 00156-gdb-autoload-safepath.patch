@@ -1,7 +1,22 @@
-diff -up Python-2.7.3/Lib/test/test_gdb.py.gdb-autoload-safepath Python-2.7.3/Lib/test/test_gdb.py
---- Python-2.7.3/Lib/test/test_gdb.py.gdb-autoload-safepath	2012-04-30 15:53:57.254045220 -0400
-+++ Python-2.7.3/Lib/test/test_gdb.py	2012-04-30 16:19:19.569941124 -0400
-@@ -54,6 +54,19 @@ def gdb_has_frame_select():
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:39:42 +0200
+Subject: [PATCH] 00156-gdb-autoload-safepath.patch
+
+00156 #
+Recent builds of gdb will only auto-load scripts from certain safe
+locations.  Turn off this protection when running test_gdb in the selftest
+suite to ensure that it can load our -gdb.py script (rhbz#817072):
+Not yet sent upstream
+---
+ Lib/test/test_gdb.py | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/test/test_gdb.py b/Lib/test/test_gdb.py
+index b96acc09884..360bad18465 100644
+--- a/Lib/test/test_gdb.py
++++ b/Lib/test/test_gdb.py
+@@ -132,6 +132,19 @@ def gdb_has_frame_select():
  
  HAS_PYUP_PYDOWN = gdb_has_frame_select()
  
@@ -21,10 +36,7 @@ diff -up Python-2.7.3/Lib/test/test_gdb.py.gdb-autoload-safepath Python-2.7.3/Li
  class DebuggerTests(unittest.TestCase):
  
      """Test that the debugger can debug Python."""
-diff -up Python-2.7.10/Lib/test/test_gdb.py.ms Python-2.7.10/Lib/test/test_gdb.py
---- Python-2.7.10/Lib/test/test_gdb.py.ms	2015-05-25 17:00:25.028462615 +0200
-+++ Python-2.7.10/Lib/test/test_gdb.py	2015-05-25 17:01:53.166359822 +0200
-@@ -153,6 +153,17 @@ class DebuggerTests(unittest.TestCase):
+@@ -178,6 +191,17 @@ class DebuggerTests(unittest.TestCase):
  
                      'run']
  
@@ -42,7 +54,7 @@ diff -up Python-2.7.10/Lib/test/test_gdb.py.ms Python-2.7.10/Lib/test/test_gdb.p
          # GDB as of 7.4 onwards can distinguish between the
          # value of a variable at entry vs current value:
          #   http://sourceware.org/gdb/onlinedocs/gdb/Variables.html
-@@ -167,10 +178,11 @@ class DebuggerTests(unittest.TestCase):
+@@ -198,10 +222,11 @@ class DebuggerTests(unittest.TestCase):
          else:
              commands += ['backtrace']
  

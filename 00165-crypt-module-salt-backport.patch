@@ -1,5 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:40:21 +0200
+Subject: [PATCH] 00165-crypt-module-salt-backport.patch
+
+00165 #
+Backport to Python 2 from Python 3.3 of improvements to the "crypt" module
+adding precanned ways of salting a password (rhbz#835021)
+Based on r88500 patch to py3k from Python 3.3
+plus 6482dd1c11ed, 0586c699d467, 62994662676a, 74a1110a3b50, plus edits
+to docstrings to note that this additional functionality is not standard
+within 2.7
+---
+ Doc/library/crypt.rst  | 113 +++++++++++++++++++++++++++++++++++++----
+ Lib/crypt.py           |  71 ++++++++++++++++++++++++++
+ Lib/test/test_crypt.py |  19 +++++++
+ Modules/Setup.dist     |   2 +-
+ Modules/cryptmodule.c  |   4 +-
+ setup.py               |   2 +-
+ 6 files changed, 198 insertions(+), 13 deletions(-)
+ create mode 100644 Lib/crypt.py
+
 diff --git a/Doc/library/crypt.rst b/Doc/library/crypt.rst
-index 91464ef..6ee64d6 100644
+index 91464efa8fd..6ee64d63598 100644
 --- a/Doc/library/crypt.rst
 +++ b/Doc/library/crypt.rst
 @@ -16,9 +16,9 @@
@@ -145,7 +167,7 @@ index 91464ef..6ee64d6 100644
 +      raise "Hashed version doesn't validate against original"
 diff --git a/Lib/crypt.py b/Lib/crypt.py
 new file mode 100644
-index 0000000..bf0a416
+index 00000000000..bf0a4160d2c
 --- /dev/null
 +++ b/Lib/crypt.py
 @@ -0,0 +1,71 @@
@@ -221,7 +243,7 @@ index 0000000..bf0a416
 +del _result, _method
 +
 diff --git a/Lib/test/test_crypt.py b/Lib/test/test_crypt.py
-index 7cd9c71..b061a55 100644
+index 7cd9c71981a..b061a550506 100644
 --- a/Lib/test/test_crypt.py
 +++ b/Lib/test/test_crypt.py
 @@ -16,6 +16,25 @@ class CryptTestCase(unittest.TestCase):
@@ -251,7 +273,7 @@ index 7cd9c71..b061a55 100644
      test_support.run_unittest(CryptTestCase)
  
 diff --git a/Modules/Setup.dist b/Modules/Setup.dist
-index 2712f06..3ea4f0c 100644
+index 9a8d630e8ba..a867d6e5176 100644
 --- a/Modules/Setup.dist
 +++ b/Modules/Setup.dist
 @@ -225,7 +225,7 @@ _ssl _ssl.c \
@@ -264,7 +286,7 @@ index 2712f06..3ea4f0c 100644
  
  # Some more UNIX dependent modules -- off by default, since these
 diff --git a/Modules/cryptmodule.c b/Modules/cryptmodule.c
-index 76de54f..7c69ca6 100644
+index 76de54f034b..7c69ca67138 100644
 --- a/Modules/cryptmodule.c
 +++ b/Modules/cryptmodule.c
 @@ -43,7 +43,7 @@ static PyMethodDef crypt_methods[] = {
@@ -278,10 +300,10 @@ index 76de54f..7c69ca6 100644
 +    Py_InitModule("_crypt", crypt_methods);
  }
 diff --git a/setup.py b/setup.py
-index b787487..c60ac35 100644
+index 741dd3b5222..761efff449b 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -798,7 +798,7 @@ class PyBuildExt(build_ext):
+@@ -844,7 +844,7 @@ class PyBuildExt(build_ext):
              libs = ['crypt']
          else:
              libs = []

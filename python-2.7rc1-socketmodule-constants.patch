@@ -1,6 +1,21 @@
---- Python-2.7rc1/Modules/socketmodule.c.socketmodule	2010-05-09 10:46:46.000000000 -0400
-+++ Python-2.7rc1/Modules/socketmodule.c	2010-06-07 23:04:19.374234780 -0400
-@@ -4783,6 +4783,61 @@ init_socket(void)
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:17:03 +0200
+Subject: [PATCH] python-2.7rc1-socketmodule-constants.patch
+
+00013 #
+Add various constants to the socketmodule (rhbz#436560):
+TODO: these patches were added in 2.5.1-22 and 2.5.1-24 but appear not to
+have been sent upstream yet:
+---
+ Modules/socketmodule.c | 55 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/Modules/socketmodule.c b/Modules/socketmodule.c
+index 4d5a8f6f017..e0ac9a34232 100644
+--- a/Modules/socketmodule.c
++++ b/Modules/socketmodule.c
+@@ -4979,6 +4979,61 @@ init_socket(void)
      PyModule_AddIntConstant(m, "SO_SETFIB", SO_SETFIB);
  #endif
  

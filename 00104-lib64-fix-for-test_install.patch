@@ -1,6 +1,20 @@
---- Python-2.7.2/Lib/distutils/tests/test_install.py.lib64	2011-09-08 17:51:57.851405376 -0400
-+++ Python-2.7.2/Lib/distutils/tests/test_install.py	2011-09-08 18:40:46.754205096 -0400
-@@ -41,8 +41,9 @@ class InstallTestCase(support.TempdirMan
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:19:19 +0200
+Subject: [PATCH] 00104-lib64-fix-for-test_install.patch
+
+00104 #
+Only used when "%%{_lib}" == "lib64"
+Another lib64 fix, for distutils/tests/test_install.py; not upstream:
+---
+ Lib/distutils/tests/test_install.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/distutils/tests/test_install.py b/Lib/distutils/tests/test_install.py
+index 397e2a7d4bb..c72ae0b6cdb 100644
+--- a/Lib/distutils/tests/test_install.py
++++ b/Lib/distutils/tests/test_install.py
+@@ -58,8 +58,9 @@ class InstallTestCase(support.TempdirManager,
              self.assertEqual(got, expected)
  
          libdir = os.path.join(destination, "lib", "python")

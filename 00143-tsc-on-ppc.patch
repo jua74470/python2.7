@@ -1,6 +1,20 @@
-diff -up Python-2.7.2/Python/ceval.c.tsc-on-ppc Python-2.7.2/Python/ceval.c
---- Python-2.7.2/Python/ceval.c.tsc-on-ppc	2011-08-23 14:59:48.051300849 -0400
-+++ Python-2.7.2/Python/ceval.c	2011-08-23 15:33:25.412162902 -0400
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:25:15 +0200
+Subject: [PATCH] 00143-tsc-on-ppc.patch
+
+00143 #
+Fix the --with-tsc option on ppc64, and rework it on 32-bit ppc to avoid
+aliasing violations (rhbz#698726)
+Sent upstream as http://bugs.python.org/issue12872
+---
+ Python/ceval.c | 40 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 29 insertions(+), 11 deletions(-)
+
+diff --git a/Python/ceval.c b/Python/ceval.c
+index b7427f9658c..80493335ebf 100644
+--- a/Python/ceval.c
++++ b/Python/ceval.c
 @@ -37,24 +37,42 @@ typedef unsigned long long uint64;
  */
  #if defined(__ppc__) || defined (__powerpc__)
@@ -40,16 +54,15 @@ diff -up Python-2.7.2/Python/ceval.c.tsc-on-ppc Python-2.7.2/Python/ceval.c
 -    asm volatile ("mftb  %0" : "=r" (tb)  );
 -    asm volatile ("mftbu %0" : "=r" (tbu2));
 -    if (__builtin_expect(tbu != tbu2, 0)) goto loop;
--
--    /* The slightly peculiar way of writing the next lines is
--       compiled better by GCC than any other way I tried. */
--    ((long*)(v))[0] = tbu;
--    ((long*)(v))[1] = tb;
 +    asm volatile ("mftbu %0" : "=r" (u.ii[0]) );
 +    asm volatile ("mftb  %0" : "=r" (u.ii[1]) );
 +    asm volatile ("mftbu %0" : "=r" (tmp));
 +    if (__builtin_expect(u.ii[0] != tmp, 0)) goto loop;
-+
+ 
+-    /* The slightly peculiar way of writing the next lines is
+-       compiled better by GCC than any other way I tried. */
+-    ((long*)(v))[0] = tbu;
+-    ((long*)(v))[1] = tb;
 +    *v = u.ll;
  }
 +#endif /* powerpc 32/64 bit */

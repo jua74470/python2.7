@@ -1,8 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:40:37 +0200
+Subject: [PATCH] 
+ 00167-disable-stack-navigation-tests-when-optimized-in-test_gdb.patch
+
+00167 #
+Don't run any of the stack navigation tests in test_gdb when Python is
+optimized, since there appear to be many different ways in which gdb can
+fail to read the PyFrameObject* for arbitrary places in the callstack,
+presumably due to compiler optimization (rhbz#912025)
+
+Not yet sent upstream
+---
+ Lib/test/test_gdb.py | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
 diff --git a/Lib/test/test_gdb.py b/Lib/test/test_gdb.py
-index 3354b34..10ba0e5 100644
+index 360bad18465..b2bbe779e81 100644
 --- a/Lib/test/test_gdb.py
 +++ b/Lib/test/test_gdb.py
-@@ -725,11 +725,10 @@ class PyListTests(DebuggerTests):
+@@ -728,11 +728,10 @@ class PyListTests(DebuggerTests):
                             '   2    \n'
                             '   3    def foo(a, b, c):\n',
                             bt)
@@ -17,7 +34,7 @@ index 3354b34..10ba0e5 100644
      def test_pyup_command(self):
          'Verify that the "py-up" command works'
          bt = self.get_stack_trace(script=self.get_sample_script(),
-@@ -740,7 +739,6 @@ class StackNavigationTests(DebuggerTests):
+@@ -743,7 +742,6 @@ class StackNavigationTests(DebuggerTests):
      baz\(a, b, c\)
  $''')
  
@@ -25,7 +42,7 @@ index 3354b34..10ba0e5 100644
      def test_down_at_bottom(self):
          'Verify handling of "py-down" at the bottom of the stack'
          bt = self.get_stack_trace(script=self.get_sample_script(),
-@@ -748,9 +746,6 @@ $''')
+@@ -751,9 +749,6 @@ $''')
          self.assertEndsWith(bt,
                              'Unable to find a newer python frame\n')
  
@@ -35,7 +52,7 @@ index 3354b34..10ba0e5 100644
      def test_up_at_top(self):
          'Verify handling of "py-up" at the top of the stack'
          bt = self.get_stack_trace(script=self.get_sample_script(),
-@@ -758,9 +753,6 @@ $''')
+@@ -761,9 +756,6 @@ $''')
          self.assertEndsWith(bt,
                              'Unable to find an older python frame\n')
  

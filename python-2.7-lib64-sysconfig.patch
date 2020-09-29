@@ -1,6 +1,21 @@
-diff -up Python-2.7/Lib/sysconfig.py.lib64-sysconfig Python-2.7/Lib/sysconfig.py
---- Python-2.7/Lib/sysconfig.py.lib64-sysconfig	2010-07-08 14:18:41.386898476 -0400
-+++ Python-2.7/Lib/sysconfig.py	2010-07-08 14:22:02.837896461 -0400
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:19:00 +0200
+Subject: [PATCH] python-2.7-lib64-sysconfig.patch
+
+00103 #
+Python 2.7 split out much of the path-handling from distutils/sysconfig.py to
+a new sysconfig.py (in r77704).
+We need to make equivalent changes to that new file to ensure that the stdlib
+and platform-specific code go to /usr/lib64 not /usr/lib, on 64-bit archs:
+---
+ Lib/sysconfig.py | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/Lib/sysconfig.py b/Lib/sysconfig.py
+index 9c8350d953d..1ff812f7b96 100644
+--- a/Lib/sysconfig.py
++++ b/Lib/sysconfig.py
 @@ -7,20 +7,20 @@ from os.path import pardir, realpath
  
  _INSTALL_SCHEMES = {

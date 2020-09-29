@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 4%{?dist}
+Release: 5%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -254,6 +254,9 @@ Source4: systemtap-example.stp
 # Written by dmalcolm; not yet sent upstream
 Source5: pyfuntop.stp
 
+# (Patches taken from github.com/fedora-python/cpython)
+
+# 00000 # eb41a89085f19eab30c9e1f22d09102f3dcab7f0
 # Modules/Setup.dist is ultimately used by the "makesetup" script to construct
 # the Makefile and config.c
 #
@@ -269,35 +272,35 @@ Source5: pyfuntop.stp
 #   - build the "readline" module (appears to also be handled by setup.py now)
 #   - build the nis module (which needs the tirpc library since glibc 2.26)
 #   - enable the build of the following modules:
-#     - array arraymodule.c	# array objects
+#     - array arraymodule.c     # array objects
 #     - cmath cmathmodule.c # -lm # complex math library functions
 #     - math mathmodule.c # -lm # math library functions, e.g. sin()
-#     - _struct _struct.c	# binary structure packing/unpacking
+#     - _struct _struct.c       # binary structure packing/unpacking
 #     - time timemodule.c # -lm # time operations and variables
-#     - operator operator.c	# operator.add() and similar goodies
-#     - _weakref _weakref.c	# basic weak reference support
+#     - operator operator.c     # operator.add() and similar goodies
+#     - _weakref _weakref.c     # basic weak reference support
 #     - _testcapi _testcapimodule.c    # Python C API test module
-#     - _random _randommodule.c	# Random number generator
+#     - _random _randommodule.c # Random number generator
 #     - _collections _collectionsmodule.c # Container types
 #     - itertools itertoolsmodule.c
 #     - strop stropmodule.c
 #     - _functools _functoolsmodule.c
-#     - _bisect _bisectmodule.c	# Bisection algorithms
+#     - _bisect _bisectmodule.c # Bisection algorithms
 #     - unicodedata unicodedata.c    # static Unicode character database
 #     - _locale _localemodule.c
-#     - fcntl fcntlmodule.c	# fcntl(2) and ioctl(2)
-#     - spwd spwdmodule.c		# spwd(3)
-#     - grp grpmodule.c		# grp(3)
-#     - select selectmodule.c	# select(2); not on ancient System V
+#     - fcntl fcntlmodule.c     # fcntl(2) and ioctl(2)
+#     - spwd spwdmodule.c               # spwd(3)
+#     - grp grpmodule.c         # grp(3)
+#     - select selectmodule.c   # select(2); not on ancient System V
 #     - mmap mmapmodule.c  # Memory-mapped files
 #     - _csv _csv.c  # CSV file helper
 #     - _socket socketmodule.c  # Socket module helper for socket(2)
 #     - _ssl _ssl.c
-#     - crypt cryptmodule.c -lcrypt	# crypt(3)
-#     - termios termios.c	# Steen Lumholt's termios module
-#     - resource resource.c	# Jeremy Hylton's rlimit interface
-#     - audioop audioop.c	# Operations on audio samples
-#     - imageop imageop.c	# Operations on images
+#     - crypt cryptmodule.c -lcrypt     # crypt(3)
+#     - termios termios.c       # Steen Lumholt's termios module
+#     - resource resource.c     # Jeremy Hylton's rlimit interface
+#     - audioop audioop.c       # Operations on audio samples
+#     - imageop imageop.c       # Operations on images
 #     - _md5 md5module.c md5.c
 #     - _sha shamodule.c
 #     - _sha256 sha256module.c
@@ -322,19 +325,21 @@ Source5: pyfuntop.stp
 #     - _codecs_tw cjkcodecs/_codecs_tw.c
 Patch0: python-2.7.1-config.patch
 
+# 00001 # 4cc17cbeaa6c5320d44494c14fe4abe479bf186b
 # Removes the "-g" option from "pydoc", for some reason; I believe
 # (dmalcolm 2010-01-29) that this was introduced in this change:
 # - fix pydoc (#68082)
 # in 2.2.1-12 as a response to the -g option needing TkInter installed
 # (Red Hat Linux 8)
-# Not upstream
 Patch1: 00001-pydocnogui.patch
 
+# 00004 # 81b93bf369d9d67c71beb5449ff0870f8ac15c7d
 # Add $(CFLAGS) to the linker arguments when linking the "python" binary
 # since some architectures (sparc64) need this (rhbz:199373).
 # Not yet filed upstream
 Patch4: python-2.5-cflags.patch
 
+# 00006 # bebaf146393db2eb55ea494243a4095ae32eb50d
 # Work around a bug in Python' gettext module relating to the "Plural-Forms"
 # header (rhbz:252136)
 # Related to upstream issues:
@@ -342,6 +347,7 @@ Patch4: python-2.5-cflags.patch
 # though the proposed upstream patches are, alas, different
 Patch6: python-2.5.1-plural-fix.patch
 
+# 00007 # 824c01cf0f2ee2f66cdd8373295431c16b809c5c
 # This patch was listed in the changelog as:
 #  * Fri Sep 14 2007 Jeremy Katz <katzj@redhat.com> - 2.5.1-11
 #  - fix encoding of sqlite .py files to work around weird encoding problem
@@ -362,6 +368,7 @@ Patch6: python-2.5.1-plural-fix.patch
 # it may be papering over a symptom
 Patch7: python-2.5.1-sqlite-encoding.patch
 
+# 00010 # 4a21749202ce4e7b8ea716d38c194a997bcf5baa
 # FIXME: Lib/ctypes/util.py posix implementation defines a function
 # _get_soname(f).  Upstreams's implementation of this uses objdump to read the
 # SONAME from a library; we avoid this, apparently to minimize space
@@ -369,25 +376,30 @@ Patch7: python-2.5.1-sqlite-encoding.patch
 # (rhbz:307221)
 Patch10: 00010-2.7.13-binutils-no-dep.patch
 
-# Upstream as of Python 2.7.3:
-#  Patch11: python-2.7rc1-codec-ascii-tolower.patch
-
+# 00013 # 4f2f7b3152a8c3d28441877567051384f23b3e4b
 # Add various constants to the socketmodule (rhbz#436560):
 # TODO: these patches were added in 2.5.1-22 and 2.5.1-24 but appear not to
 # have been sent upstream yet:
 Patch13: python-2.7rc1-socketmodule-constants.patch
+
+# 00014 # 250d635a8481bc3bf729567e135d6d9cb4698199
+# Add various constants to the socketmodule (rhbz#436560):
+# TODO: these patches were added in 2.5.1-22 and 2.5.1-24 but appear not to
+# have been sent upstream yet:
 Patch14: python-2.7rc1-socketmodule-constants2.patch
 
+# 00016 # 7ac402c3d2d7f6cd9b98deb0b7138765d31d105a
 # Remove an "-rpath $(LIBDIR)" argument from the linkage args in configure.in:
 # FIXME: is this for OSF, not Linux?
 Patch16: python-2.6-rpath.patch
 
+# 00017 # c30c4e768942a54dd3a5020c820935f9e2e9fa80
 # Fixup distutils/unixccompiler.py to remove standard library path from rpath:
 # Adapted from Patch0 in ivazquez' python3000 specfile, removing usage of
 # super() as it's an old-style class
 Patch17: python-2.6.4-distutils-rpath.patch
 
-# 00055 #
+# 00055 # 4cde34923ef71a8c32f8fae50630c90645170500
 # Systemtap support: add statically-defined probe points
 # Patch based on upstream bug: http://bugs.python.org/issue4111
 # fixed up by mjw and wcohen for 2.6.2, then fixed up by dmalcolm for 2.6.4
@@ -395,31 +407,33 @@ Patch17: python-2.6.4-distutils-rpath.patch
 # for 2.7rc1 by dmalcolm:
 Patch55: 00055-systemtap.patch
 
-# Only used when "%%{_lib}" == "lib64"
+# 00102 # 2242f5aa671eb490b5487dc46dcb05266decfe02
+# Only used when "%%%%{_lib}" == "lib64"
 # Fixup various paths throughout the build and in distutils from "lib" to "lib64",
 # and add the /usr/lib64/pythonMAJOR.MINOR/site-packages to sitedirs, in front of
 # /usr/lib/pythonMAJOR.MINOR/site-packages
 # Not upstream
 Patch102: 00102-2.7.13-lib64.patch
 
+# 00103 # ccade12a68954f5bac4d00153ac92e7eee9c2b34
 # Python 2.7 split out much of the path-handling from distutils/sysconfig.py to
 # a new sysconfig.py (in r77704).
 # We need to make equivalent changes to that new file to ensure that the stdlib
 # and platform-specific code go to /usr/lib64 not /usr/lib, on 64-bit archs:
 Patch103: python-2.7-lib64-sysconfig.patch
 
-# 00104 #
-# Only used when "%%{_lib}" == "lib64"
+# 00104 # dc327f751c4f4ad6c2e7ad338e97a8a1e0650b60
+# Only used when "%%%%{_lib}" == "lib64"
 # Another lib64 fix, for distutils/tests/test_install.py; not upstream:
 Patch104: 00104-lib64-fix-for-test_install.patch
 
-# 00111 #
+# 00111 # 3dd8cb916b10ea83c0c7d690cf3c7512394a7f66
 # Patch the Makefile.pre.in so that the generated Makefile doesn't try to build
 # a libpythonMAJOR.MINOR.a (bug 550692):
 # Downstream only: not appropriate for upstream
 Patch111: 00111-no-static-lib.patch
 
-# 00112 #
+# 00112 # 1676b155da8dcacc21fd20006105e3c164a6c5de
 # Patch to support building both optimized vs debug stacks DSO ABIs, sharing
 # the same .py and .pyc files, using "_d.so" to signify a debug build of an
 # extension module.
@@ -480,11 +494,9 @@ Patch111: 00111-no-static-lib.patch
 #  for these.
 #
 #  See also patch 130 below
-#
 Patch112: 00112-2.7.13-debug-build.patch
 
-
-# 00113 #
+# 00113 # 9dd9dbc52d40c76002245bdc718f2d09590615bf
 # Add configure-time support for the COUNT_ALLOCS and CALL_PROFILE options
 # described at http://svn.python.org/projects/python/trunk/Misc/SpecialBuilds.txt
 # so that if they are enabled, they will be in that build's pyconfig.h, so that
@@ -492,12 +504,13 @@ Patch112: 00112-2.7.13-debug-build.patch
 # Not yet sent upstream
 Patch113: 00113-more-configuration-flags.patch
 
-# 00114 #
+# 00114 # 3cfc26f24a13732fe602a47e389152714b757fd7
 # Add flags for statvfs.f_flag to the constant list in posixmodule (i.e. "os")
 # (rhbz:553020); partially upstream as http://bugs.python.org/issue7647
 # Not yet sent upstream
 Patch114: 00114-statvfs-f_flag-constants.patch
 
+# 00121 # 15d7dd7ccf99e88ddc9d858cef57b1c91f6871b2
 # Upstream r79310 removed the "Modules" directory from sys.path when Python is
 # running from the build directory on POSIX to fix a unit test (issue #8205).
 # This seems to have broken the compileall.py done in "make install": it cannot
@@ -513,13 +526,14 @@ Patch114: 00114-statvfs-f_flag-constants.patch
 # This patch adds the build Modules directory to build path.
 Patch121: 00121-add-Modules-to-build-path.patch
 
+# 00128 # cf4b30b7664a016ba6ee399aad8f65588a7efd79
 # 2.7.1 (in r84230) added a test to test_abc which fails if python is
 # configured with COUNT_ALLOCS, which is the case for our debug build
 # (the COUNT_ALLOCS instrumentation keeps "C" alive).
 # Not yet sent upstream
 Patch128: python-2.7.1-fix_test_abc_with_COUNT_ALLOCS.patch
 
-# 00130 #
+# 00130 # a1595a504aa3fc712856b20bd0850a13b5755762
 # Add "--extension-suffix" option to python-config and python-debug-config
 # (rhbz#732808)
 #
@@ -536,14 +550,14 @@ Patch128: python-2.7.1-fix_test_abc_with_COUNT_ALLOCS.patch
 # Not yet sent upstream
 Patch130: python-2.7.2-add-extension-suffix-to-python-config.patch
 
-# 00131 #
+# 00131 # aa81f736a8d7cc4315e920bcec3cb5883c67034b
 # The four tests in test_io built on top of check_interrupted_write_retry
 # fail when built in Koji, for ppc and ppc64; for some reason, the SIGALRM
 # handlers are never called, and the call to write runs to completion
 # (rhbz#732998)
 Patch131: 00131-disable-tests-in-test_io.patch
 
-# 00132 #
+# 00132 # 1ec40c78e547fc449ee22a4dbc52562b89115f40
 # Add non-standard hooks to unittest for use in the "check" phase below, when
 # running selftests within the build:
 #   @unittest._skipInRpmBuild(reason)
@@ -557,49 +571,49 @@ Patch131: 00131-disable-tests-in-test_io.patch
 # these unittest hooks in their own "check" phases)
 Patch132: 00132-add-rpmbuild-hooks-to-unittest.patch
 
-# 00133 #
+# 00133 # 434fef9eec3c579fd1ecc956136c1b7cc0b2ea3f
 # "dl" is deprecated, and test_dl doesn't work on 64-bit builds:
 Patch133: 00133-skip-test_dl.patch
 
-# 00136 #
+# 00136 # 2f7c096e92687ca4ab771802f866588242ba9184
 # Some tests try to seek on sys.stdin, but don't work as expected when run
 # within Koji/mock; skip them within the rpm build:
 Patch136: 00136-skip-tests-of-seeking-stdin-in-rpmbuild.patch
 
-# 00137 #
+# 00137 # ddb14da3b15a1f6cfda5ab94919f624c91294e00
 # Some tests within distutils fail when run in an rpmbuild:
 Patch137: 00137-skip-distutils-tests-that-fail-in-rpmbuild.patch
 
-# 00138 #
+# 00138 # c955cda1742fcfc632c8eaf0b50e4bffb199d33a
 # Fixup some tests within distutils to work with how debug builds are set up:
 Patch138: 00138-fix-distutils-tests-in-debug-build.patch
 
-# 00139 #
+# 00139 # 38a2e2222cf61623fa5519a652a28537b5cd005d
 # ARM-specific: skip known failure in test_float:
 #  http://bugs.python.org/issue8265 (rhbz#706253)
 Patch139: 00139-skip-test_float-known-failure-on-arm.patch
 
-# 00140 #
+# 00140 # e5095acfe56937839f02013f9c46cb188784a5b2
 # Sparc-specific: skip known failure in test_ctypes:
 #  http://bugs.python.org/issue8314 (rhbz#711584)
 # which appears to be a libffi bug
 Patch140: 00140-skip-test_ctypes-known-failure-on-sparc.patch
 
-# 00142 #
+# 00142 # bcd487be7de5823edd0017bf6778d5e2a0b06c8d
 # Some pty tests fail when run in mock (rhbz#714627):
 Patch142: 00142-skip-failing-pty-tests-in-rpmbuild.patch
 
-# 00143 #
+# 00143 # 87bf5bbe4f0c89ec249ee9707bc03ccc9103406c
 # Fix the --with-tsc option on ppc64, and rework it on 32-bit ppc to avoid
 # aliasing violations (rhbz#698726)
 # Sent upstream as http://bugs.python.org/issue12872
 Patch143: 00143-tsc-on-ppc.patch
 
-# 00144 #
+# 00144 # 7a99684f18ea9fc4c00cd2235c623658af36fc97
 # (Optionally) disable the gdbm module:
 Patch144: 00144-no-gdbm.patch
 
-# 00146 #
+# 00146 # 310ca3207145a5ce6cf414a14650dbafcd7ad215
 # Support OpenSSL FIPS mode (e.g. when OPENSSL_FORCE_FIPS_MODE=1 is set)
 # - handle failures from OpenSSL (e.g. on attempts to use MD5 in a
 #   FIPS-enforcing environment)
@@ -617,26 +631,26 @@ Patch144: 00144-no-gdbm.patch
 # (rhbz#563986)
 Patch146: 00146-hashlib-fips.patch
 
-# 00147 #
+# 00147 # c77e8f43adbfb44f0a843f06869a36a37415d389
 # Add a sys._debugmallocstats() function
 # Based on patch 202 from RHEL 5's python.spec, with updates from rhbz#737198
 # Sent upstream as http://bugs.python.org/issue14785
 Patch147: 00147-add-debug-malloc-stats.patch
 
-# 00155 #
+# 00155 # a154c44f2dfb60419cecaa193ef13e7613dbd488
 # Avoid allocating thunks in ctypes unless absolutely necessary, to avoid
 # generating SELinux denials on "import ctypes" and "import uuid" when
 # embedding Python within httpd (rhbz#814391)
 Patch155: 00155-avoid-ctypes-thunks.patch
 
-# 00156 #
+# 00156 # a8d1c46e2ab627c493fdcea6d6ba752d9a7bfa2e
 # Recent builds of gdb will only auto-load scripts from certain safe
 # locations.  Turn off this protection when running test_gdb in the selftest
 # suite to ensure that it can load our -gdb.py script (rhbz#817072):
 # Not yet sent upstream
 Patch156: 00156-gdb-autoload-safepath.patch
 
-# 00165 #
+# 00165 # 38fdabaaa8c5d1576a372a22cdae1f17b65a215f
 # Backport to Python 2 from Python 3.3 of improvements to the "crypt" module
 # adding precanned ways of salting a password (rhbz#835021)
 # Based on r88500 patch to py3k from Python 3.3
@@ -645,7 +659,7 @@ Patch156: 00156-gdb-autoload-safepath.patch
 # within 2.7
 Patch165: 00165-crypt-module-salt-backport.patch
 
-# 00167 #
+# 00167 # 76aea104d5c20527ea08936fb6f2edbb52a07a46
 # Don't run any of the stack navigation tests in test_gdb when Python is
 # optimized, since there appear to be many different ways in which gdb can
 # fail to read the PyFrameObject* for arbitrary places in the callstack,
@@ -654,7 +668,7 @@ Patch165: 00165-crypt-module-salt-backport.patch
 # Not yet sent upstream
 Patch167: 00167-disable-stack-navigation-tests-when-optimized-in-test_gdb.patch
 
-# 00169 #
+# 00169 # 8d99c73e801c185674c7aee473d3466a118b566a
 # Use SHA-256 rather than implicitly using MD5 within the challenge handling
 # in multiprocessing.connection
 #
@@ -662,7 +676,7 @@ Patch167: 00167-disable-stack-navigation-tests-when-optimized-in-test_gdb.patch
 # (rhbz#879695)
 Patch169: 00169-avoid-implicit-usage-of-md5-in-multiprocessing.patch
 
-# 00170 #
+# 00170 # 029de09ec004fb47f8cbd978f68759e7b4267a38
 # In debug builds, try to print repr() when a C-level assert fails in the
 # garbage collector (typically indicating a reference-counting error
 # somewhere else e.g in an extension module)
@@ -673,7 +687,7 @@ Patch169: 00169-avoid-implicit-usage-of-md5-in-multiprocessing.patch
 # (rhbz#850013)
 Patch170: 00170-gc-assertions.patch
 
-# 00174 #
+# 00174 # 149dca2c7ba69102e681d9834ac13c153ca53afc
 # Workaround for failure to set up prefix/exec_prefix when running
 # an embededed libpython that sets Py_SetProgramName() to a name not
 # on $PATH when run from the root directory due to
@@ -681,12 +695,12 @@ Patch170: 00170-gc-assertions.patch
 # e.g. cmpi-bindings under systemd (rhbz#817554):
 Patch174: 00174-fix-for-usr-move.patch
 
-# 00180 #
+# 00180 # 7199dba788cff67117e091f6ea84a8e7a98d39fe
 # Enable building on ppc64p7
 # Not appropriate for upstream, Fedora-specific naming
 Patch180: 00180-python-add-support-for-ppc64p7.patch
 
-# 00181 #
+# 00181 # 4034653bd9e53ead4d73f263d12acf20497b6155
 # Allow arbitrary timeout for Condition.wait, as reported in
 # https://bugzilla.redhat.com/show_bug.cgi?id=917709
 # Upstream doesn't want this: http://bugs.python.org/issue17748
@@ -695,12 +709,12 @@ Patch180: 00180-python-add-support-for-ppc64p7.patch
 # Doesn't apply to Python 3, where this is fixed otherwise and works.
 Patch181: 00181-allow-arbitrary-timeout-in-condition-wait.patch
 
-# 00185 #
+# 00185 # b104ec8a02f122cfc5c1bdfe923dfe94a6b5079e
 # Makes urllib2 honor "no_proxy" enviroment variable for "ftp:" URLs
 # when ftp_proxy is set
 Patch185: 00185-urllib2-honors-noproxy-for-ftp.patch
 
-# 00187 #
+# 00187 # f22c50031446603cf938a8003f059190690c8d9a
 # Add an explicit RPATH to pyexpat.so pointing at the directory
 # containing the system expat (which has the extra XML_SetHashSalt
 # symbol), to avoid an ImportError with a link error if there's an
@@ -708,28 +722,28 @@ Patch185: 00185-urllib2-honors-noproxy-for-ftp.patch
 # symbol)
 Patch187: 00187-add-RPATH-to-pyexpat.patch
 
-# 00189 #
+# 00189 # 038b390c478fe336a8ea350972785d317bdbbd53
 # Instead of bundled wheels, use our RPM packaged wheels from
 # /usr/share/python-wheels
 Patch189: 00189-use-rpm-wheels.patch
 
-# 00191 #
+# 00191 # d6f8cb42773c48c480e0639cc8a57aebbf3a4c76
 # Disabling NOOP test as it fails without internet connection
 Patch191: 00191-disable-NOOP.patch
 
-# 00193 #
+# 00193 # 31a84748ead0945648369d3520369cdd508815e8
 # Enable loading sqlite extensions. This patch isn't needed for
 # python3.spec, since Python 3 has a configuration option for this.
 # rhbz#1066708
 # Patch provided by John C. Peterson
 Patch193: 00193-enable-loading-sqlite-extensions.patch
 
-# 00289 #
+# 00289 # a923413277ad6331772a93b9daeb85a842ddfc00
 # Disable automatic detection for the nis module
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
-# 00351 #
+# 00351 # 1ae2a3db6d7af4ea973d1aee285e5fb9f882fdd0
 # Avoid infinite loop when reading specially crafted TAR files using the tarfile module
 # (CVE-2019-20907).
 # See: https://bugs.python.org/issue39017
@@ -1564,6 +1578,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Tue Sep 29 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-5
+- Import patches from GitHub tree
+
 * Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 

@@ -1,7 +1,20 @@
-diff -up Python-2.7.5/Lib/urllib2.py.orig Python-2.7.5/Lib/urllib2.py
---- Python-2.7.5/Lib/urllib2.py.orig	2013-07-17 12:22:58.595525622 +0200
-+++ Python-2.7.5/Lib/urllib2.py	2013-07-17 12:19:59.875898030 +0200
-@@ -728,6 +728,8 @@ class ProxyHandler(BaseHandler):
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Python maintainers <python-devel@lists.fedoraproject.org>
+Date: Wed, 15 Jul 2020 15:42:03 +0200
+Subject: [PATCH] 00185-urllib2-honors-noproxy-for-ftp.patch
+
+00185 #
+Makes urllib2 honor "no_proxy" enviroment variable for "ftp:" URLs
+when ftp_proxy is set
+---
+ Lib/urllib2.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Lib/urllib2.py b/Lib/urllib2.py
+index 8b634ada372..fd19e1ae943 100644
+--- a/Lib/urllib2.py
++++ b/Lib/urllib2.py
+@@ -753,6 +753,8 @@ class ProxyHandler(BaseHandler):
          if proxy_type is None:
              proxy_type = orig_type
  
