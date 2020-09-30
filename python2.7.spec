@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 5%{?dist}
+Release: 6%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -749,6 +749,18 @@ Patch289: 00289-disable-nis-detection.patch
 # See: https://bugs.python.org/issue39017
 Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
 
+# 00354 # 9e9d2c6106446ad107ca1bb6729883c76fefc6eb
+# Reject control chars in HTTP method in httplib.putrequest to prevent
+# HTTP header injection
+#
+# Backported from Python 3.5-3.10 (and adjusted for py2's single-module httplib):
+# - https://bugs.python.org/issue39603
+# - https://github.com/python/cpython/pull/18485 (3.10)
+# - https://github.com/python/cpython/pull/21946 (3.5)
+#
+# Co-authored-by: AMIR <31338382+amiremohamadi@users.noreply.github.com>
+Patch354: 00354-cve-2020-26116-http-request-method-crlf-injection-in-httplib.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -904,6 +916,8 @@ rm Lib/ensurepip/_bundled/*.whl
 
 # Patch 351 adds binary file for testing. We need to apply it using Git.
 git apply %{PATCH351}
+
+%patch354 -p1
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1578,6 +1592,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Sep 30 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-6
+- CVE-2020-26116: Reject control chars in HTTP method in httplib.putrequest
+
 * Tue Sep 29 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-5
 - Import patches from GitHub tree
 
