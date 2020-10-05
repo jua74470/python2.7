@@ -13,6 +13,9 @@
 # Run the test suite in %%check
 %bcond_without tests
 
+# Allow building without tkinter support to avoid tcl/tk runtime deps
+%bcond_without tkinter
+
 %global unicode ucs4
 %global pybasever 2.7
 %global pyshortver 27
@@ -57,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 6%{?dist}
+Release: 7%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -114,7 +117,9 @@ Provides: python(abi) = %{pybasever}
 
 # To test the python27 without disrupting everything, we keep providing the devel part until mid September 2019
 Provides: python2-devel = %{version}-%{release}
+%if %{with tkinter}
 Provides: python2-tkinter = %{version}-%{release}
+%endif
 
 
 # =======================
@@ -1325,6 +1330,11 @@ rm %{buildroot}%{_bindir}/python-config
 rm %{buildroot}%{_mandir}/*/python.1*
 rm %{buildroot}%{_libdir}/pkgconfig/python.pc
 
+%if %{without tkinter}
+# Remove the tkinter module
+rm -r %{buildroot}%{pylibdir}/lib-tk
+rm %{buildroot}%{dynload_dir}/_tkinter.so
+%endif
 
 # ======================================================
 # Running the upstream test suite
@@ -1568,9 +1578,11 @@ CheckPython \
 %{demo_dir}
 %{pylibdir}/Doc
 
+%if %{with tkinter}
 #files tkinter
 %{pylibdir}/lib-tk
 %{dynload_dir}/_tkinter.so
+%endif
 
 #files test
 %{pylibdir}/bsddb/test
@@ -1592,6 +1604,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Oct 05 2020 Kalev Lember <klember@redhat.com> - 2.7.18-7
+- Add tkinter bcond to avoid pulling in tcl/tk for gimp flatpak builds
+
 * Wed Sep 30 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-6
 - CVE-2020-26116: Reject control chars in HTTP method in httplib.putrequest
 
