@@ -139,6 +139,7 @@ BuildRequires: libdb-devel
 BuildRequires: libffi-devel
 BuildRequires: libnsl2-devel
 BuildRequires: libtirpc-devel
+BuildRequires: make
 BuildRequires: ncurses-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconf-pkg-config
