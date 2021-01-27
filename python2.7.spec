@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 6%{?dist}
+Release: 7%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1593,6 +1593,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Wed Sep 30 2020 Petr Viktorin <pviktori@redhat.com> - 2.7.18-6
 - CVE-2020-26116: Reject control chars in HTTP method in httplib.putrequest
 
