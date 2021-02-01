@@ -761,7 +761,7 @@ Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
 #
 # Co-authored-by: AMIR <31338382+amiremohamadi@users.noreply.github.com>
 Patch354: 00354-cve-2020-26116-http-request-method-crlf-injection-in-httplib.patch
-
+Patch355: CVE-2021-3177.patch 
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -919,6 +919,7 @@ rm Lib/ensurepip/_bundled/*.whl
 git apply %{PATCH351}
 
 %patch354 -p1
+%patch355 -p1
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
