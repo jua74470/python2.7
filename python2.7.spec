@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 7%{?dist}
+Release: 8%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -762,6 +762,14 @@ Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
 # Co-authored-by: AMIR <31338382+amiremohamadi@users.noreply.github.com>
 Patch354: 00354-cve-2020-26116-http-request-method-crlf-injection-in-httplib.patch
 
+# 00357 # c4b8cabe4e772e4b8eea3e4dab5de12a3e9b5bc2
+# CVE-2021-3177: Replace snprintf with Python unicode formatting in ctypes param reprs
+#
+# Backport of Python3 commit 916610ef90a0d0761f08747f7b0905541f0977c7:
+# https://bugs.python.org/issue42938
+# https://github.com/python/cpython/pull/24239
+Patch357: 00357-CVE-2021-3177.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -919,6 +927,7 @@ rm Lib/ensurepip/_bundled/*.whl
 git apply %{PATCH351}
 
 %patch354 -p1
+%patch357 -p1
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1593,6 +1602,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Feb 01 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-8
+- Security fix for CVE-2021-3177
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
