@@ -57,7 +57,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 8%{?dist}
+Release: 9%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -212,12 +212,10 @@ Requires: pkgconf-pkg-config
 # The RPM related dependencies bring nothing to a non-RPM Python developer
 # But we want them when packages BuildRequire python2-devel
 Requires: (python-rpm-macros if rpm-build)
-Requires: (python2-rpm-macros if rpm-build)
-
-# When bootstrapping python3, we need to build setuptools
-# But setuptools BR python2-devel and that brings in python3-rpm-generators
-# python3-rpm-generators needs python3-setuptools, so we cannot have it yet
-Requires: (python3-rpm-generators if rpm-build)
+Requires: (python-srpm-macros if rpm-build)
+# Remove this no sooner than Fedora 36:
+Provides: python2-rpm-macros = 3.9-34
+Obsoletes: python2-rpm-macros < 3.9-34
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1217376
 # https://bugzilla.redhat.com/show_bug.cgi?id=1496757
@@ -254,6 +252,8 @@ Source4: systemtap-example.stp
 # Another example systemtap script that uses the tapset
 # Written by dmalcolm; not yet sent upstream
 Source5: pyfuntop.stp
+
+Source6: macros.python2
 
 # (Patches taken from github.com/fedora-python/cpython)
 
@@ -1335,6 +1335,9 @@ rm %{buildroot}%{_bindir}/python-config
 rm %{buildroot}%{_mandir}/*/python.1*
 rm %{buildroot}%{_libdir}/pkgconfig/python.pc
 
+# RPM macros
+mkdir -p %{buildroot}%{rpmmacrodir}
+cp -a %{SOURCE6} %{buildroot}%{rpmmacrodir}
 
 # ======================================================
 # Running the upstream test suite
@@ -1594,6 +1597,10 @@ CheckPython \
 %{dynload_dir}/_ctypes_test.so
 %{dynload_dir}/_testcapimodule.so
 
+# RPM macros, dir co-owned to avoid the dependency
+%dir %{rpmmacrodir}
+%{rpmmacrodir}/macros.python2
+
 # Workaround for rhbz#1476593
 %undefine _debuginfo_subpackages
 
@@ -1602,6 +1609,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Feb 03 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-9
+- Add python2-rpm-macros content here
+- https://fedoraproject.org/wiki/Changes/Disable_Python_2_Dist_RPM_Generators_and_Freeze_Python_2_Macros
+
 * Mon Feb 01 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-8
 - Security fix for CVE-2021-3177
 
