@@ -13,6 +13,9 @@
 # Run the test suite in %%check
 %bcond_without tests
 
+# By default, we build with tkinter, but e.g. the GIMP flatpak can turn this off
+%bcond_without tkinter
+
 %global unicode ucs4
 %global pybasever 2.7
 %global pyshortver 27
@@ -114,7 +117,9 @@ Provides: python(abi) = %{pybasever}
 
 # To test the python27 without disrupting everything, we keep providing the devel part until mid September 2019
 Provides: python2-devel = %{version}-%{release}
+%if %{with tkinter}
 Provides: python2-tkinter = %{version}-%{release}
+%endif
 
 
 # =======================
@@ -146,9 +151,11 @@ BuildRequires: pkgconf-pkg-config
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
 BuildRequires: tar
+%if %{with tkinter}
 BuildRequires: tcl-devel
 BuildRequires: tix-devel
 BuildRequires: tk-devel
+%endif
 BuildRequires: zlib-devel
 BuildRequires: gnupg2
 BuildRequires: git-core
@@ -779,6 +786,9 @@ Patch357: 00357-CVE-2021-3177.patch
 #
 #     https://fedoraproject.org/wiki/SIGs/Python/PythonPatches
 
+# Disable tk, applied conditionally if %%{without tkinter}
+Patch4000: 04000-disable-tk.patch
+
 # This is the generated patch to "configure"; see the description of
 #   %%{regenerate_autotooling_patch}
 # above:
@@ -928,6 +938,10 @@ git apply %{PATCH351}
 
 %patch354 -p1
 %patch357 -p1
+
+%if %{without tkinter}
+%patch4000 -p1
+%endif
 
 # This shouldn't be necesarry, but is right now (2.2a3)
 find -name "*~" |xargs rm -f
@@ -1583,7 +1597,9 @@ CheckPython \
 
 #files tkinter
 %{pylibdir}/lib-tk
+%if %{with tkinter}
 %{dynload_dir}/_tkinter.so
+%endif
 
 #files test
 %{pylibdir}/bsddb/test
