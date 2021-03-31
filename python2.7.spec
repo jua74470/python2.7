@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 9%{?dist}
+Release: 10%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -722,14 +722,6 @@ Patch181: 00181-allow-arbitrary-timeout-in-condition-wait.patch
 # when ftp_proxy is set
 Patch185: 00185-urllib2-honors-noproxy-for-ftp.patch
 
-# 00187 # f22c50031446603cf938a8003f059190690c8d9a
-# Add an explicit RPATH to pyexpat.so pointing at the directory
-# containing the system expat (which has the extra XML_SetHashSalt
-# symbol), to avoid an ImportError with a link error if there's an
-# LD_LIBRARY_PATH containing a "vanilla" build of expat (without the
-# symbol)
-Patch187: 00187-add-RPATH-to-pyexpat.patch
-
 # 00189 # 038b390c478fe336a8ea350972785d317bdbbd53
 # Instead of bundled wheels, use our RPM packaged wheels from
 # /usr/share/python-wheels
@@ -922,7 +914,6 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %patch180 -p1
 %patch181 -p1
 %patch185 -p1
-%patch187 -p1
 
 %if %{with rpmwheels}
 %patch189 -p1
@@ -1625,6 +1616,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Mar 31 2021 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-10
+- Remove explicit rpath entry from pyexpat
+
 * Wed Feb 03 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-9
 - Add python2-rpm-macros content here
 - https://fedoraproject.org/wiki/Changes/Disable_Python_2_Dist_RPM_Generators_and_Freeze_Python_2_Macros
