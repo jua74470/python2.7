@@ -13,7 +13,7 @@ Patch provided by John C. Peterson
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index b401ab836a9..abc9c74281e 100644
+index 761efff449b..d8922aae7ce 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -1225,7 +1225,7 @@ class PyBuildExt(build_ext):
