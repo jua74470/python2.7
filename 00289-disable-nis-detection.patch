@@ -11,7 +11,7 @@ Disable automatic detection for the nis module
  1 file changed, 1 insertion(+), 50 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index abc9c74281e..a8b53a523c9 100644
+index d8922aae7ce..0e4d5659346 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -1377,11 +1377,7 @@ class PyBuildExt(build_ext):
@@ -27,7 +27,7 @@ index abc9c74281e..a8b53a523c9 100644
  
          # Curses support, requiring the System V version of curses, often
          # provided by the ncurses library.
-@@ -2193,51 +2189,6 @@ class PyBuildExt(build_ext):
+@@ -2184,51 +2180,6 @@ class PyBuildExt(build_ext):
              # for dlopen, see bpo-32647
              ext.libraries.append('dl')
  
