@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 8%{?dist}
+Release: 11%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -757,7 +757,7 @@ Patch289: 00289-disable-nis-detection.patch
 # See: https://bugs.python.org/issue39017
 Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
 
-# 00354 # 9e9d2c6106446ad107ca1bb6729883c76fefc6eb
+# 00354 # 73d8baef9f57f26ba97232d116f7220d1801452c
 # Reject control chars in HTTP method in httplib.putrequest to prevent
 # HTTP header injection
 #
@@ -765,9 +765,13 @@ Patch351: 00351-cve-2019-20907-fix-infinite-loop-in-tarfile.patch
 # - https://bugs.python.org/issue39603
 # - https://github.com/python/cpython/pull/18485 (3.10)
 # - https://github.com/python/cpython/pull/21946 (3.5)
-#
-# Co-authored-by: AMIR <31338382+amiremohamadi@users.noreply.github.com>
 Patch354: 00354-cve-2020-26116-http-request-method-crlf-injection-in-httplib.patch
+
+# 00355 # fde656e7116767a761720970ee750ecda6774e71
+# No longer call eval() on content received via HTTP in the CJK codec tests
+# Backported from the python3 branches upstream: https://bugs.python.org/issue41944
+# Resolves: https://bugzilla.redhat.com/show_bug.cgi?id=1889886
+Patch355: 00355-CVE-2020-27619.patch
 
 # 00357 # c4b8cabe4e772e4b8eea3e4dab5de12a3e9b5bc2
 # CVE-2021-3177: Replace snprintf with Python unicode formatting in ctypes param reprs
@@ -776,6 +780,23 @@ Patch354: 00354-cve-2020-26116-http-request-method-crlf-injection-in-httplib.pat
 # https://bugs.python.org/issue42938
 # https://github.com/python/cpython/pull/24239
 Patch357: 00357-CVE-2021-3177.patch
+
+# 00359 # 0d63bea395d9ba5e281dfbddddd6843cdfc609e5
+# CVE-2021-23336: Add `separator` argument to parse_qs; warn with default
+#
+# Partially backports https://bugs.python.org/issue42967 : [security] Address a web cache-poisoning issue reported in urllib.parse.parse_qsl().
+#
+# Backported from the python3 branch.
+# However, this solution is different than the upstream solution in Python 3.
+#
+# Based on the downstream solution for python 3.6.13 by Petr Viktorin.
+#
+# An optional argument seperator is added to specify the separator.
+# It is recommended to set it to '&' or ';' to match the application or proxy in use.
+# The default can be set with an env variable of a config file.
+# If neither the argument, env var or config file specifies a separator, "&" is used
+# but a warning is raised if parse_qs is used on input that contains ';'.
+Patch359: 00359-CVE-2021-23336.patch
 
 # (New patches go here ^^^)
 #
@@ -937,7 +958,9 @@ rm Lib/ensurepip/_bundled/*.whl
 git apply %{PATCH351}
 
 %patch354 -p1
+%patch355 -p1
 %patch357 -p1
+%patch359 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1618,6 +1641,11 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed May 19 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-11
+- Security fix for CVE-2020-27619
+- Security fix for CVE-2021-23336
+- Fixes rhbz#1928916
+
 * Mon Feb 01 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-8
 - Security fix for CVE-2021-3177
 
