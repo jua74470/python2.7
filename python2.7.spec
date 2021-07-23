@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 11%{?dist}
+Release: 12%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1639,6 +1639,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Wed May 19 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-11
 - Security fix for CVE-2020-27619
 - Security fix for CVE-2021-23336
