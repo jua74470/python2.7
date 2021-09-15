@@ -146,7 +146,7 @@ BuildRequires: libnsl2-devel
 BuildRequires: libtirpc-devel
 BuildRequires: make
 BuildRequires: ncurses-devel
-BuildRequires: openssl-devel
+BuildRequires: openssl1.1-devel
 BuildRequires: pkgconf-pkg-config
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
@@ -1639,8 +1639,8 @@ CheckPython \
 # ======================================================
 
 %changelog
-* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 2.7.18-13
-- Rebuilt with OpenSSL 3.0.0
+* Wed Sep 15 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-13
+- Explicitly buildrequire OpenSSL 1.1, as Python 2 is not compatible with OpenSSL 3.0
 
 * Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
