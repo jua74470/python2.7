@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 11%{?dist}
+Release: 14%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -798,6 +798,19 @@ Patch357: 00357-CVE-2021-3177.patch
 # but a warning is raised if parse_qs is used on input that contains ';'.
 Patch359: 00359-CVE-2021-23336.patch
 
+# 00366 # e76b05ea3313854adf80e290c07d5b38fef606bb
+# CVE-2021-3733: Fix ReDoS in urllib AbstractBasicAuthHandler
+#
+# Fix Regular Expression Denial of Service (ReDoS) vulnerability in
+# urllib2.AbstractBasicAuthHandler. The ReDoS-vulnerable regex
+# has quadratic worst-case complexity and it allows cause a denial of
+# service when identifying crafted invalid RFCs. This ReDoS issue is on
+# the client side and needs remote attackers to control the HTTP server.
+#
+# Backported from Python 3 together with another backward-compatible
+# improvement of the regex from fix for CVE-2020-8492.
+Patch366: 00366-CVE-2021-3733.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -961,6 +974,7 @@ git apply %{PATCH351}
 %patch355 -p1
 %patch357 -p1
 %patch359 -p1
+%patch366 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1641,6 +1655,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Sep 15 2021 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-14
+- Fix for CVE-2021-3733
+Resolves: rhbz#2000681
+
 * Wed May 19 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-11
 - Security fix for CVE-2020-27619
 - Security fix for CVE-2021-23336
