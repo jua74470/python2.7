@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 14%{?dist}
+Release: 15%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -811,6 +811,15 @@ Patch359: 00359-CVE-2021-23336.patch
 # improvement of the regex from fix for CVE-2020-8492.
 Patch366: 00366-CVE-2021-3733.patch
 
+# 00368 # 10dcf6732fb101ce89ad506a89365c6b1ff8c4e4
+# CVE-2021-3737: http client infinite line reading (DoS) after a HTTP 100 Continue
+#
+# Fixes http.client potential denial of service where it could get stuck reading
+# lines from a malicious server after a 100 Continue response.
+#
+# Backported from Python 3.
+Patch368: 00368-CVE-2021-3737.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -975,6 +984,7 @@ git apply %{PATCH351}
 %patch357 -p1
 %patch359 -p1
 %patch366 -p1
+%patch368 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1655,6 +1665,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Sep 17 2021 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-15
+- Fix for CVE-2021-3737
+Resolves: rhbz#1997671
+
 * Wed Sep 15 2021 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-14
 - Fix for CVE-2021-3733
 Resolves: rhbz#2000681
