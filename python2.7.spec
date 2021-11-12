@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 15%{?dist}
+Release: 16%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1663,6 +1663,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Nov 12 2021 Björn Esser <besser82@fedoraproject.org> - 2.7.18-16
+- Rebuild(libnsl2)
+
 * Fri Sep 17 2021 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-15
 - Fix for CVE-2021-3737
 Resolves: rhbz#1997671
