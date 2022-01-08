@@ -60,7 +60,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 16%{?dist}
+Release: 17%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1663,6 +1663,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-17
+- Rebuilt for https://fedoraproject.org/wiki/Changes/LIBFFI34
+
 * Fri Nov 12 2021 Björn Esser <besser82@fedoraproject.org> - 2.7.18-16
 - Rebuild(libnsl2)
 
