@@ -49,6 +49,20 @@
 %global __brp_python_bytecompile %{nil}
 %global regenerate_autotooling_patch 0
 
+# https://fedoraproject.org/wiki/Changes/Package_information_on_ELF_objects
+# https://bugzilla.redhat.com/2043092
+# The default %%build_ldflags macro contains a reference to a file that only
+# exists in the builddir of this very package.
+# The flag is stored in distutils/sysconfig and is used to build extension modules.
+# As a result, 3rd party extension modules cannot be built,
+# because the file does not exist when this package is installed.
+# Python 3 solves this by using %%extension_ldflags in LDFLAGS_NODIST,
+# however Python 2 does not support LDFLAGS_NODIST, so we opt-out completely.
+# The exact opt-out mechanism is still not finalized, so we use all of them:
+%undefine _package_note_flags
+%undefine _package_note_file
+%undefine _generate_package_note_file
+
 # ==================
 # Top-level metadata
 # ==================
