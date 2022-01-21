@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 17%{?dist}
+Release: 18%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1677,6 +1677,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Jan 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-18
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-17
 - Rebuilt for https://fedoraproject.org/wiki/Changes/LIBFFI34
 
