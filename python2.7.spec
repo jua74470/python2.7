@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 18%{?dist}
+Release: 19%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -826,6 +826,11 @@ Patch366: 00366-CVE-2021-3733.patch
 # Backported from Python 3.
 Patch368: 00368-CVE-2021-3737.patch
 
+# 00375 # 5488ab84d2447aa8df8b3502e76f151ac2488947
+# Fix precision in test_distance (test.test_turtle.TestVec2D).
+# See: https://bugzilla.redhat.com/show_bug.cgi?id=2038843
+Patch375: 00375-fix-test_distance-to-enable-Python-build-on-i686.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -990,6 +995,7 @@ git apply %{PATCH351}
 %patch359 -p1
 %patch366 -p1
 %patch368 -p1
+%patch375 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1677,6 +1683,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Jan 24 2022 Karolina Surma <ksurma@redhat.com> - 2.7.18-19
+- Fix test to enable build with i686
+Resolves: rhbz#2038843
+
 * Fri Jan 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-18
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
