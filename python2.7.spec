@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 19%{?dist}
+Release: 20%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -826,10 +826,28 @@ Patch366: 00366-CVE-2021-3733.patch
 # Backported from Python 3.
 Patch368: 00368-CVE-2021-3737.patch
 
+# 00372 # 0039a5762ac21255d6e4c2421a2159cbecfc95bd
+# CVE-2021-4189: ftplib should not use the host from the PASV response
+#
+# Upstream: https://bugs.python.org/issue43285
+#
+# Backported from the python3 branch.
+Patch372: 00372-CVE-2021-4189.patch
+
 # 00375 # 5488ab84d2447aa8df8b3502e76f151ac2488947
 # Fix precision in test_distance (test.test_turtle.TestVec2D).
 # See: https://bugzilla.redhat.com/show_bug.cgi?id=2038843
 Patch375: 00375-fix-test_distance-to-enable-Python-build-on-i686.patch
+
+# 00377 # 53940f806f5e3451c9b77b44e2fc4d18b243156b
+# CVE-2022-0391: urlparse does not sanitize URLs containing ASCII newline and tabs
+#
+# ASCII newline and tab characters are stripped from the URL.
+#
+# Upstream: https://bugs.python.org/issue43882
+#
+# Backported from Python 3.
+Patch377: 00377-CVE-2022-0391.patch
 
 # (New patches go here ^^^)
 #
@@ -1683,6 +1701,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Wed Feb 16 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-20
+- Security fixes for CVE-2021-4189 and CVE-2022-0391
+Resolves: rhbz#2047376
+
 * Mon Jan 24 2022 Karolina Surma <ksurma@redhat.com> - 2.7.18-19
 - Fix test to enable build with i686
 Resolves: rhbz#2038843
