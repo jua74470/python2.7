@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 20%{?dist}
+Release: 21%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -849,6 +849,29 @@ Patch375: 00375-fix-test_distance-to-enable-Python-build-on-i686.patch
 # Backported from Python 3.
 Patch377: 00377-CVE-2022-0391.patch
 
+# 00378 # 32b7f6200303fb36d104ac8d2afa3afba1789c1b
+# Support expat 2.4.5
+#
+# Curly brackets were never allowed in namespace URIs
+# according to RFC 3986, and so-called namespace-validating
+# XML parsers have the right to reject them a invalid URIs.
+#
+# libexpat >=2.4.5 has become strcter in that regard due to
+# related security issues; with ET.XML instantiating a
+# namespace-aware parser under the hood, this test has no
+# future in CPython.
+#
+# References:
+# - https://datatracker.ietf.org/doc/html/rfc3968
+# - https://www.w3.org/TR/xml-names/
+#
+# Also, test_minidom.py: Support Expat >=2.4.5
+#
+# Upstream: https://bugs.python.org/issue46811
+#
+# Backported from Python 3.
+Patch378: 00378-support-expat-2-4-5.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1014,6 +1037,7 @@ git apply %{PATCH351}
 %patch366 -p1
 %patch368 -p1
 %patch375 -p1
+%patch378 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1701,6 +1725,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Mar 04 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-21
+- Fix the test suite support for Expat >= 2.4.5
+Resolves: rhbz#2056970
+
 * Wed Feb 16 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-20
 - Security fixes for CVE-2021-4189 and CVE-2022-0391
 Resolves: rhbz#2047376
