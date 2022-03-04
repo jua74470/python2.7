@@ -1037,6 +1037,7 @@ git apply %{PATCH351}
 %patch366 -p1
 %patch368 -p1
 %patch375 -p1
+%patch377 -p1
 %patch378 -p1
 
 %if %{without tkinter}
