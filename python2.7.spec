@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 21%{?dist}
+Release: 22%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -872,6 +872,16 @@ Patch377: 00377-CVE-2022-0391.patch
 # Backported from Python 3.
 Patch378: 00378-support-expat-2-4-5.patch
 
+# 00382 # 65796028be4b28aaf027963d6fb2ef4c219e73dc
+# Make mailcap refuse to match unsafe filenames/types/params (GH-91993)
+#
+# Upstream: https://github.com/python/cpython/issues/68966
+#
+# Tracker bug: https://bugzilla.redhat.com/show_bug.cgi?id=2075390
+#
+# Backported from python3.
+Patch382: 00382-cve-2015-20107.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1039,6 +1049,7 @@ git apply %{PATCH351}
 %patch375 -p1
 %patch377 -p1
 %patch378 -p1
+%patch382 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1726,6 +1737,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Jun 09 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-22
+- Security fix for CVE-2015-20107
+Resolves: rhbz#2075390
+
 * Fri Mar 04 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-21
 - Fix the test suite support for Expat >= 2.4.5
 Resolves: rhbz#2056970
