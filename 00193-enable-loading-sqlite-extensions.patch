@@ -13,10 +13,10 @@ Patch provided by John C. Peterson
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index 761efff449b..d8922aae7ce 100644
+index ba0386394ac..efc6443753c 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -1225,7 +1225,7 @@ class PyBuildExt(build_ext):
+@@ -1240,7 +1240,7 @@ class PyBuildExt(build_ext):
                  sqlite_defines.append(('MODULE_NAME', '\\"sqlite3\\"'))
  
              # Comment this out if you want the sqlite3 module to be able to load extensions.

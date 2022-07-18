@@ -635,24 +635,6 @@ Patch143: 00143-tsc-on-ppc.patch
 # (Optionally) disable the gdbm module:
 Patch144: 00144-no-gdbm.patch
 
-# 00146 # 310ca3207145a5ce6cf414a14650dbafcd7ad215
-# Support OpenSSL FIPS mode (e.g. when OPENSSL_FORCE_FIPS_MODE=1 is set)
-# - handle failures from OpenSSL (e.g. on attempts to use MD5 in a
-#   FIPS-enforcing environment)
-# - add a new "usedforsecurity" keyword argument to the various digest
-#   algorithms in hashlib so that you can whitelist a callsite with
-#   "usedforsecurity=False"
-# (sent upstream for python 3 as http://bugs.python.org/issue9216; this is a
-# backport to python 2.7; see RHEL6 patch 119)
-# - enforce usage of the _hashlib implementation: don't fall back to the _md5
-#   and _sha* modules (leading to clearer error messages if fips selftests
-#   fail)
-# - don't build the _md5 and _sha* modules; rely on the _hashlib implementation
-#   of hashlib (for example, md5.py will use _hashlib's implementation of MD5,
-#   if permitted by the FIPS setting)
-# (rhbz#563986)
-Patch146: 00146-hashlib-fips.patch
-
 # 00147 # c77e8f43adbfb44f0a843f06869a36a37415d389
 # Add a sys._debugmallocstats() function
 # Based on patch 202 from RHEL 5's python.spec, with updates from rhbz#737198
@@ -1022,7 +1004,6 @@ rm -r Modules/zlib || exit 1
 %if !%{with_gdbm}
 %patch144 -p1
 %endif
-#patch146 -p1
 %patch147 -p1
 %patch155 -p1
 %patch156 -p1
