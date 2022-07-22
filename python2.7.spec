@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 23%{?dist}
+Release: 24%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1727,6 +1727,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-24
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Fri Jul 08 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-23
 - Use OpenSSL 3 on Fedora 36+
 
