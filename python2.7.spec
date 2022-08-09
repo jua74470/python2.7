@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 24%{?dist}
+Release: 25%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1727,6 +1727,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Aug 08 2022 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-25
+- Fix OpenSSL 3 compatibility (EVP_get_digestbyname -> EVP_MD_fetch)
+Resolves: rhbz#2111128
+
 * Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-24
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
