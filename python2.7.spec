@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 24%{?dist}
+Release: 25%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -160,7 +160,7 @@ BuildRequires: libnsl2-devel
 BuildRequires: libtirpc-devel
 BuildRequires: make
 BuildRequires: ncurses-devel
-BuildRequires: openssl-devel
+BuildRequires: openssl1.1-devel
 BuildRequires: pkgconf-pkg-config
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
@@ -786,14 +786,6 @@ Patch357: 00357-CVE-2021-3177.patch
 # but a warning is raised if parse_qs is used on input that contains ';'.
 Patch359: 00359-CVE-2021-23336.patch
 
-# 00361 # b86ebbab187c809f536620e2cbf1f370886979a9
-# Make python2.7 compatible with OpenSSL 3.0.0
-#
-# Backported from python3.
-#
-# Based on https://github.com/tiran/cpython/tree/2.7.18-openssl3
-Patch361: 00361-openssl-3-compat.patch
-
 # 00366 # e76b05ea3313854adf80e290c07d5b38fef606bb
 # CVE-2021-3733: Fix ReDoS in urllib AbstractBasicAuthHandler
 #
@@ -1033,7 +1025,6 @@ git apply %{PATCH351}
 %patch355 -p1
 %patch357 -p1
 %patch359 -p1
-%patch361 -p1
 %patch366 -p1
 %patch368 -p1
 %patch375 -p1
@@ -1727,6 +1718,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Aug 22 2022 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-25
+- Use OpenSSL 1.1 once again, OpenSSL 3 support is not stable
+Resolves: rhbz#2111128
+
 * Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-24
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
