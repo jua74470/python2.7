@@ -13,7 +13,7 @@
   else
     shebang_flags="-ka%{py2_shebang_flags}"
   fi
-  /usr/bin/pathfix.py -pni %{__python2} $shebang_flags}
+  %{__python3} -B %{_rpmconfigdir}/redhat/pathfix.py -pni %{__python2} $shebang_flags}
 
 # Use the slashes after expand so that the command starts on the same line as
 # the macro
