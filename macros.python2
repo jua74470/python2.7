@@ -8,7 +8,7 @@
 %py2_shbang_opts_nodash %(opts=%{py2_shbang_opts}; echo ${opts#-})
 %py2_shebang_flags %(opts=%{py2_shbang_opts}; echo ${opts#-})
 %py2_shebang_fix %{expand:\\\
-  if [ -z "%{?py_shebang_flags}" ]; then
+  if [ -z "%{?py2_shebang_flags}" ]; then
     shebang_flags="-k"
   else
     shebang_flags="-ka%{py2_shebang_flags}"
