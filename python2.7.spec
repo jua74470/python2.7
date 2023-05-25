@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 26%{?dist}
+Release: 27%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -871,7 +871,19 @@ Patch382: 00382-cve-2015-20107.patch
 # the behavior to linear.
 #
 # Backported from python3.
+
 Patch394: 00394-cve-2022-45061-cpu-denial-of-service-via-inefficient-idna-decoder.patch
+# 00399 # 70e14c5e59a39bf5fae54c040d0e1d8b5c06d92c
+# gh-102153: Start stripping C0 control and space chars in `urlsplit` (GH-102508) (#104575)
+#
+# * gh-102153: Start stripping C0 control and space chars in `urlsplit` (GH-102508)
+#
+# `urllib.parse.urlsplit` has already been respecting the WHATWG spec a bit GH-25595.
+#
+# This adds more sanitizing to respect the "Remove any leading C0 control or space from input" [rule](https://url.spec.whatwg.org/GH-url-parsing:~:text=Remove%%20any%%20leading%%20and%%20trailing%%20C0%%20control%%20or%%20space%%20from%%20input.) in response to [CVE-2023-24329](https://nvd.nist.gov/vuln/detail/CVE-2023-24329).
+#
+# Backported to Python 2 from Python 3.12.
+Patch399: 00399-gh-102153-start-stripping-c0-control-and-space-chars-in-urlsplit-gh-102508-104575.patch
 
 # (New patches go here ^^^)
 #
@@ -1041,6 +1053,7 @@ git apply %{PATCH351}
 %patch378 -p1
 %patch382 -p1
 %patch394 -p1
+%patch399 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1728,6 +1741,10 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu May 25 2023 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-27
+- Fix for CVE-2023-24329
+Resolves: rhbz#2174011
+
 * Mon Dec 19 2022 Charalampos Stratakis <cstratak@redhat.com> - 2.7.18-26
 - Security fix for CVE-2022-45061: CPU denial of service via inefficient IDNA decoder
   Related: rhbz#2144072
