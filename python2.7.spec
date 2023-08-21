@@ -13,8 +13,12 @@
 # Run the test suite in %%check
 %bcond_without tests
 
-# By default, we build with tkinter, but e.g. the GIMP flatpak can turn this off
+# Simplify dependencis for Flatpaks that include Python-2.7
+%if 0%{?flatpak}
+%bcond_with tkinter
+%else
 %bcond_without tkinter
+%endif
 
 %global unicode ucs4
 %global pybasever 2.7
@@ -74,7 +78,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 32%{?dist}
+Release: 33%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -1762,6 +1766,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Aug 21 2023 Owen Taylor <otaylor@redhat.com> - 2.7.18-33
+- Turn off tkinter for Flatpak builds
+
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-32
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
