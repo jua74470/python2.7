@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 32%{?dist}
+Release: 33%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -891,6 +891,9 @@ Patch394: 00394-cve-2022-45061-cpu-denial-of-service-via-inefficient-idna-decode
 # Backported to Python 2 from Python 3.12.
 Patch399: 00399-cve-2023-24329.patch
 
+# This fixes an incompatibility between the test suite and openssl >= 3.1.0
+Patch400: 00400-no-tls-10.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1061,6 +1064,7 @@ git apply %{PATCH351}
 %patch382 -p1
 %patch394 -p1
 %patch399 -p1
+%patch400 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1762,6 +1766,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Aug 21 2023 Owen Taylor <otaylor@redhat.com> - 2.7.18-33
+- Fix test suite failure with openssl >= 3.1.0
+
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-32
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
