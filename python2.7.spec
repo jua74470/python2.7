@@ -74,7 +74,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 27%{?dist}
+Release: 34%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -903,6 +903,10 @@ Patch399: 00399-cve-2023-24329.patch
 # This is fixed by simply using TLSv1_2 to start with.
 Patch403: 00403-no-tls-10.patch
 
+# 00405 # 0be039ad8332dded8b1336346a8fa59b84630cbf
+# Fix C99 build error: declare functions explicitly
+Patch405: 00405-fix-c99-build-error.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python2" and "python3" in Fedora, EL, etc.,
@@ -1073,6 +1077,7 @@ git apply %{PATCH351}
 %patch394 -p1
 %patch399 -p1
 %patch403 -p1
+%patch405 -p1
 
 %if %{without tkinter}
 %patch4000 -p1
@@ -1760,6 +1765,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Fri Oct 06 2023 Victor Stinner <vstinner@python.org> - 2.7.18-34
+- Fix C99 build error: declare functions explicitly
+
 * Thu May 25 2023 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-27
 - Fix for CVE-2023-24329
 Resolves: rhbz#2174011
