@@ -743,7 +743,7 @@ Patch193: 00193-enable-loading-sqlite-extensions.patch
 # (we handle it it in Setup.dist, see Patch0)
 Patch289: 00289-disable-nis-detection.patch
 
-# 00351 # 1ae2a3db6d7af4ea973d1aee285e5fb9f882fdd0
+# 00351 # 2ee72df6cc70c914e55da3017244c59c5d2c872c
 # Avoid infinite loop when reading specially crafted TAR files using the tarfile module
 # (CVE-2019-20907).
 # See: https://bugs.python.org/issue39017
@@ -790,7 +790,7 @@ Patch357: 00357-CVE-2021-3177.patch
 # but a warning is raised if parse_qs is used on input that contains ';'.
 Patch359: 00359-CVE-2021-23336.patch
 
-# 00361 # b86ebbab187c809f536620e2cbf1f370886979a9
+# 00361 # 67d6979a90e1dddf902dd1dc42fef34b80ca325b
 # Make python2.7 compatible with OpenSSL 3.0.0
 #
 # Backported from python3.

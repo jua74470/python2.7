@@ -12,13 +12,14 @@ Based on https://github.com/tiran/cpython/tree/2.7.18-openssl3
 ---
  Doc/library/ssl.rst        |    6 +
  Lib/test/test_ssl.py       |  115 +-
+ Modules/_hashopenssl.c     |   10 +-
  Modules/_ssl.c             |   86 +-
  Modules/_ssl_data_111.h    | 6525 ++++++++++++++++++++++++++++
  Modules/_ssl_data_300.h    | 8435 ++++++++++++++++++++++++++++++++++++
  Tools/ssl/make_ssl_data.py |  181 +-
  Tools/ssl/multissltests.py |    5 +-
  setup.py                   |   29 +-
- 8 files changed, 15231 insertions(+), 151 deletions(-)
+ 9 files changed, 15236 insertions(+), 156 deletions(-)
  create mode 100644 Modules/_ssl_data_111.h
  create mode 100644 Modules/_ssl_data_300.h
 
@@ -406,6 +407,49 @@ index ef2e59c1d15..e26f84676f7 100644
              client_context.verify_mode = ssl.CERT_REQUIRED
              client_context.load_verify_locations(SIGNING_CA)
              return server_context, other_context, client_context
+diff --git a/Modules/_hashopenssl.c b/Modules/_hashopenssl.c
+index 5df08e54b24..ef41b25f130 100644
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -405,7 +405,7 @@ EVP_tp_init(EVPobject *self, PyObject *args, PyObject *kwds)
+         return -1;
+     }
+ 
+-    digest = EVP_get_digestbyname(nameStr);
++    digest = EVP_MD_fetch(NULL, nameStr, NULL);
+     if (!digest) {
+         PyErr_SetString(PyExc_ValueError, "unknown hash function");
+         PyBuffer_Release(&view);
+@@ -557,7 +557,7 @@ EVP_new(PyObject *self, PyObject *args, PyObject *kwdict)
+         return NULL;
+     }
+ 
+-    digest = EVP_get_digestbyname(name);
++    digest = EVP_MD_fetch(NULL, name, NULL);
+ 
+     ret_obj = EVPnew(name_obj, digest, NULL, (unsigned char*)view.buf,
+                      view.len);
+@@ -681,7 +681,7 @@ pbkdf2_hmac(PyObject *self, PyObject *args, PyObject *kwdict)
+         return NULL;
+     }
+ 
+-    digest = EVP_get_digestbyname(name);
++    digest = EVP_MD_fetch(NULL, name, NULL);
+     if (digest == NULL) {
+         PyErr_SetString(PyExc_ValueError, "unsupported hash type");
+         goto end;
+@@ -858,9 +858,9 @@ generate_hash_name_list(void)
+ #define INIT_CONSTRUCTOR_CONSTANTS(NAME)  do { \
+     if (CONST_ ## NAME ## _name_obj == NULL) { \
+     CONST_ ## NAME ## _name_obj = PyString_FromString(#NAME); \
+-        if (EVP_get_digestbyname(#NAME)) { \
++        if (EVP_MD_fetch(NULL, #NAME, NULL)) { \
+             CONST_new_ ## NAME ## _ctx_p = EVP_MD_CTX_new(); \
+-            EVP_DigestInit(CONST_new_ ## NAME ## _ctx_p, EVP_get_digestbyname(#NAME)); \
++            EVP_DigestInit(CONST_new_ ## NAME ## _ctx_p, EVP_MD_fetch(NULL, #NAME, NULL)); \
+         } \
+     } \
+ } while (0);
 diff --git a/Modules/_ssl.c b/Modules/_ssl.c
 index 98c8a5a4a95..117433ad18d 100644
 --- a/Modules/_ssl.c
@@ -15794,46 +15838,3 @@ index c57f1a18272..302d2c3514b 100644
              # OpenSSL doesn't do these until 0.9.8 so we'll bring our own hash
              exts.append( Extension('_sha256', ['sha256module.c']) )
              exts.append( Extension('_sha512', ['sha512module.c']) )
-diff --git a/Modules/_hashopenssl.c b/Modules/_hashopenssl.c
-index 5df08e5..ef41b25 100644
---- a/Modules/_hashopenssl.c
-+++ b/Modules/_hashopenssl.c
-@@ -405,7 +405,7 @@ EVP_tp_init(EVPobject *self, PyObject *args, PyObject *kwds)
-         return -1;
-     }
- 
--    digest = EVP_get_digestbyname(nameStr);
-+    digest = EVP_MD_fetch(NULL, nameStr, NULL);
-     if (!digest) {
-         PyErr_SetString(PyExc_ValueError, "unknown hash function");
-         PyBuffer_Release(&view);
-@@ -557,7 +557,7 @@ EVP_new(PyObject *self, PyObject *args, PyObject *kwdict)
-         return NULL;
-     }
- 
--    digest = EVP_get_digestbyname(name);
-+    digest = EVP_MD_fetch(NULL, name, NULL);
- 
-     ret_obj = EVPnew(name_obj, digest, NULL, (unsigned char*)view.buf,
-                      view.len);
-@@ -681,7 +681,7 @@ pbkdf2_hmac(PyObject *self, PyObject *args, PyObject *kwdict)
-         return NULL;
-     }
- 
--    digest = EVP_get_digestbyname(name);
-+    digest = EVP_MD_fetch(NULL, name, NULL);
-     if (digest == NULL) {
-         PyErr_SetString(PyExc_ValueError, "unsupported hash type");
-         goto end;
-@@ -858,9 +858,9 @@ generate_hash_name_list(void)
- #define INIT_CONSTRUCTOR_CONSTANTS(NAME)  do { \
-     if (CONST_ ## NAME ## _name_obj == NULL) { \
-     CONST_ ## NAME ## _name_obj = PyString_FromString(#NAME); \
--        if (EVP_get_digestbyname(#NAME)) { \
-+        if (EVP_MD_fetch(NULL, #NAME, NULL)) { \
-             CONST_new_ ## NAME ## _ctx_p = EVP_MD_CTX_new(); \
--            EVP_DigestInit(CONST_new_ ## NAME ## _ctx_p, EVP_get_digestbyname(#NAME)); \
-+            EVP_DigestInit(CONST_new_ ## NAME ## _ctx_p, EVP_MD_fetch(NULL, #NAME, NULL)); \
-         } \
-     } \
- } while (0);
