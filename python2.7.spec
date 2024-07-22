@@ -78,7 +78,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 41%{?dist}
+Release: 42%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -185,6 +185,7 @@ BuildRequires: gdbm-devel >= 1:1.13
 
 %if 0%{?with_systemtap}
 BuildRequires: systemtap-sdt-devel
+BuildRequires: /usr/bin/dtrace
 # (this introduces a circular dependency, in that systemtap-sdt-devel's
 # /usr/bin/dtrace is a python script)
 %global tapsetdir      /usr/share/systemtap/tapset
@@ -1848,6 +1849,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Mon Jul 22 2024 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-42
+- Add /usr/bin/dtrace to build deps
+
 * Fri Jul 19 2024 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.18-41
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
