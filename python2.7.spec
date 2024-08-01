@@ -78,7 +78,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 42%{?dist}
+Release: 43%{?dist}
 %if %{with rpmwheels}
 License: Python
 %else
@@ -280,6 +280,15 @@ Source4: systemtap-example.stp
 Source5: pyfuntop.stp
 
 Source6: macros.python2
+
+# Patches for bundled wheels
+
+# Patch for the bundled setuptools wheel for CVE-2024-6345
+# Remote code execution via download functions in the package_index module
+# Tracking bug: https://bugzilla.redhat.com/show_bug.cgi?id=2297771
+# Upstream solution: https://github.com/pypa/setuptools/pull/4332
+# Patch simplified because upstream doesn't support SVN anymore.
+Source102: setuptools-CVE-2024-6345.patch
 
 # (Patches taken from github.com/fedora-python/cpython)
 
@@ -1119,6 +1128,12 @@ mv Modules/cryptmodule.c Modules/_cryptmodule.c
 %if %{with rpmwheels}
 %patch -P189 -p1
 rm Lib/ensurepip/_bundled/*.whl
+%else
+# Patch the bundled setuptools wheel for CVE-2024-6345
+unzip -qq Lib/ensurepip/_bundled/setuptools-41.2.0-py2.py3-none-any.whl
+patch -p1 < %{SOURCE102}
+zip -rq Lib/ensurepip/_bundled/setuptools-41.2.0-py2.py3-none-any.whl easy_install.py pkg_resources setuptools setuptools-41.2.0.dist-info
+rm -rf easy_install.py pkg_resources/ setuptools/ setuptools-41.2.0.dist-info/
 %endif
 
 %patch -P191 -p1
@@ -1849,6 +1864,9 @@ CheckPython \
 # ======================================================
 
 %changelog
+* Thu Aug 01 2024 Miro Hrončok <mhroncok@redhat.com> - 2.7.18-43
+- Security fix for CVE-2024-6345 (in bundled setuptools wheel)
+
 * Mon Jul 22 2024 Lumír Balhar <lbalhar@redhat.com> - 2.7.18-42
 - Add /usr/bin/dtrace to build deps
 
