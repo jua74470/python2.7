@@ -99,9 +99,9 @@ make altinstall DESTDIR=$RPM_BUILD_ROOT
 /usr/share/man/man1/python%{pybasever}.1.gz
 #/usr/bin/2to3-%{pybasever}
 #/usr/bin/easy_install-%{pybasever}
-/usr/bin/idle%{pybasever}
-/usr/bin/pip%{pybasever}
-/usr/bin/pydoc%{pybasever}
+#/usr/bin/idle%{pybasever}
+#/usr/bin/pip%{pybasever}
+#/usr/bin/pydoc%{pybasever}
 #/usr/bin/python%{pybasever}m
 /usr/bin/python%{pybasever}-config
 #/usr/bin/pyvenv-%{pybasever}
