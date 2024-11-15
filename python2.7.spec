@@ -88,6 +88,10 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p %{buildroot}%{_bindir}
 make altinstall DESTDIR=$RPM_BUILD_ROOT
 #ln -s /usr/bin/python%{pybasever} $RPM_BUILD_ROOT/%{_bindir}/python3
+mv $RPM_BUILD_ROOT/%{_bindir}/2to3 $RPM_BUILD_ROOT/%{_bindir}/2to3--%{pybasever}
+mv $RPM_BUILD_ROOT/%{_bindir}/idle $RPM_BUILD_ROOT/%{_bindir}/idle%{pybasever}
+mv $RPM_BUILD_ROOT/%{_bindir}/pydoc $RPM_BUILD_ROOT/%{_bindir}/pydoc
+mv $RPM_BUILD_ROOT/%{_bindir}/smtpd.py $RPM_BUILD_ROOT/%{_bindir}/smtpd.py%{pybasever}
 
 %files
 %{_bindir}/python%{pybasever}
@@ -97,14 +101,15 @@ make altinstall DESTDIR=$RPM_BUILD_ROOT
 /usr/lib64/python%{pybasever}/
 /usr/lib64/python%{pybasever}/*
 /usr/share/man/man1/python%{pybasever}.1.gz
-#/usr/bin/2to3-%{pybasever}
-#/usr/bin/easy_install-%{pybasever}
-#/usr/bin/idle%{pybasever}
-#/usr/bin/pip%{pybasever}
-#/usr/bin/pydoc%{pybasever}
-#/usr/bin/python%{pybasever}m
-/usr/bin/python%{pybasever}-config
-#/usr/bin/pyvenv-%{pybasever}
+%{_bindir}/2to3-%{pybasever}
+#%{_bindir}/easy_install-%{pybasever}
+%{_bindir}/idle%{pybasever}
+#%{_bindir}/pip%{pybasever}
+%{_bindir}/pydoc%{pybasever}
+%{_bindir}/smtpd.py%{pybasever}
+#%{_bindir}/python%{pybasever}m
+%{_bindir}/python%{pybasever}-config
+#%{_bindir}/pyvenv-%{pybasever}
 /usr/include/python%{pybasever}/
 /usr/include/python%{pybasever}/*
 /usr/lib64/libpython%{pybasever}.a
