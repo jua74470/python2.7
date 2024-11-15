@@ -90,7 +90,7 @@ make altinstall DESTDIR=$RPM_BUILD_ROOT
 #ln -s /usr/bin/python%{pybasever} $RPM_BUILD_ROOT/%{_bindir}/python3
 mv $RPM_BUILD_ROOT/%{_bindir}/2to3 $RPM_BUILD_ROOT/%{_bindir}/2to3--%{pybasever}
 mv $RPM_BUILD_ROOT/%{_bindir}/idle $RPM_BUILD_ROOT/%{_bindir}/idle%{pybasever}
-mv $RPM_BUILD_ROOT/%{_bindir}/pydoc $RPM_BUILD_ROOT/%{_bindir}/pydoc
+mv $RPM_BUILD_ROOT/%{_bindir}/pydoc $RPM_BUILD_ROOT/%{_bindir}/pydoc%{pybasever}
 mv $RPM_BUILD_ROOT/%{_bindir}/smtpd.py $RPM_BUILD_ROOT/%{_bindir}/smtpd.py%{pybasever}
 
 %files
