@@ -111,7 +111,7 @@ make altinstall DESTDIR=$RPM_BUILD_ROOT
 
 %files devel
 /usr/lib64/pkgconfig/python-%{pybasever}.pc
-/usr/lib64/pkgconfig/python-%{pybasever}-embed.pc
+#/usr/lib64/pkgconfig/python-%{pybasever}-embed.pc
 
 %changelog
 * Sat Sep 29 2018 Tomas Orsava <torsava@redhat.com> - 3.6.6-13.buildroot
