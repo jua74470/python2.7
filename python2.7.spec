@@ -21,19 +21,16 @@ BuildRequires: bzip2-devel
 BuildRequires: expat-devel
 BuildRequires: findutils
 BuildRequires: gcc-c++
-BuildRequires: glibc-all-langpacks
 BuildRequires: glibc-devel
 BuildRequires: gmp-devel
 BuildRequires: libGL-devel
 BuildRequires: libX11-devel
-BuildRequires: libdb-devel
 BuildRequires: libffi-devel
-BuildRequires: libnsl2-devel
 BuildRequires: libtirpc-devel
 BuildRequires: make
 BuildRequires: ncurses-devel
 BuildRequires: openssl-devel
-BuildRequires: pkgconf-pkg-config
+BuildRequires: pkgconfig
 BuildRequires: readline-devel
 BuildRequires: sqlite-devel
 BuildRequires: tar
@@ -43,8 +40,6 @@ BuildRequires: tk-devel
 BuildRequires: zlib-devel
 BuildRequires: gnupg2
 BuildRequires: git-core
-
-BuildRequires: gdbm-devel >= 1:1.13
 
 
 BuildRequires: systemtap-sdt-devel
